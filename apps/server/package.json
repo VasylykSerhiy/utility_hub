@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/main.js",
+  "keywords": [],
+  "license": "ISC",
+  "scripts": {
+    "dev": "ts-node-dev --transpile-only src/main.ts",
+    "build": "tsc",
+    "lint": "eslint .",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@workspace/types": "workspace:*",
+    "cors": "2.8.5",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0",
+    "ts-node-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "@types/cors": "2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/morgan": "^1.9.10"
+  }
+}

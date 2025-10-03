@@ -1,0 +1,10 @@
+{
+  "extends": "@workspace/typescript-config/express.json",
+  "compilerOptions": {
+    "outDir": "./dist"
+  },
+  "include": [
+    "src/**/*.ts",
+    "eslint.config.mjs"
+  ],
+}

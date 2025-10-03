@@ -1,0 +1,13 @@
+{
+  "name": "@workspace/i18n",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint *.ts*"
+  },
+  "dependencies": {
+    "i18next": "^25.0.0",
+    "next-i18next": "^15.4.2",
+    "react-i18next": "^15.4.1"
+  }
+}

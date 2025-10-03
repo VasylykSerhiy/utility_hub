@@ -14,6 +14,7 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
+    "providers": "@/src/providers",
     "utils": "@workspace/ui/lib/utils",
     "ui": "@workspace/ui/components"
   }

@@ -1,0 +1,20 @@
+export default {
+  plugins: ['@trivago/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
+  singleQuote: true,
+  jsxSingleQuote: true,
+  printWidth: 100,
+  trailingComma: 'all',
+  arrowParens: 'avoid',
+  importOrder: [
+    '^react$',
+    '^next',
+    '<THIRD_PARTY_MODULES>',
+    '@workspace/ui/(.*)$',
+    '@workspace/types/(.*)$',
+    '@workspace/utils/(.*)$',
+    '^~/(.*)$',
+    '^[./]',
+  ],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
+};

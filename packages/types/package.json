@@ -1,0 +1,19 @@
+{
+  "name": "@workspace/types",
+  "author": "Ives Furtado | @ivesfurtado",
+  "version": "1.0.0",
+  "keywords": [],
+  "license": "ISC",
+  "description": "",
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
