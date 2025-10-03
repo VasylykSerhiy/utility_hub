@@ -16,7 +16,7 @@ export const ThemeToggleButton: React.FC = () => {
       checked={isDarkMode}
       onCheckedChange={() => setTheme(ps => (ps === 'dark' ? 'light' : 'dark'))}
       className='w-15 h-9'
-      thumbClassName='h-8 w-8 data-[state=checked]:translate-x-6  flex items-center justify-center transition-all duration-2000'
+      thumbClassName='h-8 w-8 data-[state=checked]:translate-x-6  flex items-center justify-center'
     />
   );
 };

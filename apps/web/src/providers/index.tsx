@@ -8,13 +8,7 @@ import { LanguageProvider } from '@/providers/language-provider';
 
 export function Provides({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemesProvider
-      attribute='class'
-      defaultTheme='system'
-      enableSystem
-      disableTransitionOnChange
-      enableColorScheme
-    >
+    <NextThemesProvider attribute='class' defaultTheme='system' enableSystem enableColorScheme>
       <LanguageProvider>{children}</LanguageProvider>
     </NextThemesProvider>
   );

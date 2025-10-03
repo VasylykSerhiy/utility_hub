@@ -1,13 +1,14 @@
-import * as http from "node:http";
+import * as http from 'node:http';
 
-import app from "./app";
+import app from './app';
 
 const port = 3001;
 
 const init = async (): Promise<void> => {
   const server = http.createServer(app);
 
-  server.listen(port, "::", () => {
+  server.listen(port, '::', () => {
+    console.log(process.env.SUPABASE_URL);
     console.log(`API http server running on port ${port}`);
   });
 };

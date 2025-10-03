@@ -1,19 +1,16 @@
-import MainLayout from '@/components/layout';
-import RootLayout from '@/components/layout/root';
-import { Provides } from '@/providers';
+import { ReactNode } from 'react';
 
-import '@workspace/ui/globals.css';
+import { RootLayout } from '@/components/layout';
+import { Provides } from '@/providers';
 
 export default function Layout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <RootLayout>
-      <Provides>
-        <MainLayout>{children}</MainLayout>
-      </Provides>
+      <Provides>{children}</Provides>
     </RootLayout>
   );
 }

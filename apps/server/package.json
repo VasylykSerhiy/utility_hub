@@ -14,15 +14,16 @@
   "dependencies": {
     "@workspace/types": "workspace:*",
     "cors": "2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "morgan": "^1.10.0",
     "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
     "@types/cors": "2.8.19",
     "@types/express": "^5.0.3",
-    "@types/morgan": "^1.9.10"
+    "@types/morgan": "^1.9.10",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*"
   }
 }
