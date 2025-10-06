@@ -27,10 +27,10 @@ export function ForgotPasswordForm({ className, ...props }: React.HTMLAttributes
     defaultValues: { email: '' },
   });
 
-  function onSubmit(data: UserForgotPassword) {
+  const onSubmit = async (data: UserForgotPassword) => {
     setIsLoading(true);
     console.log(data);
-  }
+  };
 
   return (
     <Form {...form}>

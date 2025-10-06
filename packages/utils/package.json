@@ -10,7 +10,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.58.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

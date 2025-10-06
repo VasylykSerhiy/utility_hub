@@ -6,9 +6,12 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 import { LanguageProvider } from '@/providers/language-provider';
 
+import { Toaster } from '@workspace/ui/components/sonner';
+
 export function Provides({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider attribute='class' defaultTheme='system' enableSystem enableColorScheme>
+      <Toaster />
       <LanguageProvider>{children}</LanguageProvider>
     </NextThemesProvider>
   );

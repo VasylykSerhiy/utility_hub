@@ -2,9 +2,13 @@
 
 import { useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
+import { Routes } from '@/constants/router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserCreateShema, userCreateShema } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -19,8 +23,11 @@ import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
+import { singUpAction } from '../../../app/(login)/_actions';
+
 export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<UserCreateShema>({
     resolver: zodResolver(userCreateShema),
@@ -31,15 +38,17 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
     },
   });
 
-  function onSubmit(data: UserCreateShema) {
+  const onSubmit = async ({ email, password }: UserCreateShema) => {
     setIsLoading(true);
-    // eslint-disable-next-line no-console
-    console.log(data);
-
-    setTimeout(() => {
+    const { data, error } = await singUpAction({ email, password });
+    if (error) {
+      toast.error(error.message, { duration: 50000 });
       setIsLoading(false);
-    }, 3000);
-  }
+      return;
+    }
+    router.push(Routes.VERIFY_EMAIL);
+    console.log(data);
+  };
 
   return (
     <Form {...form}>

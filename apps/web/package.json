@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.58.0",
     "@workspace/types": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",
@@ -24,6 +26,7 @@
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.63.0",
     "react-i18next": "^15.4.1",
+    "sonner": "^2.0.7",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

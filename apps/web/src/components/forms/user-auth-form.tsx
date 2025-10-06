@@ -3,11 +3,14 @@
 import { HTMLAttributes, useState } from 'react';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
+import { Routes } from '@/constants/router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserAuthShema, userAuthShema } from '@workspace/utils';
 import { Loader2, LogIn } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -22,11 +25,13 @@ import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
+import { resendVerificationEmailAction, singInAction } from '../../../app/(login)/_actions';
+
 interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const form = useForm<UserAuthShema>({
     resolver: zodResolver(userAuthShema),
     defaultValues: {
@@ -35,11 +40,24 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     },
   });
 
-  function onSubmit(data: UserAuthShema) {
+  const onSubmit = async ({ email, password }: UserAuthShema) => {
     setIsLoading(true);
+    const { error } = await singInAction({ email, password });
 
-    console.log(data);
-  }
+    if (error) {
+      if (error.message === 'Email not confirmed') {
+        await resendVerificationEmailAction(email);
+        router.push(Routes.VERIFY_EMAIL);
+        return;
+      }
+
+      setIsLoading(false);
+      toast.error(error.message, { duration: 1000 });
+      return;
+    }
+
+    router.push(Routes.DASHBOARD);
+  };
 
   return (
     <Form {...form}>

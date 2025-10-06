@@ -4,6 +4,7 @@ import React from 'react';
 
 import { usePathname } from 'next/navigation';
 
+import { ProfileDropdown } from '@/components/profile-dropdown';
 import { links } from '@/constants/router';
 import { useLanguage } from '@/providers/language-provider';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,7 @@ const Header = () => {
           </SelectContent>
         </Select>
         <ThemeToggleButton />
+        <ProfileDropdown />
       </div>
     </div>
   );
