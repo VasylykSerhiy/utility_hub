@@ -3,7 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 
 import { User } from '../models/database';
 
-export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const requireAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const supabase = createClient(
       process.env.SUPABASE_URL!,
@@ -18,7 +22,8 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       error,
     } = await supabase.auth.getUser(token);
 
-    if (error || !user) return res.status(401).json({ message: 'Invalid token' });
+    if (error || !user)
+      return res.status(401).json({ message: 'Invalid token' });
 
     const mongoUser = await User.findOne({ supabaseId: user.id });
     if (!mongoUser) {

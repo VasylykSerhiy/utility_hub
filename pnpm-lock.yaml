@@ -41,6 +41,9 @@ importers:
       '@workspace/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      body-parser:
+        specifier: ^2.2.0
+        version: 2.2.0
       cors:
         specifier: 2.8.5
         version: 2.8.5
@@ -63,6 +66,9 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@types/body-parser':
+        specifier: ^1.19.6
+        version: 1.19.6
       '@types/cors':
         specifier: 2.8.19
         version: 2.8.19

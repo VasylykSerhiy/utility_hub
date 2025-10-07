@@ -6,13 +6,12 @@ const userSchema = new mongoose.Schema<IMongooseUser>(
   {
     supabaseId: { type: String, unique: true },
     email: String,
-    createdAt: Date,
   },
-  { versionKey: 'false' },
+  { versionKey: 'false', timestamps: true },
 );
 
 userSchema.set('toObject', {
-  transform: function (doc, ret) {
+  transform: function (_, ret) {
     ret.id = ret._id;
     delete ret._id;
   },

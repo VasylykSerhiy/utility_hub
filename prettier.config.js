@@ -1,8 +1,11 @@
 export default {
-  plugins: ['@trivago/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
+  plugins: [
+    '@trivago/prettier-plugin-sort-imports',
+    'prettier-plugin-tailwindcss',
+  ],
   singleQuote: true,
   jsxSingleQuote: true,
-  printWidth: 100,
+  printWidth: 80,
   trailingComma: 'all',
   arrowParens: 'avoid',
   importOrder: [

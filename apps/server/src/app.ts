@@ -1,3 +1,4 @@
+import { json, raw, text, urlencoded } from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import * as mongoose from 'mongoose';
@@ -11,7 +12,10 @@ const app: express.Express = express();
 
 app.use(morgan('tiny'));
 
-app.use(express.json({ limit: '100mb' }));
+app.use(json({ limit: '100mb' }));
+app.use(raw());
+app.use(text());
+app.use(urlencoded({ extended: true }));
 
 mongoose
   .connect(process.env.MONGO_URI!)

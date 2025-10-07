@@ -4,7 +4,10 @@ import { AuthInput } from '@workspace/utils';
 import { User } from '../models/database';
 
 const auth = async ({ token }: AuthInput) => {
-  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
   const { data, error } = await supabase.auth.getUser(token);
 
