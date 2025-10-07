@@ -1,6 +1,9 @@
+'use client';
+
 import { useRouter } from 'next/navigation';
 
 import { Routes } from '@/constants/router';
+import { getMyInfo } from '@/hooks/use-user';
 
 import { Avatar, AvatarFallback } from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
@@ -13,16 +16,22 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@workspace/ui/components/dropdown-menu';
+import { Skeleton } from '@workspace/ui/components/skeleton';
 
 import { singOutAction } from '../../app/(login)/_actions';
 
 export function ProfileDropdown() {
   const router = useRouter();
+  const { data, isLoading } = getMyInfo();
 
   const handleSignOut = async () => {
     await singOutAction();
     router.push(Routes.SING_IN);
   };
+
+  if (isLoading) {
+    return <Skeleton className='size-9 rounded-full' />;
+  }
 
   return (
     <>
@@ -37,8 +46,7 @@ export function ProfileDropdown() {
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm font-medium leading-none'>satnaing</p>
-              <p className='text-muted-foreground text-xs leading-none'>satnaingdev@gmail.com</p>
+              <p className='text-sm font-medium leading-none'>{data?.email}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

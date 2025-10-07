@@ -8,7 +8,6 @@ const init = async (): Promise<void> => {
   const server = http.createServer(app);
 
   server.listen(port, '::', () => {
-    console.log(process.env.SUPABASE_URL);
     console.log(`API http server running on port ${port}`);
   });
 };

@@ -1,16 +1,22 @@
 import cors from 'cors';
 import express from 'express';
+import * as mongoose from 'mongoose';
 import morgan from 'morgan';
 
 import routes from './routes';
 
-const app: express.Express = express();
+require('dotenv').config({ path: '.env.development.local', override: true });
 
-require('dotenv').config({ path: '.env.development.local' });
+const app: express.Express = express();
 
 app.use(morgan('tiny'));
 
 app.use(express.json({ limit: '100mb' }));
+
+mongoose
+  .connect(process.env.MONGO_URI!)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB error:', err));
 
 app.use(
   cors({

@@ -3,9 +3,11 @@
 import { HTMLAttributes, useState } from 'react';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Routes } from '@/constants/router';
+import { useAuthUser } from '@/hooks/use-user';
+import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserAuthShema, userAuthShema } from '@workspace/utils';
 import { Loader2, LogIn } from 'lucide-react';
@@ -32,6 +34,13 @@ interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { mutateAsync } = useAuthUser();
+  const supabase = createClient();
+
+  const searchParams = useSearchParams();
+
+  const next = searchParams.get('next');
+
   const form = useForm<UserAuthShema>({
     resolver: zodResolver(userAuthShema),
     defaultValues: {
@@ -42,7 +51,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const onSubmit = async ({ email, password }: UserAuthShema) => {
     setIsLoading(true);
-    const { error } = await singInAction({ email, password });
+    const { data, error } = await singInAction({ email, password });
 
     if (error) {
       if (error.message === 'Email not confirmed') {
@@ -56,9 +65,33 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       return;
     }
 
+    if (!data?.session.access_token) {
+      setIsLoading(false);
+      toast.error('Something went wrong, please try again.');
+      return;
+    }
+
+    await mutateAsync({ token: data?.session.access_token });
+
     router.push(Routes.DASHBOARD);
   };
 
+  async function signInWithGoogle() {
+    setIsLoading(true);
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback${
+            next ? `?next=${encodeURIComponent(next)}` : ''
+          }`,
+        },
+      });
+    } catch (error) {
+      toast('Error signing in with Google', { duration: 1000 });
+      setIsLoading(false);
+    }
+  }
   return (
     <Form {...form}>
       <form
@@ -113,8 +146,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </div>
 
         <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            GitHub
+          <Button variant='outline' type='button' disabled={isLoading} onClick={signInWithGoogle}>
+            Google
           </Button>
           <Button variant='outline' type='button' disabled={isLoading}>
             Facebook

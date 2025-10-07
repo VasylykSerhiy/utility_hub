@@ -1,13 +1,11 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import testRouter from "./test";
+import authRouter from './auth.routes';
+import userRouter from './user.routes';
 
-const router = Router();
+const routes = Router();
 
-router.get("/", function (_req, res) {
-  res.send("Express API is running");
-});
+routes.use('/auth', authRouter);
+routes.use('/users', userRouter);
 
-router.use("/test", testRouter);
-
-export default router;
+export default routes;

@@ -28,7 +28,6 @@ import { singUpAction } from '../../../app/(login)/_actions';
 export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
   const form = useForm<UserCreateShema>({
     resolver: zodResolver(userCreateShema),
     defaultValues: {
@@ -40,14 +39,14 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
 
   const onSubmit = async ({ email, password }: UserCreateShema) => {
     setIsLoading(true);
-    const { data, error } = await singUpAction({ email, password });
+    const { error } = await singUpAction({ email, password });
     if (error) {
-      toast.error(error.message, { duration: 50000 });
+      toast.error(error.message);
       setIsLoading(false);
       return;
     }
+
     router.push(Routes.VERIFY_EMAIL);
-    console.log(data);
   };
 
   return (
