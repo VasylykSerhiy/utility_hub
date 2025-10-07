@@ -8,7 +8,6 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  // Create a Supabase client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -30,7 +29,7 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const protectedRoutes = ['/dashboard'];
+  const protectedRoutes = ['/dashboard', '/property'];
 
   const isProtectedRoute = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route),

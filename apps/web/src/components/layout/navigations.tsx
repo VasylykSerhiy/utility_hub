@@ -18,15 +18,12 @@ interface INavigationsProps {
 const Navigations = ({ onClick }: INavigationsProps) => {
   const { t } = useTranslation();
 
-  const icons = {
-    [Routes.DASHBOARD]: <LayoutGrid />,
-  };
   const pathname = usePathname();
 
   const isActive = (link: string) => pathname === link;
 
   return (
-    <nav className='flex flex-col'>
+    <nav className='flex flex-col px-4'>
       {links.map(link => (
         <Link
           href={link.href}
@@ -35,12 +32,12 @@ const Navigations = ({ onClick }: INavigationsProps) => {
           className={cn(
             'flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2 font-semibold',
             {
-              '': isActive(link.href),
+              'bg-primary': isActive(link.href),
               '': !isActive(link.href),
             },
           )}
         >
-          {icons?.[link.href as keyof typeof icons] || null}
+          {link.icon && <link.icon size={20} />}
           {t(link.title)}
         </Link>
       ))}
