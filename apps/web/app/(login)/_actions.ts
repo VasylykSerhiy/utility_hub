@@ -25,19 +25,3 @@ export const singOutAction = async () => {
   const supabase = await createClient();
   return await supabase.auth.signOut();
 };
-
-export const getAccessToken = async () => {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
-
-  return data.session?.access_token;
-};
-
-export const getSupabaseSession = async () => {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
-
-  return data;
-};

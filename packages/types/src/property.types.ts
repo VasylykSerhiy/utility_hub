@@ -1,6 +1,8 @@
+import { ElectricityMeters } from './electricity.types';
+import { IMonth } from './month.types';
+
 export interface ITariffs {
-  electricityDay: number;
-  electricityNight: number;
+  electricity: ElectricityMeters;
   water: number;
   gas: number;
 }
@@ -8,6 +10,7 @@ export interface ITariffs {
 export interface IFixedCosts {
   internet: number;
   maintenance: number;
+  gas_delivery: number;
 }
 
 export interface IProperty {
@@ -16,4 +19,8 @@ export interface IProperty {
   name: string;
   tariffs: ITariffs;
   fixedCosts: IFixedCosts;
+}
+
+export interface IPropertyWithLastMonth extends IProperty {
+  lastMonth: IMonth;
 }

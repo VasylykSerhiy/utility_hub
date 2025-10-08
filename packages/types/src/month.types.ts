@@ -1,15 +1,14 @@
+import { ElectricityMeters } from './electricity.types';
 import { IFixedCosts, ITariffs } from './property.types';
 
 export interface IMeters {
-  electricityDay: number;
-  electricityNight: number;
+  electricity: ElectricityMeters;
   water: number;
   gas: number;
 }
 
 export interface IDifference {
-  electricityDay: number;
-  electricityNight: number;
+  electricity: ElectricityMeters;
   water: number;
   gas: number;
 }

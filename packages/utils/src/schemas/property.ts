@@ -1,8 +1,9 @@
 import z from 'zod';
 
+import { electricityMeters } from './electricity';
+
 export const tariffsSchema = z.object({
-  electricityDay: z.number().nonnegative().optional(),
-  electricityNight: z.number().nonnegative().optional(),
+  electricity: electricityMeters,
   water: z.number().nonnegative().optional(),
   gas: z.number().nonnegative().optional(),
 });
@@ -10,6 +11,7 @@ export const tariffsSchema = z.object({
 export const fixedCostsSchema = z.object({
   internet: z.number().nonnegative().optional(),
   maintenance: z.number().nonnegative().optional(),
+  gas_delivery: z.number().nonnegative().optional(),
 });
 
 export const propertySchema = z.object({

@@ -58,4 +58,45 @@ const updateProperty = async (
   }
 };
 
-export default { createProperty, getProperties, updateProperty };
+const getMonths = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.params?.id) {
+      return res.status(400).json({ message: 'Property ID is required' });
+    }
+
+    const months = await propertyService.getMonths({
+      user: req.user!,
+      propertyId: req.params?.id,
+    });
+
+    res.json(months);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createMonth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.params?.id) {
+      return res.status(400).json({ message: 'Property ID is required' });
+    }
+
+    const property = await propertyService.createMonth({
+      user: req.user!,
+      propertyId: req.params?.id,
+      data: req.body,
+    });
+
+    res.json(property);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createProperty,
+  getProperties,
+  updateProperty,
+  getMonths,
+  createMonth,
+};

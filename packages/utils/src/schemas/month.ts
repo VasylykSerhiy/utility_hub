@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
+import { electricityMeters } from './electricity';
+
 export const monthSchema = z.object({
-  propertyId: z.string().min(1),
   date: z.preprocess(arg => {
     if (typeof arg === 'string') {
       return new Date(arg);
@@ -9,8 +10,7 @@ export const monthSchema = z.object({
     return arg;
   }, z.date()),
   meters: z.object({
-    electricityDay: z.number().nonnegative(),
-    electricityNight: z.number().nonnegative(),
+    electricity: electricityMeters,
     water: z.number().nonnegative(),
     gas: z.number().nonnegative(),
   }),

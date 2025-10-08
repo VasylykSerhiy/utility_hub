@@ -1,4 +1,4 @@
-import { propertySchema } from '@workspace/utils';
+import { monthSchema, propertySchema } from '@workspace/utils';
 import { Router } from 'express';
 
 import { propertyController } from '../controllers';
@@ -7,7 +7,11 @@ import { validateRequest } from '../utils/validation.util';
 
 const propertyRouter = Router();
 
-propertyRouter.get('/', authMiddleware.requireAuth, propertyController.getProperties);
+propertyRouter.get(
+  '/',
+  authMiddleware.requireAuth,
+  propertyController.getProperties,
+);
 
 propertyRouter.post(
   '/',
@@ -16,6 +20,23 @@ propertyRouter.post(
   propertyController.createProperty,
 );
 
-propertyRouter.put('/:id', authMiddleware.requireAuth, propertyController.updateProperty);
+propertyRouter.put(
+  '/:id',
+  authMiddleware.requireAuth,
+  propertyController.updateProperty,
+);
+
+propertyRouter.get(
+  '/:id/months',
+  authMiddleware.requireAuth,
+  propertyController.getMonths,
+);
+
+propertyRouter.post(
+  '/:id/months',
+  authMiddleware.requireAuth,
+  validateRequest(monthSchema),
+  propertyController.createMonth,
+);
 
 export default propertyRouter;

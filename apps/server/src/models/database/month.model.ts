@@ -1,31 +1,34 @@
 import mongoose from 'mongoose';
 
+import { ElectricitySchema } from './electricity.model';
+
 const monthSchema = new mongoose.Schema(
   {
-    propertyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Property', required: true },
+    propertyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Property',
+      required: true,
+    },
     date: { type: Date, required: true },
     meters: {
-      electricityDay: { type: Number, default: 0 },
-      electricityNight: { type: Number, default: 0 },
+      electricity: { type: ElectricitySchema },
       water: { type: Number, default: 0 },
       gas: { type: Number, default: 0 },
     },
     difference: {
-      // різниця від попереднього місяця
-      electricityDay: Number,
-      electricityNight: Number,
-      water: Number,
-      gas: Number,
+      electricity: { type: ElectricitySchema },
+      water: { type: Number, default: 0 },
+      gas: { type: Number, default: 0 },
     },
     tariffs: {
-      electricityDay: Number,
-      electricityNight: Number,
-      water: Number,
-      gas: Number,
+      electricity: { type: ElectricitySchema },
+      water: { type: Number, default: 0 },
+      gas: { type: Number, default: 0 },
     },
     fixedCosts: {
-      internet: Number,
-      maintenance: Number,
+      internet: { type: Number, default: 0 },
+      maintenance: { type: Number, default: 0 },
+      gas_delivery: { type: Number, default: 0 },
     },
     total: { type: Number, default: 0 },
   },
