@@ -1,8 +1,12 @@
 'use client';
 
-import { Fragment } from 'react';
+import { useMemo } from 'react';
 
-import { IDifference, IPropertyWithLastMonth } from '@workspace/types';
+import PropertyCardTable from '@/components/tables/property-card-table';
+import { IPropertyWithLastMonth } from '@workspace/types';
+import { formatDate, numericFormatter } from '@workspace/utils';
+import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -18,63 +22,102 @@ export function PropertyCard({
   lastMonth,
   tariffs,
   name,
+  electricityType,
 }: IPropertyWithLastMonth) {
-  const keys: (keyof IDifference)[] = [
-    'electricityDay',
-    'electricityNight',
-    'water',
-    'gas',
-  ];
+  const { t } = useTranslation();
 
-  const total =
-    keys.reduce(
-      (sum, key) =>
-        sum + (lastMonth?.difference?.[key] ?? 0) * (tariffs?.[key] ?? 0),
-      0,
-    ) +
-    (fixedCosts?.internet ?? 0) +
-    (fixedCosts?.maintenance ?? 0);
+  const [rows, total] = useMemo(() => {
+    const rows = [
+      ...(electricityType === 'single'
+        ? [
+            {
+              meter: t('ELECTRICITY'),
+              reading: lastMonth?.meters?.electricity?.single ?? 0,
+              consumption: lastMonth?.difference?.electricity?.single ?? 0,
+              const:
+                (lastMonth?.difference?.electricity?.single ?? 0) *
+                (lastMonth?.tariffs?.electricity?.single ?? 0),
+            },
+          ]
+        : []),
+
+      ...(electricityType === 'double'
+        ? [
+            {
+              meter: t('ELECTRICITY_DAY'),
+              reading: lastMonth?.meters?.electricity?.day ?? 0,
+              consumption: lastMonth?.difference?.electricity?.day ?? 0,
+              const:
+                (lastMonth?.difference?.electricity?.day ?? 0) *
+                (lastMonth?.tariffs?.electricity?.day ?? 0),
+            },
+            {
+              meter: t('ELECTRICITY_NIGHT'),
+              reading: lastMonth?.meters?.electricity?.night ?? 0,
+              consumption: lastMonth?.difference?.electricity?.night ?? 0,
+              const:
+                (lastMonth?.difference?.electricity?.night ?? 0) *
+                (lastMonth?.tariffs?.electricity?.night ?? 0),
+            },
+          ]
+        : []),
+      {
+        meter: t('WATER'),
+        reading: lastMonth?.meters?.water ?? 0,
+        consumption: lastMonth?.difference?.water ?? 0,
+        const:
+          (lastMonth?.difference?.water ?? 0) *
+          (lastMonth?.tariffs?.water ?? 0),
+      },
+      {
+        meter: t('GAS'),
+        reading: lastMonth?.meters?.gas ?? 0,
+        consumption: lastMonth?.difference?.gas ?? 0,
+        const:
+          (lastMonth?.difference?.gas ?? 0) * (lastMonth?.tariffs?.gas ?? 0),
+      },
+    ];
+
+    const total =
+      rows.reduce((acc, row) => acc + row.const, 0) +
+      Object.values(lastMonth?.fixedCosts ?? []).reduce((acc, c) => acc + c, 0);
+    return [rows, total];
+  }, [lastMonth, tariffs, electricityType, t]);
 
   return (
     <Card className='border border-gray-700 shadow-lg transition-shadow duration-300 hover:shadow-xl'>
-      <CardHeader>
+      <CardHeader className='flex items-center justify-between'>
         <CardTitle className='text-lg font-semibold'>{name}</CardTitle>
+        {lastMonth?.date && <p>{format(lastMonth?.date, formatDate)}</p>}
       </CardHeader>
       <CardContent className='space-y-2'>
         <div>
-          <div className='flex justify-between gap-1'>
-            <span className='font-medium'>Показник</span>
-            <span className='font-medium'>Вартість</span>
-          </div>
-          <div className='ml-2 grid grid-cols-[auto_1fr] gap-1'>
-            {[
-              { label: 'День', key: 'electricityDay' },
-              { label: 'Ніч', key: 'electricityNight' },
-              { label: 'Вода', key: 'water' },
-              { label: 'Газ', key: 'gas' },
-            ].map(item => {
-              const key = item.key as keyof IDifference;
-              return (
-                <Fragment key={key}>
-                  <p className='flex justify-between gap-x-7'>
-                    {item.label}:{' '}
-                    <span>{lastMonth?.difference?.[key] ?? 0}</span>
-                  </p>
-                  <span className='text-right'>
-                    {(lastMonth?.difference?.[key] ?? 0) * tariffs?.[key]}
-                  </span>
-                </Fragment>
-              );
-            })}
+          <span className='font-medium'>{t('METERS')}:</span>
+          <div className='ml-2'>
+            <PropertyCardTable rows={rows} />
           </div>
         </div>
         <hr />
         <div>
-          <span className='font-medium'>Фіксовані витрати:</span>
+          <span className='font-medium'>{t('FIXED_COSTS')}:</span>
           <div className='ml-2'>
             {[
-              { label: 'Інтернет', value: fixedCosts.internet },
-              { label: 'Обслуговування', value: fixedCosts?.maintenance },
+              {
+                label: t('INTERNET'),
+                value: numericFormatter(fixedCosts.internet, { suffix: ' ₴' }),
+              },
+              {
+                label: t('MAINTENANCE'),
+                value: numericFormatter(fixedCosts.maintenance, {
+                  suffix: ' ₴',
+                }),
+              },
+              {
+                label: t('GAS_DELIVERY'),
+                value: numericFormatter(fixedCosts.gas_delivery, {
+                  suffix: ' ₴',
+                }),
+              },
             ].map(item => (
               <div className='flex justify-between gap-1' key={item.label}>
                 <p>{item.label}</p>
@@ -87,14 +130,18 @@ export function PropertyCard({
         <hr />
 
         <div className='flex justify-between gap-1 pt-2'>
-          <span className='font-medium'>Сума:</span>
-          <span className='font-medium'>{total}</span>
+          <span className='font-medium'>{t('TOTAL')}:</span>
+          <span className='font-medium'>
+            {numericFormatter(total, {
+              suffix: ' ₴',
+            })}
+          </span>
         </div>
       </CardContent>
       <CardFooter>
         <div className='grid w-full grid-cols-2 gap-2'>
-          <Button className='w-full'>Детальніше</Button>
-          <Button className='w-full'>Додати місяць</Button>
+          <Button className='w-full'>{t('BUTTONS.MORE')}</Button>
+          <Button className='w-full'>{t('BUTTONS.ADD_METER')}</Button>
         </div>
       </CardFooter>
     </Card>

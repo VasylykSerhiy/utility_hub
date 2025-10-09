@@ -40,7 +40,11 @@ const createProperty = async ({
   user: IMongooseUser;
   data: PropertySchema;
 }) => {
-  const property = new Property({ ...data, userId: user._id });
+  const property = new Property({
+    ...data,
+    userId: user._id,
+    electricityType: data?.tariffs?.electricity?.type,
+  });
   await property.save();
   return property;
 };
@@ -56,7 +60,12 @@ const updateProperty = async ({
 }) => {
   const property = await Property.findOneAndUpdate<IProperty>(
     { _id: id, userId: user._id },
-    data,
+    {
+      ...data,
+      ...(data?.tariffs?.electricity?.type && {
+        electricityType: data?.tariffs?.electricity?.type,
+      }),
+    },
     {
       new: true,
     },

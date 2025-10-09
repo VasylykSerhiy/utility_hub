@@ -2,6 +2,48 @@ const en = {
   // MENU
   'MENU.LINK.DASHBOARD': 'Dashboard',
   'MENU.LINK.PROPERTY': 'Property',
+
+  // FORMS
+  'FORM.PROPERTY.NAME': 'Name',
+  'FORM.PROPERTY.PLACEHOLDER': 'Enter property name',
+
+  'FORM.ERROR.REQUIRED': 'This field is required',
+  'FORM.ERROR.NON_NEGATIVE': 'Value must be non-negative',
+
+  // PROPERTY
+  'PROPERTY.CREATE.TITLE': 'Create New Property',
+
+  // BUTTONS
+  'BUTTONS.SAVE': 'Save',
+  'BUTTONS.CANCEL': 'Cancel',
+  'BUTTONS.CREATE': 'Create',
+  'BUTTONS.DELETE': 'Delete',
+  'BUTTONS.MORE': 'More',
+  'BUTTONS.ADD_METER': 'Add Meter',
+
+  //GLOBAL
+  'ELECTRICITY.SINGLE': 'Single Tariff Meter',
+  'ELECTRICITY.DOUBLE': 'Double Tariff Meter',
+  FIXED_COSTS: 'Fixed Costs',
+  COSTS: 'Costs',
+  NO_DATA: 'No data available',
+  LOADING: 'Loading...',
+  CURRENT_READING: 'Current Reading',
+  CONSUMPTION: 'Consumption',
+  READING: 'Reading',
+  METERS: 'Meters',
+  METER: 'Meter',
+  TOTAL: 'Total',
+  SEARCH: 'Search',
+  ELECTRICITY: 'Electricity',
+  ELECTRICITY_DAY: 'Electricity (Day)',
+  ELECTRICITY_NIGHT: 'Electricity (Night)',
+  ELECTRICITY_SELECT: 'Electricity Meter Type',
+  WATER: 'Water',
+  GAS: 'Gas',
+  INTERNET: 'Internet',
+  MAINTENANCE: 'Maintenance',
+  GAS_DELIVERY: 'Gas Delivery',
 };
 
 export default en;

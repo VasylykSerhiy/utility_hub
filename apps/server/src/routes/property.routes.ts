@@ -1,4 +1,8 @@
-import { monthSchema, propertySchema } from '@workspace/utils';
+import {
+  createPropertySchema,
+  monthSchema,
+  updatePropertySchema,
+} from '@workspace/utils';
 import { Router } from 'express';
 
 import { propertyController } from '../controllers';
@@ -16,13 +20,14 @@ propertyRouter.get(
 propertyRouter.post(
   '/',
   authMiddleware.requireAuth,
-  validateRequest(propertySchema),
+  validateRequest(createPropertySchema),
   propertyController.createProperty,
 );
 
 propertyRouter.put(
   '/:id',
   authMiddleware.requireAuth,
+  validateRequest(updatePropertySchema),
   propertyController.updateProperty,
 );
 

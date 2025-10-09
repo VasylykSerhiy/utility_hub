@@ -13,7 +13,7 @@ export default async function Layout({
   console.log(data.session?.access_token);
   return (
     <MainLayout>
-      <main className='max-w-4xl p-8'>{children}</main>
+      <main>{children}</main>
     </MainLayout>
   );
 }

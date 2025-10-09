@@ -4,14 +4,14 @@ import { electricityMeters } from './electricity';
 
 export const tariffsSchema = z.object({
   electricity: electricityMeters,
-  water: z.number().nonnegative().optional(),
-  gas: z.number().nonnegative().optional(),
+  water: z.number().nonnegative(),
+  gas: z.number().nonnegative(),
 });
 
 export const fixedCostsSchema = z.object({
-  internet: z.number().nonnegative().optional(),
-  maintenance: z.number().nonnegative().optional(),
-  gas_delivery: z.number().nonnegative().optional(),
+  internet: z.number().nonnegative(),
+  maintenance: z.number().nonnegative(),
+  gas_delivery: z.number().nonnegative(),
 });
 
 export const propertySchema = z.object({
@@ -20,4 +20,9 @@ export const propertySchema = z.object({
   fixedCosts: fixedCostsSchema.optional(),
 });
 
+export const createPropertySchema = propertySchema.required();
+export const updatePropertySchema = propertySchema.partial();
+
 export type PropertySchema = z.infer<typeof propertySchema>;
+export type CreatePropertySchema = z.infer<typeof createPropertySchema>;
+export type UpdatePropertySchema = z.infer<typeof updatePropertySchema>;

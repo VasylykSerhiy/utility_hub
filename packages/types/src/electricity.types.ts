@@ -1,12 +1,17 @@
-export interface singleElectricityMeter {
-  type: 'single';
+export enum ElectricityMeterType {
+  SINGLE = 'single',
+  DOUBLE = 'double',
+}
+
+export interface SingleElectricityMeter {
+  type: ElectricityMeterType.SINGLE;
   single: number;
 }
 
-export interface doubleElectricityMeter {
-  type: 'double';
+export interface DoubleElectricityMeter {
+  type: ElectricityMeterType.DOUBLE;
   day: number;
   night: number;
 }
 
-export type ElectricityMeters = singleElectricityMeter | doubleElectricityMeter;
+export type ElectricityMeters = SingleElectricityMeter | DoubleElectricityMeter;

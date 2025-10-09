@@ -10,6 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "@workspace/i18n": "workspace:*",
+    "@workspace/types": "workspace:*",
+    "react-number-format": "^5.4.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {

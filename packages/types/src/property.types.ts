@@ -1,8 +1,12 @@
-import { ElectricityMeters } from './electricity.types';
+import {
+  DoubleElectricityMeter,
+  ElectricityMeters,
+  SingleElectricityMeter,
+} from './electricity.types';
 import { IMonth } from './month.types';
 
-export interface ITariffs {
-  electricity: ElectricityMeters;
+export interface ITariffs<T extends ElectricityMeters = ElectricityMeters> {
+  electricity: T;
   water: number;
   gas: number;
 }
@@ -13,14 +17,34 @@ export interface IFixedCosts {
   gas_delivery: number;
 }
 
-export interface IProperty {
-  _id?: string;
+export interface IPropertySingleElectricity {
+  id: string;
   userId: string;
   name: string;
-  tariffs: ITariffs;
+  electricityType: SingleElectricityMeter['type'];
+  tariffs: ITariffs<SingleElectricityMeter>;
   fixedCosts: IFixedCosts;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface IPropertyWithLastMonth extends IProperty {
-  lastMonth: IMonth;
+export interface IPropertyDoubleElectricity {
+  id: string;
+  userId: string;
+  name: string;
+  electricityType: DoubleElectricityMeter['type'];
+  tariffs: ITariffs<DoubleElectricityMeter>;
+  fixedCosts: IFixedCosts;
+  createdAt: string;
+  updatedAt: string;
 }
+
+export type IProperty = IPropertySingleElectricity | IPropertyDoubleElectricity;
+
+export type IPropertyWithLastMonth =
+  | (IPropertySingleElectricity & {
+      lastMonth?: IMonth<SingleElectricityMeter>;
+    })
+  | (IPropertyDoubleElectricity & {
+      lastMonth?: IMonth<DoubleElectricityMeter>;
+    });

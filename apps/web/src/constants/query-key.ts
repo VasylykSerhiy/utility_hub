@@ -4,5 +4,6 @@ export const queryKeys = {
 };
 
 export const mutationKey = {
-  register: 'register',
+  auth: 'auth',
+  property_create: 'property_create',
 };

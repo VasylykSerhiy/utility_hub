@@ -5,7 +5,7 @@ import { AuthInput } from '@workspace/utils';
 
 export const useAuthUser = () => {
   return useMutation({
-    mutationKey: [mutationKey.register],
+    mutationKey: [mutationKey.auth],
     mutationFn: (token: AuthInput) => userService.postAuth(token),
   });
 };

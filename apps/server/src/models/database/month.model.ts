@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+import { applyIdVirtual } from '../../utils';
 import { ElectricitySchema } from './electricity.model';
 
 const monthSchema = new mongoose.Schema(
@@ -32,7 +33,12 @@ const monthSchema = new mongoose.Schema(
     },
     total: { type: Number, default: 0 },
   },
-  { versionKey: 'false', timestamps: true },
+  {
+    versionKey: 'false',
+    timestamps: true,
+  },
 );
+
+applyIdVirtual(monthSchema);
 
 export default mongoose.model('Month', monthSchema);
