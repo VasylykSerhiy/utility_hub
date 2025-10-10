@@ -19,6 +19,26 @@ const getProperties = async (
   }
 };
 
+const getProperty = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!req.params?.id) {
+      return res.status(400).json({ message: 'Property ID is required' });
+    }
+
+    const property = await propertyService.getProperty(
+      req.user,
+      req.params?.id,
+    );
+    res.json(property);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createProperty = async (
   req: Request,
   res: Response,
@@ -65,7 +85,6 @@ const getMonths = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const months = await propertyService.getMonths({
-      user: req.user!,
       propertyId: req.params?.id,
     });
 
@@ -99,4 +118,5 @@ export default {
   updateProperty,
   getMonths,
   createMonth,
+  getProperty,
 };

@@ -1,36 +1,41 @@
-import { IMonth, IProperty } from '@workspace/types';
-import { MonthSchema, PropertySchema } from '@workspace/utils';
+import { IProperty } from '@workspace/types';
+import {
+  CreatePropertySchema,
+  MonthSchema,
+  UpdatePropertySchema,
+} from '@workspace/utils';
+import mongoose from 'mongoose';
 
-import { calcElectricity, calcTotalElectricity } from '../helpers';
-import { Month, Property } from '../models/database';
+import { Month, Property, Tariff } from '../models/database';
 import { IMongooseUser } from '../types';
+import {
+  getAllMonthsPipeline,
+  propertyWithLastMonthAndTariff,
+} from './aggregation/propertyAggregation';
 
 const getProperties = async (user: IMongooseUser) => {
-  const properties = await Property.find({ userId: user._id });
+  return Property.aggregate([
+    { $match: { userId: user._id } },
+    ...propertyWithLastMonthAndTariff,
+  ]);
+};
 
-  return await Promise.all(
-    properties.map(async property => {
-      const lastMonth = await Month.findOne<IMonth>({
-        propertyId: property._id,
-      })
-        .sort({
-          createdAt: -1,
-        })
-        .limit(1);
+const getProperty = async (user: IMongooseUser, id: string) => {
+  const [property] = await Property.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(id),
+        userId: user._id,
+      },
+    },
+    ...propertyWithLastMonthAndTariff,
+  ]);
 
-      if (!lastMonth) {
-        return {
-          ...property.toObject(),
-          lastMonth: {},
-        };
-      }
+  if (!property) {
+    throw new Error('Property not found or access denied');
+  }
 
-      return {
-        ...property.toObject(),
-        lastMonth: lastMonth,
-      };
-    }),
-  );
+  return property;
 };
 
 const createProperty = async ({
@@ -38,15 +43,36 @@ const createProperty = async ({
   data,
 }: {
   user: IMongooseUser;
-  data: PropertySchema;
+  data: CreatePropertySchema;
 }) => {
-  const property = new Property({
-    ...data,
-    userId: user._id,
-    electricityType: data?.tariffs?.electricity?.type,
-  });
-  await property.save();
-  return property;
+  const { tariffs, fixedCosts, ...rest } = data;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const property = await new Property({
+      userId: user._id,
+      electricityType: tariffs?.electricity?.type ?? 'single',
+      ...rest,
+    }).save({ session });
+
+    if (!tariffs) new Error('Initial tariffs are required');
+
+    await new Tariff({
+      propertyId: property._id,
+      startDate: new Date(),
+      tariffs,
+      fixedCosts,
+    }).save({ session });
+
+    await session.commitTransaction();
+    return property;
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
+  }
 };
 
 const updateProperty = async ({
@@ -56,46 +82,50 @@ const updateProperty = async ({
 }: {
   user: IMongooseUser;
   id: string;
-  data: PropertySchema;
+  data: UpdatePropertySchema;
 }) => {
-  const property = await Property.findOneAndUpdate<IProperty>(
-    { _id: id, userId: user._id },
-    {
-      ...data,
-      ...(data?.tariffs?.electricity?.type && {
-        electricityType: data?.tariffs?.electricity?.type,
-      }),
-    },
-    {
-      new: true,
-    },
-  );
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!property) {
-    throw new Error('Property not found');
+  try {
+    const property = await Property.findOneAndUpdate<IProperty>(
+      { _id: id, userId: user._id },
+      Object.fromEntries(
+        Object.entries(data).filter(
+          ([key]) => key !== 'tariffs' && key !== 'fixedCosts',
+        ),
+      ) as Partial<IProperty>,
+      { new: true, session },
+    );
+
+    if (!property) throw new Error('Property not found');
+
+    const { tariffs, fixedCosts } = data;
+    if (tariffs || fixedCosts) {
+      await Tariff.findOneAndUpdate(
+        { propertyId: property.id },
+        { ...(tariffs && { tariffs }), ...(fixedCosts && { fixedCosts }) },
+        { new: true, upsert: true, session },
+      );
+    }
+
+    await session.commitTransaction();
+    return property;
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    await session.endSession();
   }
-
-  return property;
 };
 
-const getMonths = async ({
-  user,
-  propertyId,
-}: {
-  user: IMongooseUser;
-  propertyId: string;
-}) => {
-  const userId = user._id;
-  const property = await Property.findOne<IProperty>({
-    _id: propertyId,
-    userId,
-  });
+export const getMonths = async ({ propertyId }: { propertyId: string }) => {
+  console.log(propertyId);
+  return Month.aggregate([
+    { $match: { propertyId: new mongoose.Types.ObjectId(propertyId) } },
 
-  if (!property) {
-    throw new Error('Property not found or access denied');
-  }
-
-  return Month.find<IMonth>({ propertyId }).sort({ month: 1 });
+    ...getAllMonthsPipeline,
+  ]);
 };
 
 export const createMonth = async ({
@@ -114,59 +144,15 @@ export const createMonth = async ({
 
   if (!property) throw new Error('Property not found or access denied');
 
-  const prevMonth = await Month.find<IMonth>({ propertyId })
-    .sort({ date: -1 })
-    .limit(1);
-
-  const prevMeters = prevMonth[0]?.meters ?? {
-    electricity: {
-      type: 'single',
-      single: 0,
-    },
-    water: 0,
-    gas: 0,
-  };
-
-  const difference = {
-    electricity: calcElectricity(
-      data.meters.electricity,
-      prevMeters.electricity,
-    ),
-    water: data.meters.water - (prevMeters.water ?? 0),
-    gas: data.meters.gas - (prevMeters.gas ?? 0),
-  };
-
-  const totalElectricity = calcTotalElectricity(
-    difference.electricity,
-    property.tariffs.electricity,
-  );
-
-  const utilities: Array<keyof typeof difference> = ['water', 'gas'];
-
-  const total =
-    totalElectricity +
-    utilities.reduce((sum, key) => {
-      const diff = Number(difference[key]);
-      const tariff = Number(property.tariffs[key]);
-      return sum + diff * tariff;
-    }, 0) +
-    Object.values(property.fixedCosts ?? {}).reduce(
-      (sum, cost) => sum + (cost ?? 0),
-      0,
-    );
-
-  const monthRecord = new Month({
+  const newMonth = new Month({
     propertyId,
     date: data.date,
     meters: data.meters,
-    difference,
-    tariffs: property.tariffs,
-    fixedCosts: property.fixedCosts,
-    total,
   });
 
-  await monthRecord.save();
-  return monthRecord;
+  await newMonth.save();
+
+  return newMonth;
 };
 
 export default {
@@ -175,4 +161,5 @@ export default {
   updateProperty,
   getMonths,
   createMonth,
+  getProperty,
 };

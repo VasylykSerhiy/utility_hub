@@ -21,6 +21,7 @@
     "@workspace/utils": "workspace:*",
     "axios": "^1.12.2",
     "date-fns": "^4.1.0",
+    "dom-to-image": "^2.6.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.475.0",
     "next": "15.4.7",
@@ -34,6 +35,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@types/dom-to-image": "^2.6.7",
     "@types/node": "^20.19.9",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",

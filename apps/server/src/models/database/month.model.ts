@@ -16,22 +16,6 @@ const monthSchema = new mongoose.Schema(
       water: { type: Number, default: 0 },
       gas: { type: Number, default: 0 },
     },
-    difference: {
-      electricity: { type: ElectricitySchema },
-      water: { type: Number, default: 0 },
-      gas: { type: Number, default: 0 },
-    },
-    tariffs: {
-      electricity: { type: ElectricitySchema },
-      water: { type: Number, default: 0 },
-      gas: { type: Number, default: 0 },
-    },
-    fixedCosts: {
-      internet: { type: Number, default: 0 },
-      maintenance: { type: Number, default: 0 },
-      gas_delivery: { type: Number, default: 0 },
-    },
-    total: { type: Number, default: 0 },
   },
   {
     versionKey: 'false',

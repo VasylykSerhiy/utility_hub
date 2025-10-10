@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 import { applyIdVirtual } from '../../utils';
-import { ElectricitySchema } from './electricity.model';
 
 const propertySchema = new mongoose.Schema(
   {
@@ -15,16 +14,6 @@ const propertySchema = new mongoose.Schema(
       type: String,
       enum: ['single', 'double'],
       required: true,
-    },
-    tariffs: {
-      electricity: { type: ElectricitySchema, required: true },
-      water: { type: Number, default: 0 },
-      gas: { type: Number, default: 0 },
-    },
-    fixedCosts: {
-      internet: { type: Number, default: 0 },
-      maintenance: { type: Number, default: 0 },
-      gas_delivery: { type: Number, default: 0 },
     },
   },
   {

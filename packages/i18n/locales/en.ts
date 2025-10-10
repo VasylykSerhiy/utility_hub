@@ -6,12 +6,17 @@ const en = {
   // FORMS
   'FORM.PROPERTY.NAME': 'Name',
   'FORM.PROPERTY.PLACEHOLDER': 'Enter property name',
+  'FORM.PLACEHOLDER.DATE': 'Select a date',
 
   'FORM.ERROR.REQUIRED': 'This field is required',
   'FORM.ERROR.NON_NEGATIVE': 'Value must be non-negative',
 
   // PROPERTY
   'PROPERTY.CREATE.TITLE': 'Create New Property',
+
+  //MODALS
+  'MODAL.CREATE_METER.TITLE': 'Add New Meter',
+  'MODAL.CREATE_METER.DESC': 'Please enter the new meter readings below.',
 
   // BUTTONS
   'BUTTONS.SAVE': 'Save',
@@ -20,6 +25,9 @@ const en = {
   'BUTTONS.DELETE': 'Delete',
   'BUTTONS.MORE': 'More',
   'BUTTONS.ADD_METER': 'Add Meter',
+
+  //MESSAGES
+  'SCREENSHOT.SUCCESS': 'Screenshot saved successfully!',
 
   //GLOBAL
   'ELECTRICITY.SINGLE': 'Single Tariff Meter',
@@ -31,6 +39,7 @@ const en = {
   CURRENT_READING: 'Current Reading',
   CONSUMPTION: 'Consumption',
   READING: 'Reading',
+  DATE: 'Date',
   METERS: 'Meters',
   METER: 'Meter',
   TOTAL: 'Total',

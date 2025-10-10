@@ -6,12 +6,17 @@ const uk = {
   // FORMS
   'FORM.PROPERTY.NAME': 'Назва',
   'FORM.PROPERTY.PLACEHOLDER': 'Введіть назву',
+  'FORM.PLACEHOLDER.DATE': 'Виберіть дату',
 
   'FORM.ERROR.REQUIRED': "Це поле є обов'язковим",
   'FORM.ERROR.NON_NEGATIVE': "Значення має бути невід'ємним",
 
   // PROPERTY
   'PROPERTY.CREATE.TITLE': 'Створити власність',
+
+  //MODALS
+  'MODAL.CREATE_METER.TITLE': 'Додати показник',
+  'MODAL.CREATE_METER.DESC': 'Введіть нові показання лічильника нижче.',
 
   // BUTTONS
   'BUTTONS.SAVE': 'Зберегти',
@@ -20,6 +25,9 @@ const uk = {
   'BUTTONS.DELETE': 'Видалити',
   'BUTTONS.MORE': 'Більше',
   'BUTTONS.ADD_METER': 'Додати показник',
+
+  //MESSAGES
+  'SCREENSHOT.SUCCESS': 'Зображення збережено в буфер обміну',
 
   //GLOBAL
   'ELECTRICITY.SINGLE': 'Однотарифний лічильник',
@@ -30,6 +38,7 @@ const uk = {
   LOADING: 'Завантаження...',
   CURRENT_READING: 'Поточні показники',
   READING: 'Показники',
+  DATE: 'Дата',
   CONSUMPTION: 'Спожито',
   METERS: 'Лічильники',
   METER: 'Лічильник',

@@ -27,7 +27,7 @@ const PropertyContent = () => {
           </Button>
         </Link>
       </div>
-      <div className='grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4'>
+      <div className='grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4'>
         {data?.map(property => (
           <PropertyCard {...property} key={property.id} />
         ))}

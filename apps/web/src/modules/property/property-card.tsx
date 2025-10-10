@@ -1,12 +1,16 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import PropertyCardTable from '@/components/tables/property-card-table';
+import { Emodal, useModalState } from '@/stores/use-modal-state';
 import { IPropertyWithLastMonth } from '@workspace/types';
 import { formatDate, numericFormatter } from '@workspace/utils';
 import { format } from 'date-fns';
+import domtoimage from 'dom-to-image';
+import { Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -18,14 +22,15 @@ import {
 } from '@workspace/ui/components/card';
 
 export function PropertyCard({
-  fixedCosts,
   lastMonth,
   tariffs,
   name,
   electricityType,
+  id,
 }: IPropertyWithLastMonth) {
   const { t } = useTranslation();
-
+  const blockRef = useRef<HTMLDivElement>(null);
+  const openModal = useModalState(s => s.openModal);
   const [rows, total] = useMemo(() => {
     const rows = [
       ...(electricityType === 'single'
@@ -84,8 +89,55 @@ export function PropertyCard({
     return [rows, total];
   }, [lastMonth, tariffs, electricityType, t]);
 
+  const handleScreenshot = async () => {
+    if (!blockRef.current) return;
+
+    try {
+      const originalBlock = blockRef.current;
+      const clonedBlock = originalBlock.cloneNode(true) as HTMLElement;
+
+      clonedBlock
+        .querySelectorAll('button')
+        .forEach(btn => (btn.style.visibility = 'hidden'));
+
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.top = '-9999px';
+      container.style.left = '-9999px';
+      container.style.width = `${originalBlock.offsetWidth}px`;
+      container.style.height = `${originalBlock.offsetHeight}px`;
+      container.appendChild(clonedBlock);
+      document.body.appendChild(container);
+
+      const dataUrl = await domtoimage.toPng(clonedBlock);
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob }),
+      ]);
+
+      document.body.removeChild(container);
+
+      toast.success(t('SCREENSHOT.SUCCESS'));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <Card className='border border-gray-700 shadow-lg transition-shadow duration-300 hover:shadow-xl'>
+    <Card
+      ref={blockRef}
+      className='group relative border border-gray-700 shadow-lg transition-shadow duration-300 hover:shadow-xl'
+    >
+      <Button
+        variant='outline'
+        size='icon'
+        className='absolute right-6 top-6 z-10 mx-auto hidden text-center group-hover:flex'
+        onClick={handleScreenshot}
+      >
+        <Camera />
+      </Button>
       <CardHeader className='flex items-center justify-between'>
         <CardTitle className='text-lg font-semibold'>{name}</CardTitle>
         {lastMonth?.date && <p>{format(lastMonth?.date, formatDate)}</p>}
@@ -104,17 +156,19 @@ export function PropertyCard({
             {[
               {
                 label: t('INTERNET'),
-                value: numericFormatter(fixedCosts.internet, { suffix: ' ₴' }),
+                value: numericFormatter(lastMonth?.fixedCosts?.internet, {
+                  suffix: ' ₴',
+                }),
               },
               {
                 label: t('MAINTENANCE'),
-                value: numericFormatter(fixedCosts.maintenance, {
+                value: numericFormatter(lastMonth?.fixedCosts?.maintenance, {
                   suffix: ' ₴',
                 }),
               },
               {
                 label: t('GAS_DELIVERY'),
-                value: numericFormatter(fixedCosts.gas_delivery, {
+                value: numericFormatter(lastMonth?.fixedCosts?.gas_delivery, {
                   suffix: ' ₴',
                 }),
               },
@@ -141,7 +195,15 @@ export function PropertyCard({
       <CardFooter>
         <div className='grid w-full grid-cols-2 gap-2'>
           <Button className='w-full'>{t('BUTTONS.MORE')}</Button>
-          <Button className='w-full'>{t('BUTTONS.ADD_METER')}</Button>
+          <Button
+            onClick={e => {
+              e.stopPropagation();
+              openModal(Emodal.CrateMeter, { id });
+            }}
+            className='w-full'
+          >
+            {t('BUTTONS.ADD_METER')}
+          </Button>
         </div>
       </CardFooter>
     </Card>

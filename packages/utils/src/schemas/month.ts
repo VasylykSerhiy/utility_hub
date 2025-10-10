@@ -16,4 +16,8 @@ export const monthSchema = z.object({
   }),
 });
 
-export type MonthSchema = z.infer<typeof monthSchema>;
+export const monthSchemaClient = monthSchema.omit({ date: true }).extend({
+  date: z.date(),
+});
+
+export type MonthSchema = z.infer<typeof monthSchemaClient>;

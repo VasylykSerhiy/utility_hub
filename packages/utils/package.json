@@ -13,6 +13,8 @@
     "@tanstack/react-query": "^5.90.2",
     "@workspace/i18n": "workspace:*",
     "@workspace/types": "workspace:*",
+    "date-fns": "^4.1.0",
+    "mongoose": "^8.19.0",
     "react-number-format": "^5.4.4",
     "zod": "^3.25.76"
   },

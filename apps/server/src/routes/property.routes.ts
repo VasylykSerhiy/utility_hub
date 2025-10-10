@@ -17,6 +17,12 @@ propertyRouter.get(
   propertyController.getProperties,
 );
 
+propertyRouter.get(
+  '/:id',
+  authMiddleware.requireAuth,
+  propertyController.getProperty,
+);
+
 propertyRouter.post(
   '/',
   authMiddleware.requireAuth,
