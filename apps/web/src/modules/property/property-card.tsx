@@ -2,7 +2,9 @@
 
 import { useMemo, useRef } from 'react';
 
-import PropertyCardTable from '@/components/tables/property-card-table';
+import PropertyCardTable, {
+  generateRows,
+} from '@/components/tables/property-card-table';
 import { Emodal, useModalState } from '@/stores/use-modal-state';
 import { IPropertyWithLastMonth } from '@workspace/types';
 import { formatDate, numericFormatter } from '@workspace/utils';
@@ -21,73 +23,11 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 
-export function PropertyCard({
-  lastMonth,
-  tariffs,
-  name,
-  electricityType,
-  id,
-}: IPropertyWithLastMonth) {
+export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
   const { t } = useTranslation();
   const blockRef = useRef<HTMLDivElement>(null);
   const openModal = useModalState(s => s.openModal);
-  const [rows, total] = useMemo(() => {
-    const rows = [
-      ...(electricityType === 'single'
-        ? [
-            {
-              meter: t('ELECTRICITY'),
-              reading: lastMonth?.meters?.electricity?.single ?? 0,
-              consumption: lastMonth?.difference?.electricity?.single ?? 0,
-              const:
-                (lastMonth?.difference?.electricity?.single ?? 0) *
-                (lastMonth?.tariffs?.electricity?.single ?? 0),
-            },
-          ]
-        : []),
-
-      ...(electricityType === 'double'
-        ? [
-            {
-              meter: t('ELECTRICITY_DAY'),
-              reading: lastMonth?.meters?.electricity?.day ?? 0,
-              consumption: lastMonth?.difference?.electricity?.day ?? 0,
-              const:
-                (lastMonth?.difference?.electricity?.day ?? 0) *
-                (lastMonth?.tariffs?.electricity?.day ?? 0),
-            },
-            {
-              meter: t('ELECTRICITY_NIGHT'),
-              reading: lastMonth?.meters?.electricity?.night ?? 0,
-              consumption: lastMonth?.difference?.electricity?.night ?? 0,
-              const:
-                (lastMonth?.difference?.electricity?.night ?? 0) *
-                (lastMonth?.tariffs?.electricity?.night ?? 0),
-            },
-          ]
-        : []),
-      {
-        meter: t('WATER'),
-        reading: lastMonth?.meters?.water ?? 0,
-        consumption: lastMonth?.difference?.water ?? 0,
-        const:
-          (lastMonth?.difference?.water ?? 0) *
-          (lastMonth?.tariffs?.water ?? 0),
-      },
-      {
-        meter: t('GAS'),
-        reading: lastMonth?.meters?.gas ?? 0,
-        consumption: lastMonth?.difference?.gas ?? 0,
-        const:
-          (lastMonth?.difference?.gas ?? 0) * (lastMonth?.tariffs?.gas ?? 0),
-      },
-    ];
-
-    const total =
-      rows.reduce((acc, row) => acc + row.const, 0) +
-      Object.values(lastMonth?.fixedCosts ?? []).reduce((acc, c) => acc + c, 0);
-    return [rows, total];
-  }, [lastMonth, tariffs, electricityType, t]);
+  const rows = generateRows(lastMonth, t);
 
   const handleScreenshot = async () => {
     if (!blockRef.current) return;
@@ -128,12 +68,12 @@ export function PropertyCard({
   return (
     <Card
       ref={blockRef}
-      className='group relative border border-gray-700 shadow-lg transition-shadow duration-300 hover:shadow-xl'
+      className='group relative border shadow-lg transition-shadow duration-300 hover:shadow-xl'
     >
       <Button
         variant='outline'
         size='icon'
-        className='absolute right-6 top-6 z-10 mx-auto hidden text-center group-hover:flex'
+        className='absolute right-6 top-14 z-10 mx-auto hidden text-center group-hover:flex'
         onClick={handleScreenshot}
       >
         <Camera />
@@ -156,21 +96,30 @@ export function PropertyCard({
             {[
               {
                 label: t('INTERNET'),
-                value: numericFormatter(lastMonth?.fixedCosts?.internet, {
-                  suffix: ' ₴',
-                }),
+                value: numericFormatter(
+                  lastMonth.tariff?.fixedCosts?.internet,
+                  {
+                    suffix: ' ₴',
+                  },
+                ),
               },
               {
                 label: t('MAINTENANCE'),
-                value: numericFormatter(lastMonth?.fixedCosts?.maintenance, {
-                  suffix: ' ₴',
-                }),
+                value: numericFormatter(
+                  lastMonth.tariff?.fixedCosts?.maintenance,
+                  {
+                    suffix: ' ₴',
+                  },
+                ),
               },
               {
                 label: t('GAS_DELIVERY'),
-                value: numericFormatter(lastMonth?.fixedCosts?.gas_delivery, {
-                  suffix: ' ₴',
-                }),
+                value: numericFormatter(
+                  lastMonth.tariff?.fixedCosts?.gas_delivery,
+                  {
+                    suffix: ' ₴',
+                  },
+                ),
               },
             ].map(item => (
               <div className='flex justify-between gap-1' key={item.label}>
@@ -186,7 +135,7 @@ export function PropertyCard({
         <div className='flex justify-between gap-1 pt-2'>
           <span className='font-medium'>{t('TOTAL')}:</span>
           <span className='font-medium'>
-            {numericFormatter(total, {
+            {numericFormatter(lastMonth?.total, {
               suffix: ' ₴',
             })}
           </span>

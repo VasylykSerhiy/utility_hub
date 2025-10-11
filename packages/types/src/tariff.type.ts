@@ -15,4 +15,5 @@ export interface ITariff<T extends ElectricityMeters = ElectricityMeters> {
   endDate?: Date;
   tariffs: IMeter<T>;
   fixedCosts: IFixedCosts;
+  id: string;
 }

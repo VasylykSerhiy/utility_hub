@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 
 import { MainLayout } from '@/components/layout';
 import { createClient } from '@/lib/supabase/server';
+import PageTransitionEffect from '@/providers/animate-provider';
 
 export default async function Layout({
   children,
@@ -13,7 +14,9 @@ export default async function Layout({
   console.log(data.session?.access_token);
   return (
     <MainLayout>
-      <main>{children}</main>
+      <PageTransitionEffect>
+        <main className='w-full'>{children}</main>
+      </PageTransitionEffect>
     </MainLayout>
   );
 }
