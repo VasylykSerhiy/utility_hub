@@ -1,4 +1,5 @@
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
 import * as mongoose from 'mongoose';
 import morgan from 'morgan';
@@ -7,7 +8,9 @@ import { ClientError } from './models/errors';
 import { errorResponseHandler } from './responses';
 import routes from './routes';
 
-require('dotenv').config({ path: '.env.development.local', override: true });
+dotenv.config({
+  path: '.env.development.local',
+});
 
 const app: express.Express = express();
 
