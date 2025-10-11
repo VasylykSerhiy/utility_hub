@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
+    "@types/node": "^20.19.9",
     "@workspace/types": "workspace:*",
     "@workspace/utils": "workspace:*",
-    "body-parser": "^2.2.0",
     "cors": "2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
@@ -25,7 +25,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/body-parser": "^1.19.6",
     "@types/cors": "2.8.19",
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",

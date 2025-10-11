@@ -4,15 +4,12 @@ import { initReactI18next } from 'react-i18next';
 import en from './locales/en';
 import uk from './locales/uk';
 
-const cookieLang =
-  typeof document !== 'undefined' ? (document.cookie.match(/i18next=(\w+)/)?.[1] ?? 'en') : 'en';
-
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
     uk: { translation: uk },
   },
-  lng: cookieLang,
+  lng: 'en',
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
 });

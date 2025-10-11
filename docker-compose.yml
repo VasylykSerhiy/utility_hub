@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    container_name: server
+    ports:
+      - "3005:3001"
+    env_file:
+      - ./apps/server/.env.development.local
+    command: [ "node", "dist/main.js" ]
