@@ -21,11 +21,14 @@ export async function GET(request: Request) {
       data: { session },
     } = await supabase.auth.getSession();
 
+    console.log({ origin, next });
     if (!session) {
       return NextResponse.redirect(`${origin}/auth/auth-code-error`);
     }
 
-    const { data } = await userService.postAuth({ token: session?.access_token });
+    const { data } = await userService.postAuth({
+      token: session?.access_token,
+    });
 
     if (!error && data) {
       // If successful, redirect to the 'next' path or home

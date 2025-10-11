@@ -19,15 +19,15 @@ const PropertyContent = () => {
 
   return (
     <>
-      <div className='mb-6 flex items-center justify-between'>
+      <div className='mb-6 flex items-center justify-between gap-4'>
         <Input placeholder={t('SEARCH')} className='max-w-[256px]' />
-        <Link href={`${Routes.PROPERTY}/create`}>
+        <Link href={Routes.PROPERTY + '/create'}>
           <Button>
             <Plus /> {t('PROPERTY.CREATE.TITLE')}
           </Button>
         </Link>
       </div>
-      <div className='grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]'>
         {data?.map(property => (
           <PropertyCard {...property} key={property.id} />
         ))}

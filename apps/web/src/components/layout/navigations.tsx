@@ -5,8 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { type ILink, Routes, links } from '@/constants/router';
-import { LayoutGrid } from 'lucide-react';
+import { type ILink, links } from '@/constants/router';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@workspace/ui/lib/utils';
@@ -20,7 +19,7 @@ const Navigations = ({ onClick }: INavigationsProps) => {
 
   const pathname = usePathname();
 
-  const isActive = (link: string) => pathname === link;
+  const isActive = (link: string) => pathname.startsWith(link);
 
   return (
     <nav className='flex flex-col px-4'>

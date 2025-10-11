@@ -1,10 +1,13 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
+
+import Link from 'next/link';
 
 import PropertyCardTable, {
   generateRows,
 } from '@/components/tables/property-card-table';
+import { Routes } from '@/constants/router';
 import { Emodal, useModalState } from '@/stores/use-modal-state';
 import { IPropertyWithLastMonth } from '@workspace/types';
 import { formatDate, numericFormatter } from '@workspace/utils';
@@ -143,7 +146,9 @@ export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
       </CardContent>
       <CardFooter>
         <div className='grid w-full grid-cols-2 gap-2'>
-          <Button className='w-full'>{t('BUTTONS.MORE')}</Button>
+          <Link href={Routes.PROPERTY + '/' + id}>
+            <Button className='w-full'>{t('BUTTONS.MORE')}</Button>
+          </Link>
           <Button
             onClick={e => {
               e.stopPropagation();

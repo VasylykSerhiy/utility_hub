@@ -5,6 +5,9 @@ import React, { useEffect } from 'react';
 import Logo from '@/components/logo';
 import { useLanguage } from '@/providers/language-provider';
 import { Emodal, useModalState } from '@/stores/use-modal-state';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+
 import {
   Select,
   SelectContent,
@@ -12,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@workspace/ui/components/select';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
 
 import Navigations from './navigations';
 import { ThemeToggleButton } from './theme-toggle-button';
@@ -73,7 +74,7 @@ const MobileHeader = () => {
                 openModal(Emodal.MobileMenu);
               }
             }}
-            className='rounded-full p-2 text-gray-600 hover:bg-gray-100'
+            className='rounded-full p-2 hover:bg-gray-100'
             aria-label='Відкрити/Закрити меню'
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
