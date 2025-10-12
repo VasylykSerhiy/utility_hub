@@ -27,7 +27,10 @@ import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-import { resendVerificationEmailAction, singInAction } from '../../../app/(login)/_actions';
+import {
+  resendVerificationEmailAction,
+  singInAction,
+} from '../../../app/(login)/_actions';
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
 
@@ -51,8 +54,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const onSubmit = async ({ email, password }: UserAuthShema) => {
     setIsLoading(true);
+    console.log({ email, password });
     const { data, error } = await singInAction({ email, password });
-
+    console.log({ data, error });
     if (error) {
       if (error.message === 'Email not confirmed') {
         await resendVerificationEmailAction(email);
@@ -141,12 +145,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             <span className='w-full border-t' />
           </div>
           <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-card text-muted-foreground px-2'>Or continue with</span>
+            <span className='bg-card text-muted-foreground px-2'>
+              Or continue with
+            </span>
           </div>
         </div>
 
         <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading} onClick={signInWithGoogle}>
+          <Button
+            variant='outline'
+            type='button'
+            disabled={isLoading}
+            onClick={signInWithGoogle}
+          >
             Google
           </Button>
           <Button variant='outline' type='button' disabled={isLoading}>
