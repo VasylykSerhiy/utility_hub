@@ -55,6 +55,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit = async ({ email, password }: UserAuthShema) => {
     setIsLoading(true);
     console.log({ email, password });
+    console.log({ email, password, a: process.env.NEXT_PUBLIC_SUPABASE_URL });
     const { data, error } = await singInAction({ email, password });
     console.log({ data, error });
     if (error) {
