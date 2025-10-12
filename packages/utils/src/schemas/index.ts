@@ -3,3 +3,4 @@ export * from './auth';
 export * from './property';
 export * from './month';
 export * from './electricity';
+export * from './types';
