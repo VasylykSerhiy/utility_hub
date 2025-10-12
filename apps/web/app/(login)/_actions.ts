@@ -3,11 +3,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { UserAuthShema } from '@workspace/utils';
 
-export const singInAction = async ({ email, password }: UserAuthShema) => {
-  const supabase = await createClient();
-  return await supabase.auth.signInWithPassword({ email, password });
-};
-
 export const singUpAction = async ({ email, password }: UserAuthShema) => {
   const supabase = await createClient();
   return await supabase.auth.signUp({ email, password });
