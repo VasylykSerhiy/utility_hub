@@ -1,10 +1,11 @@
 import { IProperty } from '@workspace/types';
-import {
+import mongoose from 'mongoose';
+
+import type {
   CreatePropertySchema,
   MonthSchema,
   UpdatePropertySchema,
-} from '@workspace/utils';
-import mongoose from 'mongoose';
+} from '@workspace/utils/schemas/types';
 
 import { Month, Property, Tariff } from '../models/database';
 import { IMongooseUser } from '../types';

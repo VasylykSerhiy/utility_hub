@@ -1,43 +1,45 @@
-# --- Stage 1: Base ---
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
+FROM node:lts AS builder
 WORKDIR /app
-RUN npm install -g pnpm turbo
 
-# --- Stage 2: Pruner ---
-FROM base AS pruner
-WORKDIR /app
+# Встановлюємо turbo глобально через pnpm
+RUN npm install -g turbo
 COPY . .
+
+# Виконуємо turbo prune для ізоляції server-пакету
 RUN turbo prune --scope=server --docker
 
-# --- Stage 3: Builder ---
-FROM base AS builder
+# --- Stage 2: Installer ---
+FROM node:lts AS installer
 WORKDIR /app
 
-# Копіюємо обрізані package.json та lockfile
-COPY --from=pruner /app/out/json/ ./
-COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+# Копіюємо lockfile і package.json із підготовленого білду
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ ./
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
-# Встановлюємо залежності (dev потрібні для tsc)
+# Встановлюємо pnpm
+RUN npm install -g pnpm
+
+# Встановлюємо залежності з lockfile
 RUN pnpm install --frozen-lockfile
 
-# Копіюємо обрізаний код
-COPY --from=pruner /app/out/full/ ./
+# Копіюємо full workspace та turbo.json
+COPY --from=builder /app/out/full/ ./
+COPY turbo.json turbo.json
+COPY apps/server/.env.development.local apps/server/.env.development.local
 
-# Білдимо TypeScript
-WORKDIR /app/apps/server
-RUN pnpm build
+# Бідуємо server-пакет
+RUN pnpm turbo run build --filter=server...
 
-# --- Stage 4: Runner ---
-FROM base AS runner
+# --- Stage 3: Runner ---
+FROM node:lts AS runner
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 expressjs \
-    && adduser --system --uid 1001 expressjs
-USER expressjs
+# Копіюємо готові файли із installer
+COPY --from=installer /app ./
 
-COPY --from=builder /app/apps/server/dist ./dist
-COPY --from=builder /app/apps/server/node_modules ./node_modules
-COPY --from=builder /app/apps/server/package.json ./package.json
+WORKDIR /app/apps/server
 
+
+EXPOSE 8080
 CMD ["node", "dist/main.js"]

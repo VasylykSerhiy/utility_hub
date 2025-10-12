@@ -8,5 +8,3 @@ export const authSchema = z.object({
     })
     .min(10, 'Token must be at least 10 characters long'),
 });
-
-export type AuthInput = z.infer<typeof authSchema>;

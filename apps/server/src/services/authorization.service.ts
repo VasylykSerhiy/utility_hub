@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { AuthInput } from '@workspace/utils';
+
+import type { AuthInput } from '@workspace/utils/schemas/types';
 
 import { User } from '../models/database';
 

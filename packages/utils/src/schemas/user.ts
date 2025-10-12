@@ -25,7 +25,3 @@ export const userCreateShema = z
 export const userForgotPassword = z.object({
   email: z.string().email(),
 });
-
-export type UserAuthShema = z.infer<typeof userAuthShema>;
-export type UserCreateShema = z.infer<typeof userCreateShema>;
-export type UserForgotPassword = z.infer<typeof userForgotPassword>;

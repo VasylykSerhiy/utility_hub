@@ -11,5 +11,3 @@ export const electricityMeters = z.union([
     night: z.number().nonnegative(),
   }),
 ]);
-
-export type ElectricityMeters = z.infer<typeof electricityMeters>;

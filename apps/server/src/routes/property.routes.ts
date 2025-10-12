@@ -1,9 +1,10 @@
+import { Router } from 'express';
+
+import { monthSchema } from '@workspace/utils/schemas/month';
 import {
   createPropertySchema,
-  monthSchema,
   updatePropertySchema,
-} from '@workspace/utils';
-import { Router } from 'express';
+} from '@workspace/utils/schemas/property';
 
 import { propertyController } from '../controllers';
 import { authMiddleware } from '../middlewares';

@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { electricityMeters } from './electricity';
+import { electricityMeters } from '@workspace/utils/schemas/electricity';
 
 export const tariffsSchema = z.object({
   electricity: electricityMeters,
@@ -22,7 +22,3 @@ export const propertySchema = z.object({
 
 export const createPropertySchema = propertySchema.required();
 export const updatePropertySchema = propertySchema.partial();
-
-export type PropertySchema = z.infer<typeof propertySchema>;
-export type CreatePropertySchema = z.infer<typeof createPropertySchema>;
-export type UpdatePropertySchema = z.infer<typeof updatePropertySchema>;

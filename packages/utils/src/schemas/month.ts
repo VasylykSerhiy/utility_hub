@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { electricityMeters } from './electricity';
+import { electricityMeters } from '@workspace/utils/schemas/electricity';
 
 export const monthSchema = z.object({
   date: z.preprocess(arg => {
@@ -19,5 +19,3 @@ export const monthSchema = z.object({
 export const monthSchemaClient = monthSchema.omit({ date: true }).extend({
   date: z.date(),
 });
-
-export type MonthSchema = z.infer<typeof monthSchemaClient>;
