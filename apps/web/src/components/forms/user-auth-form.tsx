@@ -27,10 +27,7 @@ import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-import {
-  resendVerificationEmailAction,
-  singInAction,
-} from '../../../app/(login)/_actions';
+import { resendVerificationEmailAction } from '../../../app/(login)/_actions';
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
 
@@ -55,8 +52,18 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit = async ({ email, password }: UserAuthShema) => {
     setIsLoading(true);
     console.log({ email, password });
-    console.log({ email, password, a: process.env.NEXT_PUBLIC_SUPABASE_URL });
-    const { data, error } = await singInAction({ email, password });
+
+    const supabase = createClient();
+    console.log({
+      supabase,
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
     console.log({ data, error });
     if (error) {
       if (error.message === 'Email not confirmed') {
