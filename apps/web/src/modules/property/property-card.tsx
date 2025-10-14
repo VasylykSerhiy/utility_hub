@@ -4,33 +4,22 @@ import { useRef } from 'react';
 
 import Link from 'next/link';
 
-import PropertyCardTable, {
-  generateRows,
-} from '@/components/tables/property-card-table';
 import { Routes } from '@/constants/router';
+import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { Emodal, useModalState } from '@/stores/use-modal-state';
 import { IPropertyWithLastMonth } from '@workspace/types';
-import { formatDate, numericFormatter } from '@workspace/utils';
-import { format } from 'date-fns';
 import domtoimage from 'dom-to-image';
 import { Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@workspace/ui/components/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardFooter } from '@workspace/ui/components/card';
 
 export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
   const { t } = useTranslation();
   const blockRef = useRef<HTMLDivElement>(null);
   const openModal = useModalState(s => s.openModal);
-  const rows = generateRows(lastMonth, t);
 
   const handleScreenshot = async () => {
     if (!blockRef.current) return;
@@ -71,7 +60,7 @@ export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
   return (
     <Card
       ref={blockRef}
-      className='group relative border shadow-lg transition-shadow duration-300 hover:shadow-xl'
+      className='group relative justify-between border shadow-lg transition-shadow duration-300 hover:shadow-xl'
     >
       <Button
         variant='outline'
@@ -81,69 +70,7 @@ export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
       >
         <Camera />
       </Button>
-      <CardHeader className='flex items-center justify-between'>
-        <CardTitle className='text-lg font-semibold'>{name}</CardTitle>
-        {lastMonth?.date && <p>{format(lastMonth?.date, formatDate)}</p>}
-      </CardHeader>
-      <CardContent className='space-y-2'>
-        <div>
-          <span className='font-medium'>{t('METERS')}:</span>
-          <div className='ml-2'>
-            <PropertyCardTable rows={rows} />
-          </div>
-        </div>
-        <hr />
-        <div>
-          <span className='font-medium'>{t('FIXED_COSTS')}:</span>
-          <div className='ml-2'>
-            {[
-              {
-                label: t('INTERNET'),
-                value: numericFormatter(
-                  lastMonth.tariff?.fixedCosts?.internet,
-                  {
-                    suffix: ' ₴',
-                  },
-                ),
-              },
-              {
-                label: t('MAINTENANCE'),
-                value: numericFormatter(
-                  lastMonth.tariff?.fixedCosts?.maintenance,
-                  {
-                    suffix: ' ₴',
-                  },
-                ),
-              },
-              {
-                label: t('GAS_DELIVERY'),
-                value: numericFormatter(
-                  lastMonth.tariff?.fixedCosts?.gas_delivery,
-                  {
-                    suffix: ' ₴',
-                  },
-                ),
-              },
-            ].map(item => (
-              <div className='flex justify-between gap-1' key={item.label}>
-                <p>{item.label}</p>
-                <span>{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <hr />
-
-        <div className='flex justify-between gap-1 pt-2'>
-          <span className='font-medium'>{t('TOTAL')}:</span>
-          <span className='font-medium'>
-            {numericFormatter(lastMonth?.total, {
-              suffix: ' ₴',
-            })}
-          </span>
-        </div>
-      </CardContent>
+      <PropertyLastMonthDetail name={name} lastMonth={lastMonth} />
       <CardFooter>
         <div className='grid w-full grid-cols-2 gap-2'>
           <Link href={Routes.PROPERTY + '/' + id}>

@@ -4,7 +4,12 @@ import {
   computeDifference,
   computeDifferenceForAllMonths,
 } from '../pipelines/difference';
-import { cleanup, projectIds } from '../pipelines/ids';
+import {
+  cleanup,
+  projectIds,
+  replaceIdsUniversal,
+  unsetIdsUniversal,
+} from '../pipelines/ids';
 import {
   addPrevMetersToAllMonths,
   addPrevMetersToMonths,
@@ -37,5 +42,7 @@ export const getAllMonthsPipeline: PipelineStage[] = [
   computeDifferenceForAllMonths,
   ...lookupTariff({ dateField: '$date', propertyField: '$propertyId' }),
   computeTotalCurrent,
+  replaceIdsUniversal,
+  unsetIdsUniversal,
   { $sort: { date: -1 } },
 ];

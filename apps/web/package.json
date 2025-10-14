@@ -20,6 +20,7 @@
     "@workspace/ui": "workspace:*",
     "@workspace/utils": "workspace:*",
     "axios": "^1.12.2",
+    "cookies-next": "^6.1.0",
     "date-fns": "^4.1.0",
     "dom-to-image": "^2.6.0",
     "framer-motion": "^12.23.22",

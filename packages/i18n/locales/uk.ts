@@ -18,6 +18,11 @@ const uk = {
   'MODAL.CREATE_METER.TITLE': 'Додати показник',
   'MODAL.CREATE_METER.DESC': 'Введіть нові показання лічильника нижче.',
 
+  //TABLES
+  'TABLE.NO_DATA': 'Немає даних',
+  'TABLE.PAGINATION': 'Сторінка {{page}} з {{totalPages}}',
+  'TABLE.LOADING': 'Завантаження',
+
   // BUTTONS
   'BUTTONS.SAVE': 'Зберегти',
   'BUTTONS.CANCEL': 'Скасувати',
@@ -25,6 +30,9 @@ const uk = {
   'BUTTONS.DELETE': 'Видалити',
   'BUTTONS.MORE': 'Більше',
   'BUTTONS.ADD_METER': 'Додати показник',
+  'BUTTONS.CHANGE_TARIFF': 'Змінити тариф',
+  'BUTTONS.PREVIOUS': 'Попередня',
+  'BUTTONS.NEXT': 'Наступна',
 
   //MESSAGES
   'SCREENSHOT.SUCCESS': 'Зображення збережено в буфер обміну',
@@ -53,6 +61,8 @@ const uk = {
   INTERNET: 'Інтернет',
   MAINTENANCE: 'Обслуговування',
   GAS_DELIVERY: 'Поставка газу',
+  TARIFF: 'Тариф',
+  HISTORY: 'Історія',
 };
 
 export default uk;

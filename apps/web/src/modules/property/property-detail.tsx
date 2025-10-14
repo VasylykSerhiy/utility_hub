@@ -2,19 +2,27 @@
 
 import React from 'react';
 
-import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
 
-import { Input } from '@workspace/ui/components/input';
+import { Routes } from '@/constants/router';
+import { getProperty } from '@/hooks/use-property';
+import PropertyHeader from '@/modules/property/property-header';
+import PropertyHistory from '@/modules/property/property-history';
 
-const PropertyDetail = () => {
-  const { t } = useTranslation();
+const PropertyDetail = ({ id }: { id: string }) => {
+  const { push } = useRouter();
+
+  const { error } = getProperty(id);
+
+  if (error) {
+    push(Routes.PROPERTY);
+  }
 
   return (
-    <>
-      <div className='mb-6 flex items-center justify-between gap-4'>
-        <Input placeholder={t('SEARCH')} className='max-w-[256px]' />
-      </div>
-    </>
+    <div className='space-y-6'>
+      <PropertyHeader id={id} />
+      <PropertyHistory />
+    </div>
   );
 };
 

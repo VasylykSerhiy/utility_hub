@@ -26,9 +26,8 @@ interface Row {
   const: number;
 }
 
-interface IPropertyCardTableProps {
-  rows: Row[];
-  total?: number;
+interface IMeterTableProps {
+  lastMonth: IMonth;
 }
 
 export const generateRows = (
@@ -85,11 +84,12 @@ export const generateRows = (
   return rows;
 };
 
-const PropertyCardTable = ({ rows }: IPropertyCardTableProps) => {
+const MeterTable = ({ lastMonth }: IMeterTableProps) => {
   const { t } = useTranslation();
+  const rows = generateRows(lastMonth, t);
 
   return (
-    <Table>
+    <Table classNameWrapper='border-none'>
       <TableHeader>
         <TableRow>
           <TableHead className='w-[100px]'>{t('METER')}</TableHead>
@@ -114,4 +114,4 @@ const PropertyCardTable = ({ rows }: IPropertyCardTableProps) => {
   );
 };
 
-export default PropertyCardTable;
+export default MeterTable;

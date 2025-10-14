@@ -1,4 +1,4 @@
-import { IProperty } from '@workspace/types';
+import { IProperty, PaginateOptions } from '@workspace/types';
 import mongoose from 'mongoose';
 
 import type {
@@ -9,6 +9,7 @@ import type {
 
 import { Month, Property, Tariff } from '../models/database';
 import { IMongooseUser } from '../types';
+import { aggregateWithPagination } from './aggregation/pagination';
 import {
   getAllMonthsPipeline,
   propertyWithLastMonthAndTariff,
@@ -61,7 +62,7 @@ const createProperty = async ({
 
     await new Tariff({
       propertyId: property._id,
-      startDate: new Date(),
+      startDate: new Date('1970-01-01'),
       tariffs,
       fixedCosts,
     }).save({ session });
@@ -120,13 +121,22 @@ const updateProperty = async ({
   }
 };
 
-export const getMonths = async ({ propertyId }: { propertyId: string }) => {
-  console.log(propertyId);
-  return Month.aggregate([
+export const getMonths = async ({
+  propertyId,
+  page = 1,
+  pageSize = 10,
+}: {
+  propertyId: string;
+} & PaginateOptions) => {
+  const pipeline = [
     { $match: { propertyId: new mongoose.Types.ObjectId(propertyId) } },
-
     ...getAllMonthsPipeline,
-  ]);
+  ];
+
+  return aggregateWithPagination(Month, pipeline, {
+    page,
+    pageSize,
+  });
 };
 
 export const createMonth = async ({

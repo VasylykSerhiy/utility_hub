@@ -20,3 +20,9 @@ export const singOutAction = async () => {
   const supabase = await createClient();
   return await supabase.auth.signOut();
 };
+
+export const getToken = async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token;
+};

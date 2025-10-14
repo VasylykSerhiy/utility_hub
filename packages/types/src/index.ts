@@ -4,3 +4,4 @@ export * from './property.types';
 export * from './month.types';
 export * from './electricity.types';
 export * from './tariff.type';
+export * from './pagination';

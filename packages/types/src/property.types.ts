@@ -3,6 +3,7 @@ import {
   SingleElectricityMeter,
 } from './electricity.types';
 import { IMonth } from './month.types';
+import { PaginateOptions, PaginatedResult } from './pagination';
 
 export interface IPropertySingleElectricity {
   id: string;
@@ -33,3 +34,9 @@ export type IPropertyWithLastMonth =
   | (IPropertyDoubleElectricity & {
       lastMonth?: IMonth<DoubleElectricityMeter>;
     });
+
+export interface IPropertyMonths extends PaginatedResult<IMonth> {}
+
+export interface GetPropertyMonths extends PaginateOptions {
+  id: string;
+}

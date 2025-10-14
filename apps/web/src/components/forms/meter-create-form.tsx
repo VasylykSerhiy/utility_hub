@@ -54,8 +54,6 @@ export function MeterCreateForm({
     closeModal();
   };
 
-  console.log(form.formState.errors);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-2')}>

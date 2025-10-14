@@ -1,5 +1,9 @@
 import { API, apiAuth } from '@/lib/axios';
-import { IPropertyWithLastMonth } from '@workspace/types';
+import {
+  GetPropertyMonths,
+  IPropertyMonths,
+  IPropertyWithLastMonth,
+} from '@workspace/types';
 import {
   CreatePropertySchema,
   MonthSchema,
@@ -11,6 +15,10 @@ export const propertyService = {
     apiAuth.get<IPropertyWithLastMonth[]>(API.PROPERTIES),
   getProperty: async (id: string) =>
     apiAuth.get<IPropertyWithLastMonth>(`${API.PROPERTIES}/${id}`),
+  getPropertyMonths: async ({ id, page, pageSize }: GetPropertyMonths) =>
+    apiAuth.get<IPropertyMonths>(
+      `${API.PROPERTIES}/${id}/months?page=${page}&pageSize=${pageSize}`,
+    ),
   createProperty: async (data: CreatePropertySchema) =>
     apiAuth.post(API.PROPERTIES, data),
   updateProperty: async (data: UpdatePropertySchema) =>

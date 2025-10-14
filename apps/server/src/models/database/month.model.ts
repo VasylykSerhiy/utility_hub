@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+import { MonthDocument } from '../../types';
 import { applyIdVirtual } from '../../utils';
 import { ElectricitySchema } from './electricity.model';
 
@@ -25,4 +26,4 @@ const monthSchema = new mongoose.Schema(
 
 applyIdVirtual(monthSchema);
 
-export default mongoose.model('Month', monthSchema);
+export default mongoose.model<MonthDocument>('Month', monthSchema);

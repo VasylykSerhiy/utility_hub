@@ -1,6 +1,7 @@
 export const queryKeys = {
   user: 'user',
   property: 'property',
+  months: 'months',
 };
 
 export const mutationKey = {

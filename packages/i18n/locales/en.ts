@@ -18,6 +18,11 @@ const en = {
   'MODAL.CREATE_METER.TITLE': 'Add New Meter',
   'MODAL.CREATE_METER.DESC': 'Please enter the new meter readings below.',
 
+  //TABLES
+  'TABLE.NO_DATA': 'No data',
+  'TABLE.PAGINATION': 'Page {{page}} of {{totalPages}}',
+  'TABLE.LOADING': 'Loading',
+
   // BUTTONS
   'BUTTONS.SAVE': 'Save',
   'BUTTONS.CANCEL': 'Cancel',
@@ -25,6 +30,9 @@ const en = {
   'BUTTONS.DELETE': 'Delete',
   'BUTTONS.MORE': 'More',
   'BUTTONS.ADD_METER': 'Add Meter',
+  'BUTTONS.CHANGE_TARIFF': 'Change Tariff',
+  'BUTTONS.PREVIOUS': 'Previous',
+  'BUTTONS.NEXT': 'Next',
 
   //MESSAGES
   'SCREENSHOT.SUCCESS': 'Screenshot saved successfully!',
@@ -53,6 +61,9 @@ const en = {
   INTERNET: 'Internet',
   MAINTENANCE: 'Maintenance',
   GAS_DELIVERY: 'Gas Delivery',
+  TARIFF: 'Tariff',
+  TARIFFS: 'Tariffs',
+  HISTORY: 'History',
 };
 
 export default en;

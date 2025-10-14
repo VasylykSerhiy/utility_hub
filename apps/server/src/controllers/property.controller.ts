@@ -86,6 +86,8 @@ const getMonths = async (req: Request, res: Response, next: NextFunction) => {
 
     const months = await propertyService.getMonths({
       propertyId: req.params?.id,
+      page: Number(req.query?.page),
+      pageSize: Number(req.query?.pageSize),
     });
 
     res.json(months);
