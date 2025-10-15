@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: apps/server/Dockerfile
+      args:
+        NODE: development
     container_name: server
     ports:
       - "8080:8080"

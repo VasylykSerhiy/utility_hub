@@ -26,7 +26,11 @@ RUN pnpm install --frozen-lockfile
 # Копіюємо full workspace та turbo.json
 COPY --from=builder /app/out/full/ ./
 COPY turbo.json turbo.json
-COPY apps/server/.env.development.local apps/server/.env.development.local
+
+ARG NODE
+ENV NODE=${NODE}
+
+COPY apps/server/.env.${NODE}.local apps/server/.env.local
 
 # Бідуємо server-пакет
 RUN pnpm turbo run build --filter=server...

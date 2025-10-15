@@ -9,7 +9,7 @@ import { errorResponseHandler } from './responses';
 import routes from './routes';
 
 dotenv.config({
-  path: '.env.development.local',
+  path: '.env.local',
 });
 
 const app: express.Express = express();
