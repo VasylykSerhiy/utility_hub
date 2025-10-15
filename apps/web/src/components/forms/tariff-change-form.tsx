@@ -1,16 +1,15 @@
 'use client';
 
-import { HTMLAttributes } from 'react';
-
 import { useRouter } from 'next/navigation';
 
-import { useCreateProperty } from '@/hooks/use-property';
+import { useUpdateTariff } from '@/hooks/use-property';
+import { useModalState } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ElectricityMeterType } from '@workspace/types';
+import { ElectricityMeterType, IProperty } from '@workspace/types';
 import {
-  CreatePropertySchema,
   PropertySchema,
-  createPropertySchema,
+  UpdatePropertySchema,
+  updatePropertySchema,
 } from '@workspace/utils';
 import { getElectricityMeterLabel } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
@@ -25,7 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@workspace/ui/components/form';
-import { Input } from '@workspace/ui/components/input';
 import NumberInput from '@workspace/ui/components/number-input';
 import {
   Select,
@@ -36,62 +34,46 @@ import {
 } from '@workspace/ui/components/select';
 import { cn } from '@workspace/ui/lib/utils';
 
-interface PropertyCreateForm extends HTMLAttributes<HTMLFormElement> {}
+interface TariffChangeFormProps {
+  property: IProperty;
+}
 
-export function PropertyCreateForm({
-  className,
-  ...props
-}: PropertyCreateForm) {
+export function ChangeTariffForm({ property }: TariffChangeFormProps) {
   const { t } = useTranslation();
-  const { mutateAsync, isPending } = useCreateProperty();
+  const { mutateAsync, isPending } = useUpdateTariff();
   const router = useRouter();
+  const closeModal = useModalState(s => s.closeModal);
 
-  const form = useForm<CreatePropertySchema>({
-    resolver: zodResolver(createPropertySchema),
+  const form = useForm<UpdatePropertySchema>({
+    resolver: zodResolver(updatePropertySchema),
     defaultValues: {
-      name: '',
+      tariffs: property?.lastMonth?.tariff?.tariffs,
+      fixedCosts: property?.lastMonth?.tariff?.fixedCosts,
     },
   });
 
-  const electricityType = form.watch('tariffs.electricity.type');
+  const electricityType = property?.electricityType;
 
-  const onSubmit = async (data: CreatePropertySchema) => {
-    console.log(`data`, data);
-    await mutateAsync(data);
+  const onSubmit = async (data: UpdatePropertySchema) => {
+    await mutateAsync({ id: property.id, data });
+    closeModal();
     router.push('/property');
   };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-2', className)}
-        {...props}
-      >
-        <FormField
-          control={form.control}
-          name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('FORM.PROPERTY.NAME')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('FORM.PROPERTY.PLACEHOLDER')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <hr className='my-3' />
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-2')}>
         <FormField
           control={form.control}
           name='tariffs.electricity.type'
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('ELECTRICITY_SELECT')}</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled
+              >
                 <FormControl>
                   <SelectTrigger className='w-full capitalize'>
                     <SelectValue placeholder={t('ELECTRICITY_SELECT')} />

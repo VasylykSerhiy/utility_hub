@@ -2,11 +2,14 @@
 
 import React from 'react';
 
-import { getProperty } from '@/hooks/use-property';
+import { getProperty, getPropertyLastTariff } from '@/hooks/use-property';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { Emodal, useModalState } from '@/stores/use-modal-state';
-import { ElectricityMeterType } from '@workspace/types';
-import { getElectricityMeterLabel } from '@workspace/utils';
+import {
+  formatCurrencySymbol,
+  getElectricityMeterLabel,
+  isSingleElectricity,
+} from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@workspace/ui/components/button';
@@ -20,8 +23,8 @@ import { Skeleton } from '@workspace/ui/components/skeleton';
 
 const PropertyHeader = ({ id }: { id: string }) => {
   const { data, isLoading } = getProperty(id);
+  const { data: lastTariff } = getPropertyLastTariff({ id });
   const openModal = useModalState(s => s.openModal);
-
   const { t } = useTranslation();
   return (
     <Card>
@@ -52,32 +55,52 @@ const PropertyHeader = ({ id }: { id: string }) => {
             </div>
             <div>
               {[
-                ...(data?.electricityType === ElectricityMeterType.SINGLE
+                ...(isSingleElectricity(lastTariff?.tariffs?.electricity!)
                   ? [
                       {
                         label: t('ELECTRICITY'),
-                        value:
-                          data?.lastMonth?.tariff.tariffs?.electricity.single,
+                        value: formatCurrencySymbol(
+                          lastTariff?.tariffs?.electricity.single,
+                        ),
                       },
                     ]
                   : [
                       {
                         label: t('ELECTRICITY_DAY'),
-                        value: data?.lastMonth?.tariff.tariffs?.electricity.day,
+                        value: formatCurrencySymbol(
+                          lastTariff?.tariffs?.electricity.day,
+                        ),
                       },
                       {
                         label: t('ELECTRICITY_NIGHT'),
-                        value:
-                          data?.lastMonth?.tariff.tariffs?.electricity.night,
+                        value: formatCurrencySymbol(
+                          lastTariff?.tariffs?.electricity.night,
+                        ),
                       },
                     ]),
                 {
                   label: t('WATER'),
-                  value: data?.lastMonth?.tariff.tariffs?.water,
+                  value: formatCurrencySymbol(lastTariff?.tariffs?.water),
                 },
                 {
                   label: t('GAS'),
-                  value: data?.lastMonth?.tariff.tariffs?.gas,
+                  value: formatCurrencySymbol(lastTariff?.tariffs?.gas),
+                },
+                {
+                  label: t('INTERNET'),
+                  value: formatCurrencySymbol(lastTariff?.fixedCosts?.internet),
+                },
+                {
+                  label: t('MAINTENANCE'),
+                  value: formatCurrencySymbol(
+                    lastTariff?.fixedCosts?.maintenance,
+                  ),
+                },
+                {
+                  label: t('GAS_DELIVERY'),
+                  value: formatCurrencySymbol(
+                    lastTariff?.fixedCosts?.gas_delivery,
+                  ),
                 },
               ].map((item, index) => (
                 <div key={index} className='mt-2 flex gap-2'>
@@ -88,7 +111,12 @@ const PropertyHeader = ({ id }: { id: string }) => {
             </div>
           </div>
           <div className='mt-4 grid grid-cols-1 gap-2 md:grid-cols-2'>
-            <Button className='w-full'>{t('BUTTONS.CHANGE_TARIFF')}</Button>
+            <Button
+              className='w-full'
+              onClick={() => openModal(Emodal.ChangeTariff, { id })}
+            >
+              {t('BUTTONS.CHANGE_TARIFF')}
+            </Button>
             <Button
               onClick={() => openModal(Emodal.CrateMeter, { id })}
               className='w-full'

@@ -44,5 +44,4 @@ export const getAllMonthsPipeline: PipelineStage[] = [
   computeTotalCurrent,
   replaceIdsUniversal,
   unsetIdsUniversal,
-  { $sort: { date: -1 } },
 ];

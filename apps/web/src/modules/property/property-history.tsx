@@ -3,6 +3,7 @@
 import React from 'react';
 
 import ReadingTable from '@/components/tables/reading-table';
+import TariffsTable from '@/components/tables/tariffs-table';
 import { useTabs } from '@/hooks/use-tabs';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +27,7 @@ const PropertyHistory = () => {
     {
       label: t('TARIFFS'),
       id: 'tariffs',
-      content: <div>TARIFFS</div>,
+      content: <TariffsTable />,
     },
   ];
 

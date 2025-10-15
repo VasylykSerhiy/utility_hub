@@ -17,6 +17,9 @@ const en = {
   //MODALS
   'MODAL.CREATE_METER.TITLE': 'Add New Meter',
   'MODAL.CREATE_METER.DESC': 'Please enter the new meter readings below.',
+  'MODAL.CHANGE_TARIFF.TITLE': 'Change Tariff',
+  'MODAL.CHANGE_TARIFF.DESC':
+    'Please select the new tariff and enter the starting readings below. The tariff will take effect from the moment of change.',
 
   //TABLES
   'TABLE.NO_DATA': 'No data',
@@ -51,6 +54,7 @@ const en = {
   METERS: 'Meters',
   METER: 'Meter',
   TOTAL: 'Total',
+  CHART: 'Chart',
   SEARCH: 'Search',
   ELECTRICITY: 'Electricity',
   ELECTRICITY_DAY: 'Electricity (Day)',
@@ -64,6 +68,8 @@ const en = {
   TARIFF: 'Tariff',
   TARIFFS: 'Tariffs',
   HISTORY: 'History',
+  KWN: 'kWh',
+  M3: 'm³',
 };
 
 export default en;

@@ -50,6 +50,13 @@ export const computeDifference: PipelineStage = {
     },
   },
 };
+const computeDifferenceField = (field: string) => ({
+  $cond: [
+    { $ifNull: [`$prevMeters.${field}`, false] },
+    { $subtract: [`$meters.${field}`, `$prevMeters.${field}`] },
+    0,
+  ],
+});
 
 export const computeDifferenceForAllMonths: PipelineStage = {
   $addFields: {
@@ -58,35 +65,18 @@ export const computeDifferenceForAllMonths: PipelineStage = {
         $cond: [
           { $eq: ['$meters.electricity.type', 'single'] },
           {
-            single: {
-              $subtract: [
-                '$meters.electricity.single',
-                '$prevMeters.electricity.single',
-              ],
-            },
+            type: '$meters.electricity.type',
+            single: computeDifferenceField('electricity.single'),
           },
           {
-            day: {
-              $subtract: [
-                '$meters.electricity.day',
-                '$prevMeters.electricity.day',
-              ],
-            },
-            night: {
-              $subtract: [
-                '$meters.electricity.night',
-                '$prevMeters.electricity.night',
-              ],
-            },
+            type: '$meters.electricity.type',
+            day: computeDifferenceField('electricity.day'),
+            night: computeDifferenceField('electricity.night'),
           },
         ],
       },
-      water: {
-        $subtract: ['$meters.water', { $ifNull: ['$prevMeters.water', 0] }],
-      },
-      gas: {
-        $subtract: ['$meters.gas', { $ifNull: ['$prevMeters.gas', 0] }],
-      },
+      water: computeDifferenceField('water'),
+      gas: computeDifferenceField('gas'),
     },
   },
 };

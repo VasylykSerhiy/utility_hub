@@ -1,3 +1,4 @@
+import i18n from '@workspace/i18n/i18n';
 import { Language } from '@workspace/types';
 import { Locale, enUS, uk } from 'date-fns/locale';
 import { numericFormatter as _numericFormatter } from 'react-number-format';
@@ -18,4 +19,17 @@ export const numericFormatter = (
     ...props,
   });
 };
+
+export const formatEnergy = (num: number | string | undefined) => {
+  return numericFormatter(num, { suffix: ` ${i18n.t('KWN')}` });
+};
+
+export const formatVolume = (num: number | string | undefined) => {
+  return numericFormatter(num, { suffix: ` ${i18n.t('M3')}` });
+};
+
+export const formatCurrencySymbol = (num: number | string | undefined) => {
+  return numericFormatter(num, { suffix: ` ${i18n.t('₴')}` });
+};
+
 export const formatDate = 'dd.MM.yyyy';

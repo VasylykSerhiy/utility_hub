@@ -1,9 +1,10 @@
-import { ITariff } from '@workspace/types';
 import { Schema, model } from 'mongoose';
 
+import { TariffDocument } from '../../types/database/tariff.type';
+import { applyIdVirtual } from '../../utils';
 import { ElectricitySchema } from './electricity.model';
 
-const TariffSchema = new Schema<ITariff>(
+const TariffSchema = new Schema<TariffDocument>(
   {
     propertyId: {
       type: Schema.Types.ObjectId,
@@ -29,4 +30,6 @@ const TariffSchema = new Schema<ITariff>(
   },
 );
 
-export default model('Tariff', TariffSchema);
+applyIdVirtual(TariffSchema);
+
+export default model<TariffDocument>('Tariff', TariffSchema);

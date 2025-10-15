@@ -6,6 +6,7 @@ import { createWithEqualityFn } from 'zustand/traditional';
 export enum Emodal {
   MobileMenu = 'mobile-menu',
   CrateMeter = 'create-meter',
+  ChangeTariff = 'change-tariff',
 }
 
 interface IArgs {

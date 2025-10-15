@@ -17,6 +17,9 @@ const uk = {
   //MODALS
   'MODAL.CREATE_METER.TITLE': 'Додати показник',
   'MODAL.CREATE_METER.DESC': 'Введіть нові показання лічильника нижче.',
+  'MODAL.CHANGE_TARIFF.TITLE': 'Змінити тариф',
+  'MODAL.CHANGE_TARIFF.DESC':
+    'Будь ласка, виберіть новий тариф і введіть початкові показання нижче. Тариф буде діяти з моменту зміни.',
 
   //TABLES
   'TABLE.NO_DATA': 'Немає даних',
@@ -51,6 +54,7 @@ const uk = {
   METERS: 'Лічильники',
   METER: 'Лічильник',
   TOTAL: 'Всього',
+  CHART: 'Діаграма',
   SEARCH: 'Пошук',
   ELECTRICITY: 'Світло',
   ELECTRICITY_DAY: 'Світло (День)',
@@ -62,7 +66,10 @@ const uk = {
   MAINTENANCE: 'Обслуговування',
   GAS_DELIVERY: 'Поставка газу',
   TARIFF: 'Тариф',
+  TARIFFS: 'Тарифи',
   HISTORY: 'Історія',
+  KWN: 'кВт·год',
+  M3: 'м³',
 };
 
 export default uk;

@@ -51,4 +51,22 @@ propertyRouter.post(
   propertyController.createMonth,
 );
 
+propertyRouter.get(
+  '/:id/last-tariff',
+  authMiddleware.requireAuth,
+  propertyController.getLastTariff,
+);
+
+propertyRouter.get(
+  '/:id/tariffs',
+  authMiddleware.requireAuth,
+  propertyController.getTariffs,
+);
+
+propertyRouter.get(
+  '/:id/metrics',
+  authMiddleware.requireAuth,
+  propertyController.getMetrics,
+);
+
 export default propertyRouter;

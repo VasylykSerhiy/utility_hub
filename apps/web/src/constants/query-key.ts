@@ -2,6 +2,8 @@ export const queryKeys = {
   user: 'user',
   property: 'property',
   months: 'months',
+  tariff: 'tariff',
+  metrics: 'metrics',
 };
 
 export const mutationKey = {

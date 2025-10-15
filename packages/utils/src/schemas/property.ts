@@ -21,4 +21,6 @@ export const propertySchema = z.object({
 });
 
 export const createPropertySchema = propertySchema.required();
-export const updatePropertySchema = propertySchema.partial();
+export const updatePropertySchema = propertySchema
+  .omit({ name: true })
+  .required();

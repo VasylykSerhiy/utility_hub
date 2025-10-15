@@ -114,6 +114,57 @@ const createMonth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getLastTariff = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.params?.id) {
+      return res.status(400).json({ message: 'Property ID is required' });
+    }
+
+    const tariff = await propertyService.getLastTariff(req.params?.id);
+
+    res.json(tariff);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.params?.id) {
+      return res.status(400).json({ message: 'Property ID is required' });
+    }
+
+    const tariffs = await propertyService.getTariffs({
+      propertyId: req.params?.id,
+      page: Number(req.query?.page),
+      pageSize: Number(req.query?.pageSize),
+    });
+
+    res.json(tariffs);
+  } catch (error) {
+    next(error);
+  }
+};
+const getMetrics = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.params?.id) {
+      return res.status(400).json({ message: 'Property ID is required' });
+    }
+
+    const result = await propertyService.getMetrics({
+      propertyId: req.params?.id,
+    });
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createProperty,
   getProperties,
@@ -121,4 +172,7 @@ export default {
   getMonths,
   createMonth,
   getProperty,
+  getLastTariff,
+  getTariffs,
+  getMetrics,
 };

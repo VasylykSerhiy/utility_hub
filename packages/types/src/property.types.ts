@@ -4,6 +4,7 @@ import {
 } from './electricity.types';
 import { IMonth } from './month.types';
 import { PaginateOptions, PaginatedResult } from './pagination';
+import { ITariff } from './tariff.type';
 
 export interface IPropertySingleElectricity {
   id: string;
@@ -36,7 +37,12 @@ export type IPropertyWithLastMonth =
     });
 
 export interface IPropertyMonths extends PaginatedResult<IMonth> {}
+export interface IPropertyTariff extends PaginatedResult<ITariff> {}
 
 export interface GetPropertyMonths extends PaginateOptions {
+  id: string;
+}
+
+export interface GetPropertyTariffs extends PaginateOptions {
   id: string;
 }
