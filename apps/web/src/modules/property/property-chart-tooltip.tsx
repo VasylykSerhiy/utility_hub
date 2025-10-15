@@ -73,8 +73,9 @@ const PropertyChartTooltip = ({
             <h2 className='text-base'>{t('COSTS')}</h2>
 
             {[
-              { label: 'GAS', value: item?.payload?.cost?.gas },
               { label: 'WATER', value: item?.payload?.cost?.water },
+
+              { label: 'GAS', value: item?.payload?.cost?.gas },
               ...(isSingle
                 ? [
                     {
