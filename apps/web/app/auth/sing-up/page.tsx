@@ -2,7 +2,7 @@ import React from 'react';
 
 import Link from 'next/link';
 
-import { ForgotPasswordForm } from '@/components/forms/forgot-password-form';
+import SignUpForm from '@/components/forms/sign-up-form';
 import { Routes } from '@/constants/router';
 
 import {
@@ -18,22 +18,25 @@ const Page = () => {
   return (
     <Card className='gap-4'>
       <CardHeader>
-        <CardTitle className='text-lg tracking-tight'>Forgot Password</CardTitle>
+        <CardTitle className='text-lg tracking-tight'>
+          Create an account
+        </CardTitle>
         <CardDescription>
-          Enter your registered email and <br /> we will send you a link to reset your password.
+          Enter your email and password below to <br />
+          create your account
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ForgotPasswordForm />
+        <SignUpForm />
       </CardContent>
       <CardFooter>
         <p className='text-muted-foreground mx-auto text-balance px-8 text-center text-sm'>
-          Don't have an account?
+          Already have an account?
           <Link
-            href={Routes.SING_UP}
+            href={Routes.SING_IN}
             className='hover:text-primary ml-1 underline underline-offset-4'
           >
-            Sign up
+            Sign in
           </Link>
           .
         </p>

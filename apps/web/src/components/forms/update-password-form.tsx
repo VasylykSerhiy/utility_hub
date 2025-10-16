@@ -2,10 +2,12 @@
 
 import { HTMLAttributes, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserForgotPassword, userForgotPassword } from '@workspace/utils';
+import { UserUpdatePassword, userUpdatePassword } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@workspace/ui/components/button';
@@ -17,38 +19,33 @@ import {
   FormLabel,
   FormMessage,
 } from '@workspace/ui/components/form';
-import { Input } from '@workspace/ui/components/input';
+import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-interface ForgotPasswordFormProps extends HTMLAttributes<HTMLFormElement> {
-  setSuccess: (success: boolean) => void;
-}
+interface UpdatePasswordFormProps extends HTMLAttributes<HTMLFormElement> {}
 
-export function ForgotPasswordForm({
+export function UpdatePasswordForm({
   className,
-  setSuccess,
   ...props
-}: ForgotPasswordFormProps) {
+}: UpdatePasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-
+  const { push } = useRouter();
   const supabase = createClient();
 
-  const form = useForm<UserForgotPassword>({
-    resolver: zodResolver(userForgotPassword),
-    defaultValues: { email: '' },
+  const form = useForm<UserUpdatePassword>({
+    resolver: zodResolver(userUpdatePassword),
+    defaultValues: { password: '' },
   });
 
-  const onSubmit = async (data: UserForgotPassword) => {
+  const onSubmit = async ({ password }: UserUpdatePassword) => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/${Routes.UPDATE_PASSWORD}`,
-      });
+      const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      setSuccess(true);
+      push(Routes.DASHBOARD);
     } catch (error: unknown) {
-      form.setError('email', {
+      form.setError('password', {
         message: error instanceof Error ? error.message : 'An error occurred',
       });
     } finally {
@@ -65,19 +62,19 @@ export function ForgotPasswordForm({
       >
         <FormField
           control={form.control}
-          name='email'
+          name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder='name@example.com' {...field} />
+                <PasswordInput placeholder='********' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button className='mt-2' isLoading={isLoading}>
-          Send reset link
+          Update
         </Button>
       </form>
     </Form>

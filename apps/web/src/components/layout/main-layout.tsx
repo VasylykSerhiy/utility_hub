@@ -13,8 +13,8 @@ const MainLayout = ({ children }: PropsWithChildren) => {
       <Sidebar />
       <MobileMainMenu />
       <Header />
-      <div className='relative flex flex-1 p-4 lg:ml-[280px]'>
-        <div className='bg-background-2 rounded-4xl flex flex-1 flex-col overflow-hidden p-4 lg:p-6'>
+      <div className='relative flex flex-1 p-2 md:p-4 lg:ml-[280px]'>
+        <div className='bg-background-2 md:rounded-4xl flex flex-1 flex-col overflow-hidden rounded-3xl p-2 md:p-6'>
           {children}
         </div>
       </div>

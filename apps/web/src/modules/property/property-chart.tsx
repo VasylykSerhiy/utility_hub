@@ -6,7 +6,11 @@ import { useParams } from 'next/navigation';
 
 import { getPropertyMetrics } from '@/hooks/use-property';
 import PropertyChartTooltip from '@/modules/property/property-chart-tooltip';
-import { isDoubleElectricity, isSingleElectricity } from '@workspace/utils';
+import {
+  isDoubleElectricity,
+  isSingleElectricity,
+  numericFormatter,
+} from '@workspace/utils';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { CartesianGrid, Line, LineChart, Tooltip, YAxis } from 'recharts';
@@ -103,10 +107,16 @@ const PropertyChart = () => {
         <CardTitle>{t('CHART')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-100 w-full'>
+        <ChartContainer config={chartConfig} className='md:h-100 h-60 w-full'>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray='0' vertical={false} />
-            <YAxis />
+            <YAxis
+              tickFormatter={v => numericFormatter(v)}
+              className='text-xs font-normal'
+              strokeWidth={0}
+              offset={50}
+              width={25}
+            />
             <Line
               type='monotone'
               dataKey='difference.water'

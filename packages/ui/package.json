@@ -49,6 +49,7 @@
     "typescript": "^5.9.2"
   },
   "exports": {
+    "./icons/*": "./src/components/icons/*.tsx",
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",

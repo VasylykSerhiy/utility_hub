@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { Routes } from '@/constants/router';
 import { getMyInfo } from '@/hooks/use-user';
+import { createClient } from '@/lib/supabase/client';
 
 import { Avatar, AvatarFallback } from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
@@ -18,14 +19,13 @@ import {
 } from '@workspace/ui/components/dropdown-menu';
 import { Skeleton } from '@workspace/ui/components/skeleton';
 
-import { singOutAction } from '../../app/(login)/_actions';
-
 export function ProfileDropdown() {
   const router = useRouter();
   const { data, isLoading } = getMyInfo();
+  const supabase = createClient();
 
   const handleSignOut = async () => {
-    await singOutAction();
+    await supabase.auth.signOut();
     router.push(Routes.SING_IN);
   };
 

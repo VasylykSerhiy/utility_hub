@@ -9,10 +9,11 @@ export interface ILink {
 export const Routes = {
   DASHBOARD: '/dashboard',
   PROPERTY: '/property',
-  SING_IN: '/sing-in',
-  SING_UP: '/sing-up',
-  FORGOT_PASSWORD: '/forgot-password',
-  VERIFY_EMAIL: '/verify-email',
+  SING_IN: '/auth/sing-in',
+  SING_UP: '/auth/sing-up',
+  SING_UP_SUCCESS: '/auth/sing-up-success',
+  FORGOT_PASSWORD: '/auth/forgot-password',
+  UPDATE_PASSWORD: 'auth/update-password',
 } as const;
 
 export const links: ILink[] = [

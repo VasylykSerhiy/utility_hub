@@ -1,10 +1,15 @@
 import { type NextRequest } from 'next/server';
 
 import { updateSession } from '@/lib/supabase/middleware';
+import { Routes } from '@/constants/router';
 
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === '/') {
-    return Response.redirect(new URL('/dashboard', request.url));
+    return Response.redirect(new URL(Routes.DASHBOARD, request.url));
+  }
+
+  if (request.nextUrl.pathname === '/auth') {
+    return Response.redirect(new URL(Routes.SING_IN, request.url));
   }
 
   return await updateSession(request);

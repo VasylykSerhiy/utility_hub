@@ -8,7 +8,12 @@ import {
   propertySchema,
   updatePropertySchema,
 } from './property';
-import { userAuthShema, userCreateShema, userForgotPassword } from './user';
+import {
+  userAuthShema,
+  userCreateShema,
+  userForgotPassword,
+  userUpdatePassword,
+} from './user';
 
 export type AuthInput = z.infer<typeof authSchema>;
 export type ElectricityMeters = z.infer<typeof electricityMeters>;
@@ -21,3 +26,4 @@ export type UpdatePropertySchema = z.infer<typeof updatePropertySchema>;
 export type UserAuthShema = z.infer<typeof userAuthShema>;
 export type UserCreateShema = z.infer<typeof userCreateShema>;
 export type UserForgotPassword = z.infer<typeof userForgotPassword>;
+export type UserUpdatePassword = z.infer<typeof userUpdatePassword>;

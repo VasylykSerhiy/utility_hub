@@ -25,3 +25,10 @@ export const userCreateShema = z
 export const userForgotPassword = z.object({
   email: z.string().email(),
 });
+
+export const userUpdatePassword = z.object({
+  password: z
+    .string()
+    .min(1, 'Please enter your password')
+    .min(7, 'Password must be at least 7 characters long'),
+});

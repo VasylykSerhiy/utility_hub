@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { HTMLAttributes, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import GoogleButton from '@/components/forms/components/google-button';
 import { Routes } from '@/constants/router';
+import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserCreateShema, userCreateShema } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
@@ -23,11 +25,14 @@ import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-import { singUpAction } from '../../../app/(login)/_actions';
-
-export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
+const SignUpForm = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLFormElement>) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const supabase = createClient();
+
   const form = useForm<UserCreateShema>({
     resolver: zodResolver(userCreateShema),
     defaultValues: {
@@ -39,14 +44,21 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
 
   const onSubmit = async ({ email, password }: UserCreateShema) => {
     setIsLoading(true);
-    const { error } = await singUpAction({ email, password });
-    if (error) {
-      toast.error(error.message);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm?next=${Routes.DASHBOARD}`,
+        },
+      });
+      if (error) throw error;
+      router.push(Routes.SING_UP_SUCCESS);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    router.push(Routes.VERIFY_EMAIL);
   };
 
   return (
@@ -95,7 +107,7 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
             </FormItem>
           )}
         />
-        <Button className='mt-2' disabled={isLoading}>
+        <Button className='mt-2' isLoading={isLoading}>
           Create Account
         </Button>
 
@@ -104,19 +116,18 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
             <span className='w-full border-t' />
           </div>
           <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-card text-muted-foreground px-2'>Or continue with</span>
+            <span className='bg-card text-muted-foreground px-2'>
+              Or continue with
+            </span>
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' className='w-full' type='button' disabled={isLoading}>
-            GitHub
-          </Button>
-          <Button variant='outline' className='w-full' type='button' disabled={isLoading}>
-            Facebook
-          </Button>
+        <div className='grid grid-cols-1'>
+          <GoogleButton />
         </div>
       </form>
     </Form>
   );
-}
+};
+
+export default SignUpForm;

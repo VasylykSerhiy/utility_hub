@@ -3,14 +3,14 @@
 import { HTMLAttributes, useState } from 'react';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
+import GoogleButton from '@/components/forms/components/google-button';
 import { Routes } from '@/constants/router';
 import { useAuthUser } from '@/hooks/use-user';
 import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserAuthShema, userAuthShema } from '@workspace/utils';
-import { Loader2, LogIn } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -27,8 +27,6 @@ import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-import { resendVerificationEmailAction } from '../../../app/(login)/_actions';
-
 interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
@@ -36,10 +34,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const router = useRouter();
   const { mutateAsync } = useAuthUser();
   const supabase = createClient();
-
-  const searchParams = useSearchParams();
-
-  const next = searchParams.get('next');
 
   const form = useForm<UserAuthShema>({
     resolver: zodResolver(userAuthShema),
@@ -51,60 +45,32 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const onSubmit = async ({ email, password }: UserAuthShema) => {
     setIsLoading(true);
-    console.log({ email, password });
 
-    const supabase = createClient();
-    console.log({
-      supabase,
-      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    });
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    console.log({ data, error });
-    if (error) {
-      if (error.message === 'Email not confirmed') {
-        await resendVerificationEmailAction(email);
-        router.push(Routes.VERIFY_EMAIL);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      if (!data?.session.access_token) {
+        setIsLoading(false);
+        toast.error('Something went wrong, please try again.');
         return;
       }
 
+      await mutateAsync({ token: data?.session.access_token });
+
+      router.push(Routes.DASHBOARD);
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : 'An error occurred',
+        { duration: 1000 },
+      );
+    } finally {
       setIsLoading(false);
-      toast.error(error.message, { duration: 1000 });
-      return;
     }
-
-    if (!data?.session.access_token) {
-      setIsLoading(false);
-      toast.error('Something went wrong, please try again.');
-      return;
-    }
-
-    await mutateAsync({ token: data?.session.access_token });
-
-    router.push(Routes.DASHBOARD);
   };
 
-  async function signInWithGoogle() {
-    setIsLoading(true);
-    console.log(`${window.location.origin}/auth/callback`);
-    try {
-      await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback${
-            next ? `?next=${encodeURIComponent(next)}` : ''
-          }`,
-        },
-      });
-    } catch (error) {
-      toast('Error signing in with Google', { duration: 1000 });
-      setIsLoading(false);
-    }
-  }
   return (
     <Form {...form}>
       <form
@@ -136,7 +102,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               </FormControl>
               <FormMessage />
               <Link
-                href='/forgot-password'
+                href={Routes.FORGOT_PASSWORD}
                 className='text-muted-foreground absolute -top-0.5 end-0 text-sm font-medium hover:opacity-75'
               >
                 Forgot password?
@@ -144,8 +110,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </FormItem>
           )}
         />
-        <Button className='mt-2' disabled={isLoading}>
-          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
+        <Button className='mt-2' isLoading={isLoading}>
           Sign in
         </Button>
 
@@ -160,18 +125,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-2'>
-          <Button
-            variant='outline'
-            type='button'
-            disabled={isLoading}
-            onClick={signInWithGoogle}
-          >
-            Google
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            Facebook
-          </Button>
+        <div className='grid grid-cols-1'>
+          <GoogleButton />
         </div>
       </form>
     </Form>
