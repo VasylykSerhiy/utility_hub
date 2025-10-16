@@ -32,10 +32,8 @@ export const nextJsConfig = [
       '@next/next': pluginNext,
     },
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'off',
       ...pluginNext.configs.recommended.rules,
       ...pluginNext.configs['core-web-vitals'].rules,
-      'unused-imports/no-unused-imports-ts': 'error',
     },
   },
   {
