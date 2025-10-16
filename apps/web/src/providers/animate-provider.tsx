@@ -5,7 +5,7 @@ import { ReactNode, useContext, useRef } from 'react';
 import { LayoutRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { usePathname } from 'next/navigation';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, Variants, motion } from 'framer-motion';
 
 function FrozenRouter(props: Readonly<{ children: ReactNode }>) {
   const context = useContext(LayoutRouterContext);
@@ -18,28 +18,37 @@ function FrozenRouter(props: Readonly<{ children: ReactNode }>) {
   );
 }
 
-const variants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  enter: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 1.05 },
+const variants: Variants = {
+  hidden: { opacity: 0, filter: 'blur(12px) brightness(0.8)' },
+  enter: {
+    opacity: 1,
+    filter: 'blur(0px) brightness(1)',
+    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
+  },
+  exit: {
+    opacity: 0,
+    filter: 'blur(10px) brightness(0.7)',
+    transition: { duration: 0.4, ease: 'easeInOut' },
+  },
 };
-
 const PageTransitionEffect = ({ children }: { children: ReactNode }) => {
-  // The `key` is tied to the url using the `usePathname` hook.
-  const key = usePathname();
+  const pathname = usePathname();
 
   return (
-    <AnimatePresence mode='popLayout'>
+    <AnimatePresence mode='wait' initial={false}>
       <motion.div
-        key={key}
+        key={pathname}
         initial='hidden'
         animate='enter'
         exit='exit'
         variants={variants}
-        transition={{ ease: 'easeInOut', duration: 0.3 }}
-        className='flex h-full w-full overflow-hidden'
-        style={{ overflow: 'hidden' }}
+        className='flex h-full w-full'
+        style={{
+          willChange: 'filter, opacity, transform',
+          transformOrigin: 'center',
+        }}
       >
+        {/* 🧊 Контент всередині залишається стабільним для Recharts */}
         <FrozenRouter>{children}</FrozenRouter>
       </motion.div>
     </AnimatePresence>
