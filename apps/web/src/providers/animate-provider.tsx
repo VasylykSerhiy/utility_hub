@@ -5,7 +5,7 @@ import { ReactNode, useContext, useRef } from 'react';
 import { LayoutRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { usePathname } from 'next/navigation';
 
-import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { AnimatePresence, motion, Variants } from 'framer-motion';
 
 function FrozenRouter(props: Readonly<{ children: ReactNode }>) {
   const context = useContext(LayoutRouterContext);
@@ -48,7 +48,6 @@ const PageTransitionEffect = ({ children }: { children: ReactNode }) => {
           transformOrigin: 'center',
         }}
       >
-        {/* 🧊 Контент всередині залишається стабільним для Recharts */}
         <FrozenRouter>{children}</FrozenRouter>
       </motion.div>
     </AnimatePresence>
