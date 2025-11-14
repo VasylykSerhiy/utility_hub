@@ -1,6 +1,19 @@
 import type { PipelineStage } from 'mongoose';
 
+
+
+
+
 // Обчислюємо difference для lastMonth
+const safeSubtract = (a: string, b: string) => ({
+  $let: {
+    vars: {
+      diff: { $subtract: [a, b] },
+    },
+    in: { $cond: [{ $lt: ['$$diff', 0] }, 0, '$$diff'] },
+  },
+});
+
 export const computeDifference: PipelineStage = {
   $addFields: {
     lastMonth: {
@@ -8,39 +21,32 @@ export const computeDifference: PipelineStage = {
         '$lastMonth',
         {
           difference: {
-            water: {
-              $subtract: [
-                '$lastMonth.meters.water',
-                '$lastMonth.prevMeters.water',
-              ],
-            },
-            gas: {
-              $subtract: ['$lastMonth.meters.gas', '$lastMonth.prevMeters.gas'],
-            },
+            water: safeSubtract(
+              '$lastMonth.meters.water',
+              '$lastMonth.prevMeters.water',
+            ),
+            gas: safeSubtract(
+              '$lastMonth.meters.gas',
+              '$lastMonth.prevMeters.gas',
+            ),
             electricity: {
               $cond: [
                 { $eq: ['$lastMonth.meters.electricity.type', 'single'] },
                 {
-                  single: {
-                    $subtract: [
-                      '$lastMonth.meters.electricity.single',
-                      '$lastMonth.prevMeters.electricity.single',
-                    ],
-                  },
+                  single: safeSubtract(
+                    '$lastMonth.meters.electricity.single',
+                    '$lastMonth.prevMeters.electricity.single',
+                  ),
                 },
                 {
-                  day: {
-                    $subtract: [
-                      '$lastMonth.meters.electricity.day',
-                      '$lastMonth.prevMeters.electricity.day',
-                    ],
-                  },
-                  night: {
-                    $subtract: [
-                      '$lastMonth.meters.electricity.night',
-                      '$lastMonth.prevMeters.electricity.night',
-                    ],
-                  },
+                  day: safeSubtract(
+                    '$lastMonth.meters.electricity.day',
+                    '$lastMonth.prevMeters.electricity.day',
+                  ),
+                  night: safeSubtract(
+                    '$lastMonth.meters.electricity.night',
+                    '$lastMonth.prevMeters.electricity.night',
+                  ),
                 },
               ],
             },
