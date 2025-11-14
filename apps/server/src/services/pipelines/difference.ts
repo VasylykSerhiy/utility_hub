@@ -50,10 +50,20 @@ export const computeDifference: PipelineStage = {
     },
   },
 };
+
 const computeDifferenceField = (field: string) => ({
   $cond: [
     { $ifNull: [`$prevMeters.${field}`, false] },
-    { $subtract: [`$meters.${field}`, `$prevMeters.${field}`] },
+    {
+      $let: {
+        vars: {
+          diff: { $subtract: [`$meters.${field}`, `$prevMeters.${field}`] },
+        },
+        in: {
+          $cond: [{ $lt: ['$$diff', 0] }, 0, '$$diff'],
+        },
+      },
+    },
     0,
   ],
 });
