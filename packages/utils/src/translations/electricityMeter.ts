@@ -1,11 +1,11 @@
 import i18n from '@workspace/i18n/i18n';
-import { ElectricityMeterType } from '@workspace/types';
+import { IElectricityType } from '@workspace/types';
 
-export function getElectricityMeterLabel(type: ElectricityMeterType) {
+export function getElectricityMeterLabel(type: IElectricityType) {
   switch (type) {
-    case ElectricityMeterType.SINGLE:
+    case IElectricityType.SINGLE:
       return i18n.t('ELECTRICITY.SINGLE');
-    case ElectricityMeterType.DOUBLE:
+    case IElectricityType.DOUBLE:
       return i18n.t('ELECTRICITY.DOUBLE');
     default:
       return type;

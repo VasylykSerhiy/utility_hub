@@ -6,11 +6,7 @@ import { useParams } from 'next/navigation';
 
 import { getPropertyMetrics } from '@/hooks/use-property';
 import PropertyChartTooltip from '@/modules/property/property-chart-tooltip';
-import {
-  isDoubleElectricity,
-  isSingleElectricity,
-  numericFormatter,
-} from '@workspace/utils';
+import { numericFormatter } from '@workspace/utils';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { CartesianGrid, Line, LineChart, Tooltip, YAxis } from 'recharts';
@@ -34,8 +30,10 @@ const PropertyChart = () => {
 
     return data.map(item => {
       const tariff = item.tariff.tariffs;
+
       return {
         date: item.date,
+        electricityType: item.electricityType,
         label: format(new Date(item.date), 'MMM dd'),
         difference: item.difference,
         cost: {
@@ -43,26 +41,26 @@ const PropertyChart = () => {
           gas: Number(item.difference?.gas * tariff.gas) ?? 0,
           water: Number(item.difference?.water * tariff.water) ?? 0,
           electricity: {
-            ...(isSingleElectricity(item.difference.electricity) &&
-              isSingleElectricity(tariff.electricity) && {
-                type: 'single',
-                single:
-                  Number(
-                    item.difference.electricity.single *
-                      tariff.electricity.single,
-                  ) ?? 0,
-              }),
-            ...(isDoubleElectricity(item.difference.electricity) &&
-              isDoubleElectricity(tariff.electricity) && {
+            ...(item.difference.electricity.single && {
+              type: 'single',
+              single:
+                Number(
+                  item.difference.electricity.single *
+                    (tariff.electricity.single ?? 0),
+                ) ?? 0,
+            }),
+            ...(item.difference.electricity.day &&
+              item.difference.electricity.night && {
                 type: 'double',
                 day:
                   Number(
-                    item.difference.electricity.day * tariff.electricity.day,
+                    item.difference.electricity.day *
+                      (tariff.electricity.day ?? 0),
                   ) ?? 0,
                 night:
                   Number(
                     item.difference.electricity.night *
-                      tariff.electricity.night,
+                      (tariff.electricity.day ?? 0),
                   ) ?? 0,
               }),
           },
@@ -72,7 +70,7 @@ const PropertyChart = () => {
     });
   }, [data]);
 
-  const electricityType = chartData?.[0]?.difference?.electricity?.type;
+  const electricityType = chartData?.[0]?.electricityType;
 
   const chartConfig = {
     'difference.water': {

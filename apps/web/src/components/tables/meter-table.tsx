@@ -2,12 +2,8 @@
 
 import React from 'react';
 
-import { IMonth } from '@workspace/types';
-import {
-  isDoubleMonth,
-  isSingleMonth,
-  numericFormatter,
-} from '@workspace/utils';
+import { IElectricityType, LastReading } from '@workspace/types';
+import { numericFormatter } from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -27,38 +23,37 @@ interface Row {
 }
 
 interface IMeterTableProps {
-  lastMonth: IMonth;
+  lastReading: LastReading;
 }
 
 export const generateRows = (
-  lastMonth: IMonth,
+  lastReading: LastReading,
   t: (key: string) => string,
 ): Row[] => {
-  const tariffs = lastMonth?.tariff?.tariffs ?? {};
-  const meters = lastMonth?.meters ?? {};
-  const diff = lastMonth?.difference ?? {};
+  const tariffs = lastReading?.tariff?.tariffs ?? {};
+  const meters = lastReading?.meters ?? {};
+  const diff = lastReading?.difference ?? {};
 
   const rows: Row[] = [];
 
-  if (isSingleMonth(lastMonth)) {
-    const consumption = lastMonth?.difference?.electricity?.single ?? 0;
+  // ⚡️ Світло
+  if (lastReading?.electricityType === IElectricityType.SINGLE) {
+    const consumption = diff.electricity.single ?? 0;
+
     rows.push({
       meter: t('ELECTRICITY'),
-      reading: lastMonth?.meters?.electricity?.single ?? 0,
+      reading: meters?.electricity?.single ?? 0,
       consumption,
-      const:
-        consumption * (lastMonth?.tariff?.tariffs?.electricity?.single ?? 0),
+      const: consumption * (tariffs?.electricity?.single ?? 0),
     });
-  } else if (isDoubleMonth(lastMonth)) {
+  } else if (lastReading?.electricityType === IElectricityType.DOUBLE) {
     (['day', 'night'] as const).forEach(period => {
-      const consumption = lastMonth?.difference?.electricity?.[period] ?? 0;
+      const consumption = diff?.electricity?.[period] ?? 0;
       rows.push({
         meter: t(`ELECTRICITY_${period.toUpperCase()}`),
-        reading: lastMonth?.meters?.electricity?.[period] ?? 0,
+        reading: meters?.electricity?.[period] ?? 0,
         consumption,
-        const:
-          consumption *
-          (lastMonth?.tariff?.tariffs?.electricity?.[period] ?? 0),
+        const: consumption * (tariffs?.electricity?.[period] ?? 0),
       });
     });
   }
@@ -84,9 +79,9 @@ export const generateRows = (
   return rows;
 };
 
-const MeterTable = ({ lastMonth }: IMeterTableProps) => {
+const MeterTable = ({ lastReading }: IMeterTableProps) => {
   const { t } = useTranslation();
-  const rows = generateRows(lastMonth, t);
+  const rows = generateRows(lastReading, t);
 
   return (
     <Table classNameWrapper='border-none'>

@@ -2,18 +2,20 @@ import { NextFunction, Request, Response } from 'express';
 
 import { propertyService } from '../services';
 
+const getUserId = (req: Request): string => {
+  if (!req.user?.id) throw new Error('User ID missing in request');
+  return req.user.id;
+};
+
 const getProperties = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    const property = await propertyService.getProperties(req.user);
-    res.json(property);
+    const userId = getUserId(req);
+    const properties = await propertyService.getProperties(userId);
+    res.json(properties);
   } catch (error) {
     next(error);
   }
@@ -21,18 +23,13 @@ const getProperties = async (
 
 const getProperty = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    const userId = getUserId(req);
+    const { id } = req.params;
 
-    if (!req.params?.id) {
+    if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
-    }
 
-    const property = await propertyService.getProperty(
-      req.user,
-      req.params?.id,
-    );
+    const property = await propertyService.getProperty(userId, id);
     res.json(property);
   } catch (error) {
     next(error);
@@ -45,8 +42,10 @@ const createProperty = async (
   next: NextFunction,
 ) => {
   try {
+    const userId = getUserId(req);
+
     const property = await propertyService.createProperty({
-      user: req.user!,
+      userId,
       data: req.body,
     });
 
@@ -62,13 +61,15 @@ const updateProperty = async (
   next: NextFunction,
 ) => {
   try {
-    if (!req.params?.id) {
+    const userId = getUserId(req);
+    const { id } = req.params;
+
+    if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
-    }
 
     const property = await propertyService.updateProperty({
-      user: req.user!,
-      id: req.params.id,
+      userId,
+      propertyId: id,
       data: req.body,
     });
 
@@ -80,14 +81,14 @@ const updateProperty = async (
 
 const getMonths = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.params?.id) {
+    const { id } = req.params;
+    if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
-    }
 
     const months = await propertyService.getMonths({
-      propertyId: req.params?.id,
-      page: Number(req.query?.page),
-      pageSize: Number(req.query?.pageSize),
+      propertyId: id,
+      page: Number(req.query.page) || 1,
+      pageSize: Number(req.query.pageSize) || 10,
     });
 
     res.json(months);
@@ -98,17 +99,19 @@ const getMonths = async (req: Request, res: Response, next: NextFunction) => {
 
 const createMonth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.params?.id) {
-      return res.status(400).json({ message: 'Property ID is required' });
-    }
+    const userId = getUserId(req);
+    const { id } = req.params;
 
-    const property = await propertyService.createMonth({
-      user: req.user!,
-      propertyId: req.params?.id,
+    if (!id)
+      return res.status(400).json({ message: 'Property ID is required' });
+
+    const month = await propertyService.createMonth({
+      userId,
+      propertyId: id,
       data: req.body,
     });
 
-    res.json(property);
+    res.json(month);
   } catch (error) {
     next(error);
   }
@@ -120,12 +123,11 @@ const getLastTariff = async (
   next: NextFunction,
 ) => {
   try {
-    if (!req.params?.id) {
+    const { id } = req.params;
+    if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
-    }
 
-    const tariff = await propertyService.getLastTariff(req.params?.id);
-
+    const tariff = await propertyService.getLastTariff(id);
     res.json(tariff);
   } catch (error) {
     next(error);
@@ -134,14 +136,14 @@ const getLastTariff = async (
 
 const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.params?.id) {
+    const { id } = req.params;
+    if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
-    }
 
     const tariffs = await propertyService.getTariffs({
-      propertyId: req.params?.id,
-      page: Number(req.query?.page),
-      pageSize: Number(req.query?.pageSize),
+      propertyId: id,
+      page: Number(req.query.page) || 1,
+      pageSize: Number(req.query.pageSize) || 10,
     });
 
     res.json(tariffs);
@@ -149,16 +151,14 @@ const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
 const getMetrics = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.params?.id) {
+    const { id } = req.params;
+    if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
-    }
 
-    const result = await propertyService.getMetrics({
-      propertyId: req.params?.id,
-    });
-
+    const result = await propertyService.getMetrics({ propertyId: id });
     res.json(result);
   } catch (error) {
     next(error);

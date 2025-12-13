@@ -1,31 +1,22 @@
-import { createClient } from '@supabase/supabase-js';
-
 import type { AuthInput } from '@workspace/utils/schemas/types';
 
-import { User } from '../models/database';
+import { supabase } from '../configs/supabase';
+import { getMyProfile } from '../utils/getProfile';
 
 const auth = async ({ token }: AuthInput) => {
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-
+  // 1. Перевіряємо токен через Supabase
   const { data, error } = await supabase.auth.getUser(token);
 
-  if (error || !data?.user) throw new Error('Invalid token');
-
-  let user = await User.findOne({ supabaseId: data.user.id });
-
-  if (!user) {
-    user = await User.create({
-      supabaseId: data.user.id,
-      email: data.user.email,
-      fullName: data.user.user_metadata.full_name || 'New User',
-      createdAt: new Date(),
-    });
+  if (error || !data?.user) {
+    throw new Error('Invalid or expired token');
   }
 
-  return user;
+  // 2. Повертаємо дані користувача напряму з Supabase Auth
+  const user = data.user;
+
+  // 3. Мапимо в чисту структуру для фронтенду (Опціонально, але рекомендовано)
+  // Це дозволить фронтенду не змінювати логіку доступу до полів (наприклад, user.email)
+  return getMyProfile(user);
 };
 
 export default { auth };

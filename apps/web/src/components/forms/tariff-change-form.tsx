@@ -5,33 +5,15 @@ import { useRouter } from 'next/navigation';
 import { useUpdateTariff } from '@/hooks/use-property';
 import { useModalState } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ElectricityMeterType, IProperty } from '@workspace/types';
-import {
-  PropertySchema,
-  UpdatePropertySchema,
-  updatePropertySchema,
-} from '@workspace/utils';
-import { getElectricityMeterLabel } from '@workspace/utils';
+import { IElectricityType, IProperty } from '@workspace/types';
+import { getElectricityMeterLabel, type UpdatePropertySchema, updatePropertySchema, } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@workspace/ui/components/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@workspace/ui/components/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from '@workspace/ui/components/form';
 import NumberInput from '@workspace/ui/components/number-input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@workspace/ui/components/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@workspace/ui/components/select';
 import { cn } from '@workspace/ui/lib/utils';
 
 interface TariffChangeFormProps {
@@ -44,35 +26,55 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
   const router = useRouter();
   const closeModal = useModalState(s => s.closeModal);
 
+  const defaultTariffs =
+    property.currentTariff?.tariffs || property.lastReading?.tariff?.tariffs;
+  const defaultFixed =
+    property.currentTariff?.fixedCosts ||
+    property.lastReading?.tariff?.fixedCosts;
+
   const form = useForm<UpdatePropertySchema>({
     resolver: zodResolver(updatePropertySchema),
     defaultValues: {
-      tariffs: property?.lastMonth?.tariff?.tariffs,
-      fixedCosts: property?.lastMonth?.tariff?.fixedCosts,
+      electricityType: property.electricityType || IElectricityType.SINGLE,
+      tariffs: {
+        electricity: {
+          single: defaultTariffs?.electricity?.single ?? 0,
+          day: defaultTariffs?.electricity?.day ?? 0,
+          night: defaultTariffs?.electricity?.night ?? 0,
+        },
+        water: defaultTariffs?.water ?? 0,
+        gas: defaultTariffs?.gas ?? 0,
+      },
+      fixedCosts: {
+        internet: defaultFixed?.internet ?? 0,
+        maintenance: defaultFixed?.maintenance ?? 0,
+        gas_delivery: defaultFixed?.gas_delivery ?? 0,
+      },
     },
   });
 
-  const electricityType = property?.electricityType;
+  const electricityType = form.watch('electricityType');
 
   const onSubmit = async (data: UpdatePropertySchema) => {
     await mutateAsync({ id: property.id, data });
     closeModal();
-    router.push('/property');
+    router.refresh();
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-2')}>
+        {/* Тип лічильника (Кореневий рівень) */}
         <FormField
           control={form.control}
-          name='tariffs.electricity.type'
+          name='electricityType'
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('ELECTRICITY_SELECT')}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                disabled
+                disabled={true}
               >
                 <FormControl>
                   <SelectTrigger className='w-full capitalize'>
@@ -80,7 +82,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.values(ElectricityMeterType).map(el => (
+                  {Object.values(IElectricityType).map(el => (
                     <SelectItem value={el} key={el} className='capitalize'>
                       {getElectricityMeterLabel(el)}
                     </SelectItem>
@@ -90,7 +92,9 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
             </FormItem>
           )}
         />
-        {electricityType === ElectricityMeterType.SINGLE && (
+
+        {/* Умовний рендерінг полів залежно від electricityType */}
+        {electricityType === IElectricityType.SINGLE && (
           <FormField
             control={form.control}
             name='tariffs.electricity.single'
@@ -111,8 +115,9 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
             )}
           />
         )}
-        {electricityType === ElectricityMeterType.DOUBLE && (
-          <>
+
+        {electricityType === IElectricityType.DOUBLE && (
+          <div className='grid grid-cols-2 gap-2'>
             <FormField
               control={form.control}
               name='tariffs.electricity.day'
@@ -131,7 +136,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />{' '}
+            />
             <FormField
               control={form.control}
               name='tariffs.electricity.night'
@@ -151,61 +156,67 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                 </FormItem>
               )}
             />
-          </>
+          </div>
         )}
-        <FormField
-          control={form.control}
-          name='tariffs.gas'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('GAS')}</FormLabel>
-              <FormControl>
-                <NumberInput
-                  {...field}
-                  onChange={undefined}
-                  onValueChange={({ floatValue }) => field.onChange(floatValue)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='tariffs.water'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('WATER')}</FormLabel>
-              <FormControl>
-                <NumberInput
-                  {...field}
-                  onChange={undefined}
-                  onValueChange={({ floatValue }) => field.onChange(floatValue)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        {/* Газ та Вода */}
+        <div className='grid grid-cols-2 gap-2'>
+          <FormField
+            control={form.control}
+            name='tariffs.gas'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('GAS')}</FormLabel>
+                <FormControl>
+                  <NumberInput
+                    {...field}
+                    onChange={undefined}
+                    onValueChange={({ floatValue }) =>
+                      field.onChange(floatValue)
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='tariffs.water'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('WATER')}</FormLabel>
+                <FormControl>
+                  <NumberInput
+                    {...field}
+                    onChange={undefined}
+                    onValueChange={({ floatValue }) =>
+                      field.onChange(floatValue)
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <hr className='my-3' />
 
+        {/* Фіксовані витрати */}
         {[
           { name: 'fixedCosts.internet', label: t('INTERNET') },
-          {
-            name: 'fixedCosts.maintenance',
-            label: t('MAINTENANCE'),
-          },
-          {
-            name: 'fixedCosts.gas_delivery',
-            label: t('GAS_DELIVERY'),
-          },
+          { name: 'fixedCosts.maintenance', label: t('MAINTENANCE') },
+          { name: 'fixedCosts.gas_delivery', label: t('GAS_DELIVERY') },
         ].map(el => {
-          const key = el.name as keyof PropertySchema['fixedCosts'];
+          // TypeScript Path Trick: ми гарантуємо, що це валідний шлях
+          const fieldName = el.name as any;
+
           return (
             <FormField
               key={el.name}
               control={form.control}
-              name={key}
+              name={fieldName}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t(el.label)}</FormLabel>
@@ -224,6 +235,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
             />
           );
         })}
+
         <Button className='mt-2' type='submit' isLoading={isPending}>
           {t('BUTTONS.CREATE')}
         </Button>

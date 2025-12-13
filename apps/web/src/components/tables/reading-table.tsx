@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { getPropertyMonths } from '@/hooks/use-property';
-import { ElectricityMeterType } from '@workspace/types';
+import { IElectricityType } from '@workspace/types';
 import {
   formatDate,
   formatEnergy,
@@ -35,8 +35,10 @@ const ReadingTable = () => {
     pageSize: 10,
   });
 
-  const electricityType = data?.data[0]?.meters?.electricity
-    ?.type as ElectricityMeterType;
+  console.log({ data });
+  const electricityType = data?.data?.[0]?.meters.electricity.single
+    ? IElectricityType.SINGLE
+    : IElectricityType.DOUBLE;
 
   return (
     <Table
@@ -48,10 +50,10 @@ const ReadingTable = () => {
       <TableHeader>
         <TableRow>
           <TableHead>{t('DATE')}</TableHead>
-          {electricityType === ElectricityMeterType.SINGLE && (
+          {electricityType === IElectricityType.SINGLE && (
             <TableHead>{t('ELECTRICITY')}</TableHead>
           )}
-          {electricityType === ElectricityMeterType.DOUBLE && (
+          {electricityType === IElectricityType.DOUBLE && (
             <>
               <TableHead>{t('ELECTRICITY_DAY')}</TableHead>
               <TableHead>{t('ELECTRICITY_NIGHT')}</TableHead>
@@ -65,12 +67,12 @@ const ReadingTable = () => {
         {data?.data.map(month => (
           <TableRow key={month.id}>
             <TableCell>{format(new Date(month.date), formatDate)}</TableCell>
-            {isSingleElectricity(month?.meters?.electricity) && (
+            {isSingleElectricity(electricityType) && (
               <TableCell>
                 {formatEnergy(month?.meters?.electricity?.single)}
               </TableCell>
             )}
-            {isDoubleElectricity(month?.meters?.electricity) && (
+            {isDoubleElectricity(electricityType) && (
               <>
                 <TableCell>
                   {formatEnergy(month?.meters?.electricity?.day)}

@@ -1,9 +1,9 @@
-import { IMongooseUser } from './database';
+import { User } from '@supabase/supabase-js';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: IMongooseUser;
+      user?: User;
     }
   }
 }

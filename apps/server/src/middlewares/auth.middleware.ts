@@ -1,8 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextFunction, Request, Response } from 'express';
 
-import { User } from '../models/database';
-
 export const requireAuth = async (
   req: Request,
   res: Response,
@@ -25,12 +23,7 @@ export const requireAuth = async (
     if (error || !user)
       return res.status(401).json({ message: 'Invalid token' });
 
-    const mongoUser = await User.findOne({ supabaseId: user.id });
-    if (!mongoUser) {
-      return res.status(404).json({ message: 'User not found in database' });
-    }
-
-    req.user = mongoUser;
+    req.user = user;
     next();
   } catch (err) {
     console.error('Auth middleware error:', err);

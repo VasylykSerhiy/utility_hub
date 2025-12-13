@@ -5,13 +5,7 @@ import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { getPropertyTariffs } from '@/hooks/use-property';
-import { ElectricityMeterType } from '@workspace/types';
-import {
-  formatCurrencySymbol,
-  formatDate,
-  isDoubleElectricity,
-  isSingleElectricity,
-} from '@workspace/utils';
+import { formatCurrencySymbol, formatDate } from '@workspace/utils';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
@@ -34,9 +28,6 @@ const TariffsTable = () => {
     pageSize: 10,
   });
 
-  const electricityType = data?.data[0]?.tariffs?.electricity
-    ?.type as ElectricityMeterType;
-
   return (
     <Table
       withPagination
@@ -47,15 +38,8 @@ const TariffsTable = () => {
       <TableHeader>
         <TableRow>
           <TableHead>{t('DATE')}</TableHead>
-          {electricityType === ElectricityMeterType.SINGLE && (
-            <TableHead>{t('ELECTRICITY')}</TableHead>
-          )}
-          {electricityType === ElectricityMeterType.DOUBLE && (
-            <>
-              <TableHead>{t('ELECTRICITY_DAY')}</TableHead>
-              <TableHead>{t('ELECTRICITY_NIGHT')}</TableHead>
-            </>
-          )}
+          <TableHead>{t('ELECTRICITY_DAY')}</TableHead>
+          <TableHead>{t('ELECTRICITY_NIGHT')}</TableHead>
           <TableHead>{t('GAS')}</TableHead>
           <TableHead>{t('WATER')}</TableHead>
           <TableHead>{t('INTERNET')}</TableHead>
@@ -72,22 +56,15 @@ const TariffsTable = () => {
                 ? `- ${format(new Date(tariff.endDate), formatDate)}`
                 : ''}
             </TableCell>
-            {isSingleElectricity(tariff?.tariffs?.electricity) && (
-              <TableCell>
-                {formatCurrencySymbol(tariff?.tariffs?.electricity?.single)}
-              </TableCell>
-            )}
-            {isDoubleElectricity(tariff?.tariffs?.electricity) && (
-              <>
-                <TableCell>
-                  {formatCurrencySymbol(tariff?.tariffs?.electricity?.day)}
-                </TableCell>
-                <TableCell>
-                  {formatCurrencySymbol(tariff?.tariffs?.electricity?.night)}
-                </TableCell>
-              </>
-            )}
-
+            <TableCell>
+              {formatCurrencySymbol(
+                tariff?.tariffs?.electricity?.single ??
+                  tariff?.tariffs?.electricity?.day,
+              )}
+            </TableCell>
+            <TableCell>
+              {formatCurrencySymbol(tariff?.tariffs?.electricity?.night)}
+            </TableCell>
             <TableCell>{formatCurrencySymbol(tariff?.tariffs?.gas)}</TableCell>
             <TableCell>
               {formatCurrencySymbol(tariff?.tariffs?.water)}

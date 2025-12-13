@@ -1,7 +1,6 @@
 import z from 'zod';
 
 import { authSchema } from './auth';
-import { electricityMeters } from './electricity';
 import { monthSchemaClient } from './month';
 import {
   createPropertySchema,
@@ -16,7 +15,6 @@ import {
 } from './user';
 
 export type AuthInput = z.infer<typeof authSchema>;
-export type ElectricityMeters = z.infer<typeof electricityMeters>;
 export type MonthSchema = z.infer<typeof monthSchemaClient>;
 
 export type PropertySchema = z.infer<typeof propertySchema>;

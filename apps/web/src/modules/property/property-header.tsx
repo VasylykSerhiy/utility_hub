@@ -36,7 +36,7 @@ const PropertyHeader = ({ id }: { id: string }) => {
       <div className='grid grid-cols-1 md:grid-cols-2'>
         <div className='relative'>
           <PropertyLastMonthDetail
-            lastMonth={data?.lastMonth!}
+            lastReading={data?.lastReading}
             isLoading={isLoading}
           />
 
@@ -55,7 +55,7 @@ const PropertyHeader = ({ id }: { id: string }) => {
             </div>
             <div>
               {[
-                ...(isSingleElectricity(lastTariff?.tariffs?.electricity!)
+                ...(isSingleElectricity(data?.electricityType!)
                   ? [
                       {
                         label: t('ELECTRICITY'),

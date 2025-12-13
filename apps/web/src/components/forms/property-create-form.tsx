@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 
 import { useCreateProperty } from '@/hooks/use-property';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ElectricityMeterType } from '@workspace/types';
+import { IElectricityType } from '@workspace/types';
 import {
   CreatePropertySchema,
   PropertySchema,
   createPropertySchema,
+  getElectricityMeterLabel,
 } from '@workspace/utils';
-import { getElectricityMeterLabel } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -98,7 +98,7 @@ export function PropertyCreateForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.values(ElectricityMeterType).map(el => (
+                  {Object.values(IElectricityType).map(el => (
                     <SelectItem value={el} key={el} className='capitalize'>
                       {getElectricityMeterLabel(el)}
                     </SelectItem>
@@ -108,7 +108,7 @@ export function PropertyCreateForm({
             </FormItem>
           )}
         />
-        {electricityType === ElectricityMeterType.SINGLE && (
+        {electricityType === IElectricityType.SINGLE && (
           <FormField
             control={form.control}
             name='tariffs.electricity.single'
@@ -129,7 +129,7 @@ export function PropertyCreateForm({
             )}
           />
         )}
-        {electricityType === ElectricityMeterType.DOUBLE && (
+        {electricityType === IElectricityType.DOUBLE && (
           <>
             <FormField
               control={form.control}

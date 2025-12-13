@@ -26,7 +26,7 @@ const PropertyChartTooltip = ({
   if (!active || !payload || payload.length === 0) return null;
   const [item] = payload;
   const selectLabel = format(item?.payload?.date, formatDate);
-  const isSingle = Boolean(item?.payload?.cost?.electricity?.type === 'single');
+  const isSingle = Boolean(item?.payload?.cost?.electricity?.single > 0);
 
   return (
     <Card className='gap-0 shadow-2xl'>

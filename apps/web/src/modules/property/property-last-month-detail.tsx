@@ -3,7 +3,7 @@
 import React from 'react';
 
 import MeterTable from '@/components/tables/meter-table';
-import { IMonth } from '@workspace/types';
+import { LastReading } from '@workspace/types';
 import { formatDate, numericFormatter } from '@workspace/utils';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ import { Skeleton } from '@workspace/ui/components/skeleton';
 
 interface PropertyLastMonthDetailProps {
   name?: string;
-  lastMonth: IMonth;
+  lastReading: LastReading;
   isLoading?: boolean;
 }
 
@@ -66,7 +66,7 @@ const LoadingSkeleton = ({ hasName }: { hasName: boolean }) => {
 
 const PropertyLastMonthDetail = ({
   name,
-  lastMonth,
+  lastReading,
   isLoading,
 }: PropertyLastMonthDetailProps) => {
   const { t } = useTranslation();
@@ -78,14 +78,14 @@ const PropertyLastMonthDetail = ({
       {name && (
         <CardHeader className='flex items-center justify-between'>
           <CardTitle className='text-lg font-semibold'>{name}</CardTitle>
-          {lastMonth?.date && <p>{format(lastMonth?.date, formatDate)}</p>}
+          {lastReading?.date && <p>{format(lastReading?.date, formatDate)}</p>}
         </CardHeader>
       )}
       <CardContent className='space-y-2'>
         <div>
           <span className='text-lg font-medium'>{t('METERS')}:</span>
           <div className='ml-2'>
-            <MeterTable lastMonth={lastMonth} />
+            <MeterTable lastReading={lastReading} />
           </div>
         </div>
         <hr />
@@ -96,7 +96,7 @@ const PropertyLastMonthDetail = ({
               {
                 label: t('INTERNET'),
                 value: numericFormatter(
-                  lastMonth.tariff?.fixedCosts?.internet,
+                  lastReading.tariff?.fixedCosts?.internet,
                   {
                     suffix: ' ₴',
                   },
@@ -105,7 +105,7 @@ const PropertyLastMonthDetail = ({
               {
                 label: t('MAINTENANCE'),
                 value: numericFormatter(
-                  lastMonth.tariff?.fixedCosts?.maintenance,
+                  lastReading.tariff?.fixedCosts?.maintenance,
                   {
                     suffix: ' ₴',
                   },
@@ -114,7 +114,7 @@ const PropertyLastMonthDetail = ({
               {
                 label: t('GAS_DELIVERY'),
                 value: numericFormatter(
-                  lastMonth.tariff?.fixedCosts?.gas_delivery,
+                  lastReading.tariff?.fixedCosts?.gas_delivery,
                   {
                     suffix: ' ₴',
                   },
@@ -134,7 +134,7 @@ const PropertyLastMonthDetail = ({
         <div className='flex justify-between gap-1 pt-2'>
           <span className='font-medium'>{t('TOTAL')}:</span>
           <span className='font-medium'>
-            {numericFormatter(lastMonth?.total, {
+            {numericFormatter(lastReading?.total, {
               suffix: ' ₴',
             })}
           </span>

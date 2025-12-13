@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-export const electricityMeters = z.union([
+export const electricitySchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('single'),
-    single: z.number().nonnegative(),
+    single: z.coerce.number().nonnegative(),
   }),
   z.object({
     type: z.literal('double'),
-    day: z.number().nonnegative(),
-    night: z.number().nonnegative(),
+    day: z.coerce.number().nonnegative(),
+    night: z.coerce.number().nonnegative(),
   }),
 ]);

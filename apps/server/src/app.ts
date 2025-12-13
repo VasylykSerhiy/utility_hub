@@ -1,7 +1,6 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
-import * as mongoose from 'mongoose';
 import morgan from 'morgan';
 
 import { ClientError } from './models/errors';
@@ -20,11 +19,6 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.raw());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
-
-mongoose
-  .connect(process.env.MONGO_URI!)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => console.error('❌ MongoDB error:', err));
 
 app.use(cors());
 

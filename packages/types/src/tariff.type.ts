@@ -1,7 +1,4 @@
-import { Types } from 'mongoose';
-
-import { ElectricityMeters } from './electricity.types';
-import { IMeter } from './month.types';
+import { IMeter } from './property.types';
 
 export interface IFixedCosts {
   internet: number;
@@ -9,11 +6,10 @@ export interface IFixedCosts {
   gas_delivery: number;
 }
 
-export interface ITariff<T extends ElectricityMeters = ElectricityMeters> {
-  propertyId: Types.ObjectId | string;
+export interface ITariff {
   startDate: Date;
   endDate?: Date;
-  tariffs: IMeter<T>;
+  tariffs: IMeter;
   fixedCosts: IFixedCosts;
   id: string;
 }

@@ -1,40 +1,61 @@
-import {
-  DoubleElectricityMeter,
-  SingleElectricityMeter,
-} from './electricity.types';
-import { IMonth } from './month.types';
 import { PaginateOptions, PaginatedResult } from './pagination';
 import { ITariff } from './tariff.type';
 
-export interface IPropertySingleElectricity {
-  id: string;
-  userId: string;
-  name: string;
-  electricityType: SingleElectricityMeter['type'];
-  lastMonth: IMonth<SingleElectricityMeter>;
-  createdAt: string;
-  updatedAt: string;
+export enum IElectricityType {
+  SINGLE = 'single',
+  DOUBLE = 'double',
 }
 
-export interface IPropertyDoubleElectricity {
-  id: string;
-  userId: string;
-  name: string;
-  electricityType: DoubleElectricityMeter['type'];
-  lastMonth: IMonth<DoubleElectricityMeter>;
-  createdAt: string;
-  updatedAt: string;
+export interface IElectricity {
+  day?: number;
+  night?: number;
+  single?: number;
 }
 
-export type IProperty = IPropertySingleElectricity | IPropertyDoubleElectricity;
+export interface IMeter {
+  electricity: IElectricity;
+  water: number;
+  gas: number;
+}
 
-export type IPropertyWithLastMonth =
-  | (IPropertySingleElectricity & {
-      lastMonth?: IMonth<SingleElectricityMeter>;
-    })
-  | (IPropertyDoubleElectricity & {
-      lastMonth?: IMonth<DoubleElectricityMeter>;
-    });
+export interface IMonth {
+  id?: string;
+  createdAt?: string;
+  propertyId: string;
+  date: Date;
+  meters: IMeter;
+  prevMeters: IMeter;
+  difference: IMeter;
+  tariff: ITariff;
+  total: number;
+}
+
+export interface LastReading {
+  electricityType: IElectricityType;
+  createdAt: string;
+  date: string;
+  id: string;
+  meters: IMeter;
+  prevMeters: IMeter;
+  difference: IMeter;
+  tariff: ITariff;
+  total: number;
+}
+
+export type IProperty = {
+  created_at: string;
+  electricityType: IElectricityType;
+  id: string;
+  name: string;
+  updated_at: string;
+  user_id: string;
+  lastReading: LastReading;
+  currentTariff: ITariff;
+};
+
+export interface IMetrics extends IMonth {
+  electricityType: IElectricityType;
+}
 
 export interface IPropertyMonths extends PaginatedResult<IMonth> {}
 export interface IPropertyTariff extends PaginatedResult<ITariff> {}

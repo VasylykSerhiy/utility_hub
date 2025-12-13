@@ -1,9 +1,9 @@
 import z from 'zod';
 
-import { electricityMeters } from '@workspace/utils/schemas/electricity';
+import { electricitySchema } from '@workspace/utils/schemas/electricity';
 
 export const tariffsSchema = z.object({
-  electricity: electricityMeters,
+  electricity: electricitySchema,
   water: z.number().nonnegative(),
   gas: z.number().nonnegative(),
 });
@@ -21,6 +21,4 @@ export const propertySchema = z.object({
 });
 
 export const createPropertySchema = propertySchema.required();
-export const updatePropertySchema = propertySchema
-  .omit({ name: true })
-  .required();
+export const updatePropertySchema = propertySchema.omit({ name: true });

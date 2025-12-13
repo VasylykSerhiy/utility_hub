@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Routes } from '@/constants/router';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { Emodal, useModalState } from '@/stores/use-modal-state';
-import { IPropertyWithLastMonth } from '@workspace/types';
+import { IProperty } from '@workspace/types';
 import domtoimage from 'dom-to-image';
 import { Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { Button } from '@workspace/ui/components/button';
 import { Card, CardFooter } from '@workspace/ui/components/card';
 
-export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
+export function PropertyCard({ lastReading, name, id }: IProperty) {
   const { t } = useTranslation();
   const blockRef = useRef<HTMLDivElement>(null);
   const openModal = useModalState(s => s.openModal);
@@ -70,7 +70,8 @@ export function PropertyCard({ lastMonth, name, id }: IPropertyWithLastMonth) {
       >
         <Camera />
       </Button>
-      <PropertyLastMonthDetail name={name} lastMonth={lastMonth} />
+
+      <PropertyLastMonthDetail name={name} lastReading={lastReading} />
       <CardFooter>
         <div className='grid w-full grid-cols-2 gap-2'>
           <Link href={Routes.PROPERTY + '/' + id}>

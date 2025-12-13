@@ -2,10 +2,10 @@ import { API, apiAuth } from '@/lib/axios';
 import {
   GetPropertyMonths,
   GetPropertyTariffs,
-  IMonth,
+  IMetrics,
+  IProperty,
   IPropertyMonths,
   IPropertyTariff,
-  IPropertyWithLastMonth,
   ITariff,
 } from '@workspace/types';
 import {
@@ -15,10 +15,9 @@ import {
 } from '@workspace/utils';
 
 export const propertyService = {
-  getProperties: async () =>
-    apiAuth.get<IPropertyWithLastMonth[]>(API.PROPERTIES),
+  getProperties: async () => apiAuth.get<IProperty[]>(API.PROPERTIES),
   getProperty: async (id: string) =>
-    apiAuth.get<IPropertyWithLastMonth>(`${API.PROPERTIES}/${id}`),
+    apiAuth.get<IProperty>(`${API.PROPERTIES}/${id}`),
   getPropertyMonths: async ({ id, page, pageSize }: GetPropertyMonths) =>
     apiAuth.get<IPropertyMonths>(
       `${API.PROPERTIES}/${id}/months?page=${page}&pageSize=${pageSize}`,
@@ -41,5 +40,5 @@ export const propertyService = {
       `${API.PROPERTIES}/${id}/tariffs?page=${page}&pageSize=${pageSize}`,
     ),
   getPropertyMetrics: async (id: string) =>
-    apiAuth.get<IMonth[]>(`${API.PROPERTIES}/${id}/metrics`),
+    apiAuth.get<IMetrics[]>(`${API.PROPERTIES}/${id}/metrics`),
 };

@@ -4,7 +4,7 @@ import { useCreateMeter } from '@/hooks/use-property';
 import { useLanguage } from '@/providers/language-provider';
 import { useModalState } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ElectricityMeterType, IPropertyWithLastMonth } from '@workspace/types';
+import { IElectricityType, IProperty } from '@workspace/types';
 import { MonthSchema, monthSchemaClient } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,21 +22,17 @@ import {
 import NumberInput from '@workspace/ui/components/number-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-export function MeterCreateForm({
-  property,
-}: {
-  property: IPropertyWithLastMonth;
-}) {
+export function MeterCreateForm({ property }: { property: IProperty }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const { mutateAsync } = useCreateMeter();
   const closeModal = useModalState(s => s.closeModal);
 
   const electricityType = property.electricityType;
-
   const form = useForm<MonthSchema>({
     resolver: zodResolver(monthSchemaClient),
     defaultValues: {
+      date: new Date(),
       meters: {
         electricity: {
           type: electricityType,
@@ -46,7 +42,7 @@ export function MeterCreateForm({
   });
 
   const onSubmit = async (data: MonthSchema) => {
-    console.log(1);
+    console.log(data);
     await mutateAsync({
       id: property.id,
       data,
@@ -78,7 +74,7 @@ export function MeterCreateForm({
           )}
         />
         <hr className='my-3' />
-        {electricityType === ElectricityMeterType.SINGLE && (
+        {electricityType === IElectricityType.SINGLE && (
           <FormField
             control={form.control}
             name='meters.electricity.single'
@@ -92,7 +88,7 @@ export function MeterCreateForm({
                     onValueChange={({ floatValue }) =>
                       field.onChange(floatValue)
                     }
-                    placeholder={`${property?.lastMonth?.meters?.electricity?.single ?? 0}`}
+                    placeholder={`${property?.lastReading?.meters?.electricity?.single ?? 0}`}
                   />
                 </FormControl>
                 <FormMessage />
@@ -100,7 +96,7 @@ export function MeterCreateForm({
             )}
           />
         )}
-        {electricityType === ElectricityMeterType.DOUBLE && (
+        {electricityType === IElectricityType.DOUBLE && (
           <>
             <FormField
               control={form.control}
@@ -115,7 +111,7 @@ export function MeterCreateForm({
                       onValueChange={({ floatValue }) =>
                         field.onChange(floatValue)
                       }
-                      placeholder={`${property?.lastMonth?.meters?.electricity?.day ?? 0}`}
+                      placeholder={`${property?.lastReading?.meters?.electricity?.day ?? 0}`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -135,7 +131,7 @@ export function MeterCreateForm({
                       onValueChange={({ floatValue }) =>
                         field.onChange(floatValue)
                       }
-                      placeholder={`${property?.lastMonth?.meters?.electricity?.night ?? 0}`}
+                      placeholder={`${property?.lastReading?.meters?.electricity?.night ?? 0}`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -155,7 +151,7 @@ export function MeterCreateForm({
                   {...field}
                   onChange={undefined}
                   onValueChange={({ floatValue }) => field.onChange(floatValue)}
-                  placeholder={`${property?.lastMonth?.meters?.gas ?? 0}`}
+                  placeholder={`${property?.lastReading?.meters?.gas ?? 0}`}
                 />
               </FormControl>
               <FormMessage />
@@ -173,7 +169,7 @@ export function MeterCreateForm({
                   {...field}
                   onChange={undefined}
                   onValueChange={({ floatValue }) => field.onChange(floatValue)}
-                  placeholder={`${property?.lastMonth?.meters?.water ?? 0}`}
+                  placeholder={`${property?.lastReading?.meters?.water ?? 0}`}
                 />
               </FormControl>
               <FormMessage />
