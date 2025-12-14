@@ -26,6 +26,9 @@ const PropertyHeader = ({ id }: { id: string }) => {
   const { data: lastTariff } = getPropertyLastTariff({ id });
   const openModal = useModalState(s => s.openModal);
   const { t } = useTranslation();
+
+  if (!data) return null;
+
   return (
     <Card>
       <CardHeader className='flex items-center justify-between'>
