@@ -1,11 +1,6 @@
 export interface IUser {
-  supabaseId: string;
+  avatar?: string;
   email?: string;
-  createdAt?: Date;
-}
-
-export interface IUserActions {}
-
-export interface IUserState {
-  user: IUser;
+  name: string;
+  id: string;
 }

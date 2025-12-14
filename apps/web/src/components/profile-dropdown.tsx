@@ -6,7 +6,11 @@ import { Routes } from '@/constants/router';
 import { getMyInfo } from '@/hooks/use-user';
 import { createClient } from '@/lib/supabase/client';
 
-import { Avatar, AvatarFallback } from '@workspace/ui/components/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
@@ -39,6 +43,7 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative size-9 rounded-full'>
             <Avatar className='size-9'>
+              <AvatarImage src={data?.avatar} alt='avatar' />
               <AvatarFallback>SN</AvatarFallback>
             </Avatar>
           </Button>
