@@ -6,14 +6,31 @@ import { useUpdateTariff } from '@/hooks/use-property';
 import { useModalState } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IElectricityType, IProperty } from '@workspace/types';
-import { getElectricityMeterLabel, type UpdatePropertySchema, updatePropertySchema, } from '@workspace/utils';
+import {
+  type UpdatePropertySchema,
+  getElectricityMeterLabel,
+  updatePropertySchema,
+} from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@workspace/ui/components/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from '@workspace/ui/components/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@workspace/ui/components/form';
 import NumberInput from '@workspace/ui/components/number-input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@workspace/ui/components/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@workspace/ui/components/select';
 import { cn } from '@workspace/ui/lib/utils';
 
 interface TariffChangeFormProps {
@@ -35,9 +52,9 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
   const form = useForm<UpdatePropertySchema>({
     resolver: zodResolver(updatePropertySchema),
     defaultValues: {
-      electricityType: property.electricityType || IElectricityType.SINGLE,
       tariffs: {
         electricity: {
+          type: property.electricityType || IElectricityType.SINGLE,
           single: defaultTariffs?.electricity?.single ?? 0,
           day: defaultTariffs?.electricity?.day ?? 0,
           night: defaultTariffs?.electricity?.night ?? 0,
@@ -53,7 +70,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
     },
   });
 
-  const electricityType = form.watch('electricityType');
+  const electricityType = form.watch('tariffs.electricity.type');
 
   const onSubmit = async (data: UpdatePropertySchema) => {
     await mutateAsync({ id: property.id, data });
@@ -67,7 +84,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
         {/* Тип лічильника (Кореневий рівень) */}
         <FormField
           control={form.control}
-          name='electricityType'
+          name='tariffs.electricity.type'
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('ELECTRICITY_SELECT')}</FormLabel>
