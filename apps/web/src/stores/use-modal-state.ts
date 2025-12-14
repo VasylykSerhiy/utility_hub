@@ -1,36 +1,39 @@
 'use client';
 
+import {
+  type ModalMap,
+  type ModalType,
+} from '@/components/modals/modal-registry';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 
-export enum Emodal {
-  MobileMenu = 'mobile-menu',
-  CrateMeter = 'create-meter',
-  ChangeTariff = 'change-tariff',
-}
+interface ModalState {
+  isOpen: boolean;
+  type: ModalType | null;
+  props: Record<string, unknown>;
 
-interface IArgs {
-  id?: string;
-}
+  openModal: <T extends ModalType>(
+    type: T,
+    props: Omit<ModalMap[T], 'closeModal'>,
+  ) => void;
 
-type State = {
-  args: IArgs;
-  open: null | Emodal;
-  openModal: (modal: Emodal, args?: Partial<IArgs>) => void;
-  setArgs: (args: Partial<IArgs>) => void;
   closeModal: () => void;
-};
+}
 
-export const useModalStateStore = createWithEqualityFn<State>(
+export const useModalStore = createWithEqualityFn<ModalState>(
   set => ({
-    open: null,
-    args: {},
-    openModal: (modal: Emodal, args = {}) => set({ open: modal, args }),
-    setArgs: args => set(state => ({ args: { ...state.args, ...args } })),
-    closeModal: () => set({ open: null }),
+    isOpen: false,
+    type: null,
+    props: {},
+
+    openModal: (type, props) =>
+      set({
+        isOpen: true,
+        type,
+        props: props as Record<string, unknown>,
+      }),
+
+    closeModal: () => set({ isOpen: false }),
   }),
   shallow,
 );
-
-export const useModalState = <T>(selector: (state: State) => T) =>
-  useModalStateStore(selector, shallow);

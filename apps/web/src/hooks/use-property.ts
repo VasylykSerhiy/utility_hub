@@ -26,6 +26,24 @@ export const getProperty = (id: string) => {
   });
 };
 
+export const useDeleteProperty = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: propertyService.deleteProperty,
+    onSuccess: async (_, deletedId) => {
+      await queryClient.cancelQueries({
+        queryKey: [queryKeys.property, deletedId],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: [queryKeys.property],
+        exact: true,
+        refetchType: 'active',
+      });
+    },
+  });
+};
+
 export const getPropertyMonths = ({
   id,
   page,
@@ -57,9 +75,16 @@ export const useUpdateTariff = () => {
     mutationKey: [mutationKey.property_create],
     mutationFn: (props: { id: string; data: UpdatePropertySchema }) =>
       propertyService.updateProperty(props),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.property] });
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.property, variables.id],
+      });
+
       void queryClient.invalidateQueries({ queryKey: [queryKeys.tariff] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.property],
+        exact: true,
+      });
     },
   });
 };
@@ -70,7 +95,10 @@ export const useCreateMeter = () => {
     mutationKey: [mutationKey.meter_create],
     mutationFn: propertyService.createMeter,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.property] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.property],
+        exact: true,
+      });
       void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
     },
   });

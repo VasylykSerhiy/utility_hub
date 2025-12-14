@@ -1,192 +1,13 @@
-import {CreatePropertySchema, MonthSchema, UpdatePropertySchema,} from '@workspace/utils';
+import { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
 
-import {supabase} from '../configs/supabase';
-
-// --- MAPPERS (Data Transformation Layer) ---
-const createEmptyReading = (
-  electricityType: 'single' | 'double' | null = 'single',
-) => ({
-  id: null,
-  electricityType,
-  date: null,
-  meters: {
-    water: 0,
-    gas: 0,
-    electricity: {
-      single: 0,
-      day: 0,
-      night: 0,
-    },
-  },
-  difference: {
-    water: 0,
-    gas: 0,
-    electricity: {
-      single: 0,
-      day: 0,
-      night: 0,
-    },
-  },
-  prevMeters: {
-    water: 0,
-    gas: 0,
-    electricity: {
-      single: 0,
-      day: 0,
-      night: 0,
-    },
-  },
-  tariff: null,
-  total: 0,
-  createdAt: null,
-});
-
-// 1. TARIFF MAPPER
-const mapTariffToFrontend = (tariff: any) => ({
-  id: tariff.id,
-  startDate: tariff.start_date,
-  endDate: tariff.end_date,
-  tariffs: {
-    electricity: {
-      single: tariff.rate_electricity_single,
-      day: tariff.rate_electricity_day,
-      night: tariff.rate_electricity_night,
-    },
-    water: tariff.rate_water,
-    gas: tariff.rate_gas,
-  },
-  fixedCosts: {
-    internet: tariff.fixed_internet,
-    maintenance: tariff.fixed_maintenance,
-    gas_delivery: tariff.fixed_gas_delivery,
-  },
-});
-
-// 2. TOTAL CALCULATOR
-const calculateTotal = (diff: any, tariff: any) => {
-  if (!tariff) return 0;
-
-  let electricityCost: number;
-  if (diff.electricity_day > 0 || diff.electricity_night > 0) {
-    electricityCost =
-      diff.electricity_day * tariff.rate_electricity_day +
-      diff.electricity_night * tariff.rate_electricity_night;
-  } else {
-    electricityCost = diff.electricity_single * tariff.rate_electricity_single;
-  }
-
-  const waterCost = diff.water * tariff.rate_water;
-  const gasCost = diff.gas * tariff.rate_gas;
-  const fixedCost =
-    tariff.fixed_internet +
-    tariff.fixed_maintenance +
-    tariff.fixed_gas_delivery;
-
-  return (
-    Math.round((electricityCost + waterCost + gasCost + fixedCost) * 100) / 100
-  );
-};
-
-// 3. READING MAPPER
-const mapReadingToFrontend = (
-  reading: any,
-  tariff: any = null,
-  propertyElectricityType: 'single' | 'double' | null = null,
-) => {
-  // --- ЛОГІКА АВТОВИЗНАЧЕННЯ ТИПУ ---
-  // Ми використовуємо тип з Property як дефолтний.
-  // Але якщо ми бачимо, що в базі заповнені поля day/night (і вони не null),
-  // то ми примусово ставимо тип 'double' для цього конкретного запису.
-  // Це рятує історію, якщо ти поміняв лічильник.
-
-  let actualType = propertyElectricityType || 'single';
-
-  // Перевірка: чи є дані в двозонних колонках? (non-null check)
-  if (reading.electricity_day !== null || reading.electricity_night !== null) {
-    actualType = 'double';
-  }
-  // Перевірка: чи є дані в однозонній колонці?
-  else if (reading.electricity_single !== null) {
-    actualType = 'single';
-  }
-
-  const diff = {
-    water: Math.max(reading.diff_water ?? 0, 0),
-    gas: Math.max(reading.diff_gas ?? 0, 0),
-    electricity_single: Math.max(reading.diff_electricity_single ?? 0, 0),
-    electricity_day: Math.max(reading.diff_electricity_day ?? 0, 0),
-    electricity_night: Math.max(reading.diff_electricity_night ?? 0, 0),
-  };
-
-  const total = tariff ? calculateTotal(diff, tariff) : 0;
-
-  return {
-    id: reading.id,
-    electricityType: actualType,
-    date: reading.date,
-    meters: {
-      water: reading.water,
-      gas: reading.gas,
-      electricity: {
-        single: reading.electricity_single,
-        day: reading.electricity_day,
-        night: reading.electricity_night,
-      },
-    },
-    difference: {
-      water: diff.water,
-      gas: diff.gas,
-      electricity: {
-        single: diff.electricity_single,
-        day: diff.electricity_day,
-        night: diff.electricity_night,
-      },
-    },
-    prevMeters: {
-      water: reading.prev_water ?? 0,
-      gas: reading.prev_gas ?? 0,
-      electricity: {
-        single: reading.prev_electricity_single ?? 0,
-        day: reading.prev_electricity_day ?? 0,
-        night: reading.prev_electricity_night ?? 0,
-      },
-    },
-    tariff: tariff ? mapTariffToFrontend(tariff) : null,
-    total,
-    createdAt: reading.created_at,
-  };
-};
-
-const mapPropertyToFrontend = (
-  prop: any,
-  lastReading: any = null,
-  currentTariff: any = null,
-) => {
-  return {
-    id: prop.id,
-    userId: prop.user_id,
-    name: prop.name,
-    electricityType: prop.electricity_type,
-    createdAt: prop.created_at,
-    updatedAt: prop.updated_at,
-    lastReading,
-    currentTariff,
-  };
-};
-
-// --- DB HELPER ---
-const findTariffForDate = async (propertyId: string, date: string | Date) => {
-  const { data } = await supabase
-    .from('tariffs')
-    .select('*')
-    .eq('property_id', propertyId)
-    .lte('start_date', date)
-    .order('start_date', { ascending: false })
-    .limit(1)
-    .single();
-
-  return data;
-};
+import { supabase } from '../configs/supabase';
+import {
+  createEmptyReading,
+  mapPropertyToFrontend,
+  mapReadingToFrontend,
+  mapTariffToFrontend,
+} from '../mappers/property.mappers';
+import { findTariffForDate } from './tariff.service';
 
 const getProperties = async (userId: string) => {
   const { data: properties, error } = await supabase
@@ -388,153 +209,31 @@ const updateProperty = async ({
   return { success: true };
 };
 
-const getMonths = async ({
-  propertyId,
-  page = 1,
-  pageSize = 10,
-}: {
-  propertyId: string;
-  page: number;
-  pageSize: number;
-}) => {
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
-  // Отримуємо тип з property
-  const { data: property } = await supabase
-    .from('properties')
-    .select('electricity_type')
-    .eq('id', propertyId)
-    .single();
-
-  const electricityType = property?.electricity_type || 'single';
-
-  const {
-    data: rows,
-    count,
-    error,
-  } = await supabase
-    .from('view_readings_stats')
-    .select('*', { count: 'exact' })
-    .eq('property_id', propertyId)
-    .order('date', { ascending: false })
-    .range(from, to);
-
-  if (error) throw new Error(error.message);
-
-  const resultData = await Promise.all(
-    rows.map(async r => {
-      const tariff = await findTariffForDate(propertyId, r.date);
-      return mapReadingToFrontend(r, tariff, electricityType);
-    }),
-  );
-
-  return {
-    data: resultData,
-    total: count,
-    page,
-    totalPages: Math.ceil((count || 0) / pageSize),
-  };
-};
-
-const createMonth = async ({
+const deleteProperty = async ({
   userId,
   propertyId,
-  data,
 }: {
   userId: string;
   propertyId: string;
-  data: MonthSchema;
 }) => {
-  const { data: property } = await supabase
+  const { data, error } = await supabase
     .from('properties')
-    .select('id, electricity_type')
+    .delete()
     .eq('id', propertyId)
     .eq('user_id', userId)
-    .single();
+    .select('id')
+    .maybeSingle();
 
-  if (!property) throw new Error('Property not found');
+  if (error) {
+    console.error('Error deleting property:', error);
+    throw new Error(`Failed to delete property: ${error.message}`);
+  }
 
-  const { error, data: newReading } = await supabase
-    .from('readings')
-    .insert({
-      property_id: propertyId,
-      date: data.date,
-      water: data.meters.water || 0,
-      gas: data.meters.gas || 0,
-      ...(data.meters.electricity?.type === 'single'
-        ? {
-            electricity_single: data.meters.electricity.single,
-          }
-        : {
-            electricity_day: data.meters.electricity?.day || 0,
-            electricity_night: data.meters.electricity?.night || 0,
-          }),
-    })
-    .select()
-    .single();
+  if (!data) {
+    throw new Error('Property not found or access denied');
+  }
 
-  if (error) throw new Error(error.message);
-
-  const { data: readingWithStats } = await supabase
-    .from('view_readings_stats')
-    .select('*')
-    .eq('id', newReading.id)
-    .single();
-
-  const tariff = await findTariffForDate(propertyId, data.date);
-
-  return mapReadingToFrontend(
-    readingWithStats || newReading,
-    tariff,
-    property.electricity_type,
-  );
-};
-
-const getLastTariff = async (propertyId: string) => {
-  const { data, error } = await supabase
-    .from('tariffs')
-    .select('*')
-    .eq('property_id', propertyId)
-    .order('start_date', { ascending: false })
-    .limit(1)
-    .single();
-
-  if (error) return null;
-  return mapTariffToFrontend(data);
-};
-
-const getTariffs = async ({
-  propertyId,
-  page = 1,
-  pageSize = 10,
-}: {
-  propertyId: string;
-  page: number;
-  pageSize: number;
-}) => {
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
-  const {
-    data: rows,
-    count,
-    error,
-  } = await supabase
-    .from('tariffs')
-    .select('*', { count: 'exact' })
-    .eq('property_id', propertyId)
-    .order('start_date', { ascending: false })
-    .range(from, to);
-
-  if (error) throw new Error(error.message);
-
-  return {
-    data: rows.map(mapTariffToFrontend),
-    total: count,
-    page,
-    totalPages: Math.ceil((count || 0) / pageSize),
-  };
+  return { success: true };
 };
 
 const getMetrics = async ({ propertyId }: { propertyId: string }) => {
@@ -574,10 +273,7 @@ export default {
   getProperties,
   createProperty,
   updateProperty,
-  getMonths,
-  createMonth,
+  deleteProperty,
   getProperty,
-  getLastTariff,
-  getTariffs,
   getMetrics,
 };

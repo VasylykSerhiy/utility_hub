@@ -5,7 +5,7 @@ import * as React from 'react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 import { LanguageProvider } from '@/providers/language-provider';
-import ModalsProvider from '@/providers/modals-provider';
+import { ModalsProvider } from '@/providers/modals-provider';
 import QueryProvider from '@/providers/query-provider';
 
 import { Toaster } from '@workspace/ui/components/sonner';
@@ -21,7 +21,8 @@ export function Provides({ children }: { children: React.ReactNode }) {
       >
         <Toaster />
         <LanguageProvider>
-          <ModalsProvider>{children}</ModalsProvider>
+          <ModalsProvider />
+          {children}
         </LanguageProvider>
       </NextThemesProvider>
     </QueryProvider>

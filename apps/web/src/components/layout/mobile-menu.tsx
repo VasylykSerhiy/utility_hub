@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Logo from '@/components/logo';
 import { useLanguage } from '@/providers/language-provider';
-import { Emodal, useModalState } from '@/stores/use-modal-state';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
@@ -20,12 +19,7 @@ import Navigations from './navigations';
 import { ThemeToggleButton } from './theme-toggle-button';
 
 const MobileHeader = () => {
-  const { open, openModal, closeModal } = useModalState(s => ({
-    open: s.open,
-    openModal: s.openModal,
-    closeModal: s.closeModal,
-  }));
-  const isOpen = open === Emodal.MobileMenu;
+  const [open, setOpen] = useState(false);
 
   const { language, changeLanguage } = useLanguage();
 
@@ -40,7 +34,7 @@ const MobileHeader = () => {
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (open) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'visible';
@@ -49,7 +43,7 @@ const MobileHeader = () => {
     return () => {
       document.body.style.overflow = 'visible';
     };
-  }, [isOpen]);
+  }, [open]);
 
   return (
     <div className='relative w-full lg:hidden'>
@@ -68,29 +62,27 @@ const MobileHeader = () => {
           <ThemeToggleButton />
           <button
             onClick={() => {
-              if (isOpen) {
-                closeModal();
-              } else {
-                openModal(Emodal.MobileMenu);
-              }
+              setOpen(!open);
             }}
             className='rounded-full p-2 hover:bg-gray-100'
             aria-label='Відкрити/Закрити меню'
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </header>
 
       <AnimatePresence>
-        {isOpen && (
+        {open && (
           <>
             <motion.div
               variants={backdropVariants}
               initial='hidden'
               animate='visible'
               exit='hidden'
-              onClick={closeModal}
+              onClick={() => {
+                setOpen(!open);
+              }}
               className='bg-background/70 fixed inset-0 z-10'
             />
 
@@ -102,7 +94,11 @@ const MobileHeader = () => {
               className='bg-background absolute left-0 top-full z-20 w-full overflow-hidden border-b'
             >
               <div className='flex flex-col gap-6 p-4'>
-                <Navigations onClick={closeModal} />
+                <Navigations
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
+                />
               </div>
             </motion.div>
           </>

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { propertyService } from '../services';
+import { propertyService, readingService, tariffService } from '../services';
 
 const getUserId = (req: Request): string => {
   if (!req.user?.id) throw new Error('User ID missing in request');
@@ -79,19 +79,62 @@ const updateProperty = async (
   }
 };
 
+const deleteProperty = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+
+    if (!id)
+      return res.status(400).json({ message: 'Property ID is required' });
+
+    await propertyService.deleteProperty({
+      userId,
+      propertyId: id,
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getMonths = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
 
-    const months = await propertyService.getMonths({
+    const months = await readingService.getMonths({
       propertyId: id,
       page: Number(req.query.page) || 1,
       pageSize: Number(req.query.pageSize) || 10,
     });
 
     res.json(months);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteMonth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, monthId } = req.params;
+
+    if (!id)
+      return res.status(400).json({ message: 'Property ID is required' });
+    if (!monthId)
+      return res.status(400).json({ message: 'Month ID is required' });
+
+    await readingService.deleteMonth({
+      propertyId: id,
+      monthId,
+    });
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -105,7 +148,7 @@ const createMonth = async (req: Request, res: Response, next: NextFunction) => {
     if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
 
-    const month = await propertyService.createMonth({
+    const month = await readingService.createMonth({
       userId,
       propertyId: id,
       data: req.body,
@@ -127,7 +170,7 @@ const getLastTariff = async (
     if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
 
-    const tariff = await propertyService.getLastTariff(id);
+    const tariff = await tariffService.getLastTariff(id);
     res.json(tariff);
   } catch (error) {
     next(error);
@@ -140,7 +183,7 @@ const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
     if (!id)
       return res.status(400).json({ message: 'Property ID is required' });
 
-    const tariffs = await propertyService.getTariffs({
+    const tariffs = await tariffService.getTariffs({
       propertyId: id,
       page: Number(req.query.page) || 1,
       pageSize: Number(req.query.pageSize) || 10,
@@ -169,8 +212,10 @@ export default {
   createProperty,
   getProperties,
   updateProperty,
+  deleteProperty,
   getMonths,
   createMonth,
+  deleteMonth,
   getProperty,
   getLastTariff,
   getTariffs,

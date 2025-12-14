@@ -38,6 +38,12 @@ propertyRouter.put(
   propertyController.updateProperty,
 );
 
+propertyRouter.delete(
+  '/:id',
+  authMiddleware.requireAuth,
+  propertyController.deleteProperty,
+);
+
 propertyRouter.get(
   '/:id/months',
   authMiddleware.requireAuth,
@@ -49,6 +55,12 @@ propertyRouter.post(
   authMiddleware.requireAuth,
   validateRequest(monthSchema),
   propertyController.createMonth,
+);
+
+propertyRouter.delete(
+  '/:id/months/:monthId',
+  authMiddleware.requireAuth,
+  propertyController.deleteMonth,
 );
 
 propertyRouter.get(

@@ -21,6 +21,11 @@ const uk = {
   'MODAL.CHANGE_TARIFF.DESC':
     'Будь ласка, виберіть новий тариф і введіть початкові показання нижче. Тариф буде діяти з моменту зміни.',
 
+  //MODAL ALERT
+  'MODALS.ALERT.TITLE.REMOVE_PROPERTY': 'Видалити власність',
+  'MODALS.ALERT.MESSAGE.REMOVE_PROPERTY':
+    'Ви впевнені, що хочете видалити цю власність та всі пов’язані з нею дані? Цю дію неможливо скасувати.',
+
   //TABLES
   'TABLE.NO_DATA': 'Немає даних',
   'TABLE.PAGINATION': 'Сторінка {{page}} з {{totalPages}}',

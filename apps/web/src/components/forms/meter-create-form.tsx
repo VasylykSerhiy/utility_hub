@@ -2,7 +2,7 @@
 
 import { useCreateMeter } from '@/hooks/use-property';
 import { useLanguage } from '@/providers/language-provider';
-import { useModalState } from '@/stores/use-modal-state';
+import { useModalStore } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IElectricityType, IProperty } from '@workspace/types';
 import { MonthSchema, monthSchemaClient } from '@workspace/utils';
@@ -26,7 +26,7 @@ export function MeterCreateForm({ property }: { property: IProperty }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const { mutateAsync } = useCreateMeter();
-  const closeModal = useModalState(s => s.closeModal);
+  const closeModal = useModalStore(s => s.closeModal);
 
   const electricityType = property.electricityType;
   const form = useForm<MonthSchema>({

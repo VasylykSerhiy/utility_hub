@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { useUpdateTariff } from '@/hooks/use-property';
-import { useModalState } from '@/stores/use-modal-state';
+import { useModalStore } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IElectricityType, IProperty } from '@workspace/types';
 import {
@@ -41,7 +41,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
   const { t } = useTranslation();
   const { mutateAsync, isPending } = useUpdateTariff();
   const router = useRouter();
-  const closeModal = useModalState(s => s.closeModal);
+  const closeModal = useModalStore(s => s.closeModal);
 
   const defaultTariffs =
     property.currentTariff?.tariffs || property.lastReading?.tariff?.tariffs;

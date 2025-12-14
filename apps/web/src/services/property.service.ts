@@ -24,6 +24,8 @@ export const propertyService = {
     ),
   createProperty: async (data: CreatePropertySchema) =>
     apiAuth.post(API.PROPERTIES, data),
+  deleteProperty: async (id: string) =>
+    apiAuth.delete(`${API.PROPERTIES}/${id}`),
   updateProperty: async ({
     id,
     data,

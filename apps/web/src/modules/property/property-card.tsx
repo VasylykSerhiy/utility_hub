@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { Routes } from '@/constants/router';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
-import { Emodal, useModalState } from '@/stores/use-modal-state';
+import { useModalStore } from '@/stores/use-modal-state';
 import { IProperty } from '@workspace/types';
 import domtoimage from 'dom-to-image';
 import { Camera } from 'lucide-react';
@@ -19,7 +19,7 @@ import { Card, CardFooter } from '@workspace/ui/components/card';
 export function PropertyCard({ lastReading, name, id }: IProperty) {
   const { t } = useTranslation();
   const blockRef = useRef<HTMLDivElement>(null);
-  const openModal = useModalState(s => s.openModal);
+  const openModal = useModalStore(s => s.openModal);
 
   const handleScreenshot = async () => {
     if (!blockRef.current) return;
@@ -80,7 +80,7 @@ export function PropertyCard({ lastReading, name, id }: IProperty) {
           <Button
             onClick={e => {
               e.stopPropagation();
-              openModal(Emodal.CrateMeter, { id });
+              openModal('createMeter', { id });
             }}
             className='w-full'
           >

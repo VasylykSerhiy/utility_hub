@@ -1,19 +1,33 @@
-import React, { PropsWithChildren } from 'react';
+'use client';
 
-import ChangeTariff from '@/components/modals/change-tariff';
-import CreateMeter from '@/components/modals/create-meter';
-import { Emodal, useModalState } from '@/stores/use-modal-state';
+import { Suspense } from 'react';
 
-const ModalsProvider = ({ children }: PropsWithChildren) => {
-  const open = useModalState(state => state.open);
+import { ModalComponents } from '@/components/modals/modal-registry';
+import { useModalStore } from '@/stores/use-modal-state';
+
+import { Dialog } from '@workspace/ui/components/dialog';
+
+export const ModalsProvider = () => {
+  const { isOpen, type, props, closeModal } = useModalStore(state => ({
+    isOpen: state.isOpen,
+    type: state.type,
+    props: state.props,
+    closeModal: state.closeModal,
+  }));
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) closeModal();
+  };
+
+  if (!type) return null;
+
+  const SpecificModal = ModalComponents[type];
 
   return (
-    <>
-      {open === Emodal.CrateMeter && <CreateMeter />}
-      {open === Emodal.ChangeTariff && <ChangeTariff />}
-      {children}
-    </>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <Suspense fallback={null}>
+        <SpecificModal {...(props as any)} />
+      </Suspense>
+    </Dialog>
   );
 };
-
-export default ModalsProvider;

@@ -2,9 +2,16 @@
 
 import React from 'react';
 
-import { getProperty, getPropertyLastTariff } from '@/hooks/use-property';
+import { useRouter } from 'next/navigation';
+
+import { Routes } from '@/constants/router';
+import {
+  getProperty,
+  getPropertyLastTariff,
+  useDeleteProperty,
+} from '@/hooks/use-property';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
-import { Emodal, useModalState } from '@/stores/use-modal-state';
+import { useModalStore } from '@/stores/use-modal-state';
 import {
   formatCurrencySymbol,
   getElectricityMeterLabel,
@@ -24,10 +31,18 @@ import { Skeleton } from '@workspace/ui/components/skeleton';
 const PropertyHeader = ({ id }: { id: string }) => {
   const { data, isLoading } = getProperty(id);
   const { data: lastTariff } = getPropertyLastTariff({ id });
-  const openModal = useModalState(s => s.openModal);
+  const { mutate: deleteProperty, isPending } = useDeleteProperty();
+  const { push } = useRouter();
+  const { openModal, closeModal } = useModalStore(s => ({
+    openModal: s.openModal,
+    closeModal: s.closeModal,
+  }));
+
   const { t } = useTranslation();
 
-  if (!data) return null;
+  if (!data && !isLoading) {
+    return null;
+  }
 
   return (
     <Card>
@@ -35,14 +50,44 @@ const PropertyHeader = ({ id }: { id: string }) => {
         <CardTitle className='text-lg font-semibold'>
           {isLoading ? <Skeleton className='h-7 w-20' /> : data?.name}
         </CardTitle>
+        <Button
+          onClick={() =>
+            openModal('alertModal', {
+              title: t('MODALS.ALERT.TITLE.REMOVE_PROPERTY'),
+              message: t('MODALS.ALERT.MESSAGE.REMOVE_PROPERTY'),
+              actions: [
+                {
+                  children: t('BUTTONS.DELETE'),
+                  variant: 'destructive',
+                  isLoading: isPending,
+                  onClick: async () => {
+                    deleteProperty(id, {
+                      onSuccess: () => {
+                        closeModal();
+                        push(Routes.PROPERTY);
+                      },
+                    });
+                  },
+                },
+                {
+                  children: t('BUTTONS.CANCEL'),
+                  disabled: isPending,
+                  onClick: closeModal,
+                },
+              ],
+            })
+          }
+          variant='destructive'
+        >
+          {t('BUTTONS.DELETE')}
+        </Button>
       </CardHeader>
       <div className='grid grid-cols-1 md:grid-cols-2'>
         <div className='relative'>
           <PropertyLastMonthDetail
-            lastReading={data?.lastReading}
+            lastReading={data?.lastReading!}
             isLoading={isLoading}
           />
-
           <div className='bg-border absolute right-0 top-0 h-full w-[1px] max-md:hidden' />
         </div>
 
@@ -116,16 +161,16 @@ const PropertyHeader = ({ id }: { id: string }) => {
           <div className='mt-4 grid grid-cols-1 gap-2 md:grid-cols-2'>
             <Button
               className='w-full'
-              onClick={() => openModal(Emodal.ChangeTariff, { id })}
+              onClick={() => openModal('changeTariff', { id })}
             >
               {t('BUTTONS.CHANGE_TARIFF')}
             </Button>
             <Button
-              onClick={() => openModal(Emodal.CrateMeter, { id })}
+              onClick={() => openModal('createMeter', { id })}
               className='w-full'
             >
               {t('BUTTONS.ADD_METER')}
-            </Button>
+            </Button>{' '}
           </div>
         </CardContent>
       </div>

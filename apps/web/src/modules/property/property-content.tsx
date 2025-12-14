@@ -16,7 +16,6 @@ import { Input } from '@workspace/ui/components/input';
 const PropertyContent = () => {
   const { data } = getProperties();
   const { t } = useTranslation();
-  console.log(data?.map(e => e.lastReading.tariff));
   return (
     <>
       <div className='mb-6 flex items-center justify-between gap-4'>
