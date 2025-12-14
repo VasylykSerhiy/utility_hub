@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@workspace/ui"],
-}
+  compiler: {
+    removeConsole: true,
+  },
+  transpilePackages: ['@workspace/ui'],
+};
 
-export default nextConfig
+export default nextConfig;
