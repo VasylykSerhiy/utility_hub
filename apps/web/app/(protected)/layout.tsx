@@ -8,6 +8,7 @@ export default async function Layout({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  console.log('Rendering protected layout');
   return (
     <MainLayout>
       <PageTransitionEffect>
