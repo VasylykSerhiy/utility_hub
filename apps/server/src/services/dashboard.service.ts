@@ -4,10 +4,11 @@ import {
   MonthTrend,
   PropertyCost,
 } from '@workspace/types';
-import { format, startOfMonth, subMonths } from 'date-fns';
+import { format, getDate, startOfMonth, subMonths } from 'date-fns';
 
 import { supabase } from '../configs/supabase';
 
+// --- Database Interfaces ---
 interface DatabaseTariff {
   rate_water: number | null;
   rate_gas: number | null;
@@ -36,15 +37,24 @@ interface DatabaseProperty {
   tariffs: DatabaseTariff[];
 }
 
+/**
+ * EN: Threshold for "Accounting Month" (1st-10th belongs to prev month).
+ * UA: Поріг для "Розрахункового місяця" (1-10 число відноситься до попереднього місяця).
+ */
+const getLogicalMonthKey = (date: Date): string => {
+  const day = getDate(date);
+  if (day <= 10) return format(subMonths(date, 1), 'yyyy-MM');
+  return format(date, 'yyyy-MM');
+};
+
 const calculateCosts = (
   current: DatabaseReading,
   prev: DatabaseReading,
   t: DatabaseTariff,
-): CategoryBreakdown & { total: number } => {
+) => {
   const water =
     Math.max(0, current.water - prev.water) * (Number(t.rate_water) || 0);
   const gas = Math.max(0, current.gas - prev.gas) * (Number(t.rate_gas) || 0);
-
   let electricity = 0;
   const rateDay =
     Number(t.rate_electricity_day) || Number(t.rate_electricity_single) || 0;
@@ -56,28 +66,23 @@ const calculateCosts = (
     prev.electricity_day !== null &&
     prev.electricity_night !== null
   ) {
-    const dDelta = Math.max(0, current.electricity_day - prev.electricity_day);
-    const nDelta = Math.max(
-      0,
-      current.electricity_night - prev.electricity_night,
-    );
-    electricity = dDelta * rateDay + nDelta * rateNight;
+    electricity =
+      Math.max(0, current.electricity_day - prev.electricity_day) * rateDay +
+      Math.max(0, current.electricity_night - prev.electricity_night) *
+        rateNight;
   } else if (
     current.electricity_single !== null &&
     prev.electricity_single !== null
   ) {
-    const delta = Math.max(
-      0,
-      current.electricity_single - prev.electricity_single,
-    );
-    electricity = delta * rateDay;
+    electricity =
+      Math.max(0, current.electricity_single - prev.electricity_single) *
+      rateDay;
   }
 
   const fixed =
     (Number(t.fixed_internet) || 0) +
     (Number(t.fixed_maintenance) || 0) +
     (Number(t.fixed_gas_delivery) || 0);
-
   return {
     water,
     gas,
@@ -91,9 +96,11 @@ export const getDashboardAnalytics = async (
   userId: string,
 ): Promise<FullDashboardData> => {
   const today = new Date();
-  const currentCalendarKey = format(today, 'yyyy-MM');
-  const rangeStart = startOfMonth(subMonths(today, 12));
+  const currentDay = getDate(today);
+  const currentLogicalKey = getLogicalMonthKey(today);
+  const prevMonthKey = format(subMonths(today, 1), 'yyyy-MM');
 
+  const rangeStart = startOfMonth(subMonths(today, 12));
   const { data: properties, error } = await supabase
     .from('properties')
     .select('*, readings (*), tariffs (*)')
@@ -101,12 +108,10 @@ export const getDashboardAnalytics = async (
     .gte('readings.date', format(rangeStart, 'yyyy-MM-dd'));
 
   if (error) throw new Error('Failed to load dashboard data');
-
   const typedProperties = properties as unknown as DatabaseProperty[];
 
   const monthlyStats = new Map<string, CategoryBreakdown & { total: number }>();
   const propertyCostsByMonth = new Map<string, PropertyCost[]>();
-
   let latestDataKey = '';
   let pendingReadingsCount = 0;
 
@@ -117,27 +122,26 @@ export const getDashboardAnalytics = async (
     const tariff = prop.tariffs?.[0];
     if (!tariff) return;
 
-    let hasCurrentMonthReading = false;
+    let latestReadingLogicalKey = '';
 
     sorted.forEach((reading, index) => {
       const prev = sorted[index - 1];
       if (!prev) return;
 
-      const readingDate = new Date(reading.date);
-      const key = format(readingDate, 'yyyy-MM');
-
-      if (key === currentCalendarKey) hasCurrentMonthReading = true;
+      const logicalKey = getLogicalMonthKey(new Date(reading.date));
+      if (logicalKey > latestReadingLogicalKey)
+        latestReadingLogicalKey = logicalKey;
 
       const costs = calculateCosts(reading, prev, tariff);
-
-      const existing = monthlyStats.get(key) || {
+      const existing = monthlyStats.get(logicalKey) || {
         water: 0,
         gas: 0,
         electricity: 0,
         fixed: 0,
         total: 0,
       };
-      monthlyStats.set(key, {
+
+      monthlyStats.set(logicalKey, {
         water: existing.water + costs.water,
         gas: existing.gas + costs.gas,
         electricity: existing.electricity + costs.electricity,
@@ -145,20 +149,27 @@ export const getDashboardAnalytics = async (
         total: existing.total + costs.total,
       });
 
-      const propCosts = propertyCostsByMonth.get(key) || [];
+      const propCosts = propertyCostsByMonth.get(logicalKey) || [];
       propCosts.push({
         name: prop.name,
         total: Number(costs.total.toFixed(2)),
       });
-      propertyCostsByMonth.set(key, propCosts);
+      propertyCostsByMonth.set(logicalKey, propCosts);
 
-      if (key > latestDataKey) latestDataKey = key;
+      if (logicalKey > latestDataKey) latestDataKey = logicalKey;
     });
 
-    if (!hasCurrentMonthReading) pendingReadingsCount++;
+    // 1. Якщо сьогодні до 26-го числа, нас цікавить лише чи закритий ПОПЕРЕДНІЙ місяць.
+    // 2. Якщо сьогодні 26-те і пізніше, ми очікуємо, що і поточний місяць буде закритий.
+    const isLateInMonth = currentDay >= 26;
+    const targetKey = isLateInMonth ? currentLogicalKey : prevMonthKey;
+
+    if (!latestReadingLogicalKey || latestReadingLogicalKey < targetKey) {
+      pendingReadingsCount++;
+    }
   });
 
-  const effectiveLatestKey = latestDataKey || currentCalendarKey;
+  const effectiveLatestKey = latestDataKey || currentLogicalKey;
   const latestDate = new Date(`${effectiveLatestKey}-01T00:00:00Z`);
   const previousKey = format(subMonths(latestDate, 1), 'yyyy-MM');
 

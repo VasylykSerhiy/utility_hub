@@ -102,7 +102,7 @@ const getRelativeTimeString = (
   const labels =
     RELATIVE_LABELS[locale.code as string] || RELATIVE_LABELS['en-US'];
 
-  if (diffInMinutes < 1) return labels.now;
+  if (diffInMinutes < 1) return labels?.now;
   if (diffInDays > threshold) return null;
 
   const timeStr = format(parsedDate, DATE_FORMATS.onlyTime, { locale });
