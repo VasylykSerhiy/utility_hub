@@ -59,20 +59,14 @@ const ReadingTable = () => {
             meterId: month?.id,
           }),
       },
-
       {
         children: t('BUTTONS.DELETE'),
         variant: 'destructive',
         onClick: () => {
           openModal('alertModal', {
-            title: t('MODALS.DELETE_METER_TITLE'),
-            message: t('MODALS.DELETE_METER_MESSAGE'),
+            title: t('MODALS.ALERT.TITLE.DELETE_METER'),
+            message: t('MODALS.ALERT.MESSAGE.DELETE_METER'),
             actions: [
-              {
-                children: t('BUTTONS.CANCEL'),
-                variant: 'default',
-                onClick: () => closeModal(),
-              },
               {
                 children: t('BUTTONS.DELETE'),
                 variant: 'destructive',
@@ -82,7 +76,13 @@ const ReadingTable = () => {
                     propertyId: month?.propertyId as string,
                     monthId: month.id!,
                   });
+                  closeModal();
                 },
+              },
+              {
+                children: t('BUTTONS.CANCEL'),
+                variant: 'default',
+                onClick: () => closeModal(),
               },
             ],
           });

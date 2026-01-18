@@ -25,6 +25,9 @@ const en = {
   'MODALS.ALERT.TITLE.REMOVE_PROPERTY': 'Delete Property',
   'MODALS.ALERT.MESSAGE.REMOVE_PROPERTY':
     'Are you sure you want to delete this property and all its associated data? This action cannot be undone.',
+  'MODALS.ALERT.TITLE.DELETE_METER': 'Delete Meter',
+  'MODALS.ALERT.MESSAGE.DELETE_METER':
+    'Are you sure you want to delete this meter? This action cannot be undone.',
 
   //TABLES
   'TABLE.NO_DATA': 'No data',

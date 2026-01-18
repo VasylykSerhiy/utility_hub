@@ -25,6 +25,9 @@ const uk = {
   'MODALS.ALERT.TITLE.REMOVE_PROPERTY': 'Видалити власність',
   'MODALS.ALERT.MESSAGE.REMOVE_PROPERTY':
     'Ви впевнені, що хочете видалити цю власність та всі пов’язані з нею дані? Цю дію неможливо скасувати.',
+  'MODALS.ALERT.TITLE.DELETE_METER': 'Видалити лічильник',
+  'MODALS.ALERT.MESSAGE.DELETE_METER':
+    'Ви впевнені, що хочете видалити цей лічильник? Цю дію неможливо скасувати.',
 
   //TABLES
   'TABLE.NO_DATA': 'Немає даних',

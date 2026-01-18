@@ -77,9 +77,13 @@ export const useDeletePropertyMonth = () => {
   return useMutation({
     mutationFn: (data: GetPropertyMonth) =>
       propertyService.deletePropertyMonth(data),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: [queryKeys.property],
+        exact: true,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.property, variables.propertyId],
         exact: true,
       });
       void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });

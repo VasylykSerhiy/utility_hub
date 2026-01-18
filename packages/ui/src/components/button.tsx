@@ -56,7 +56,7 @@ function Button({
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot : 'button';
-
+  console.log(isLoading);
   const colorByVariant = {
     default: 'var(--color-white)',
     destructive: 'var(--color-white)',
