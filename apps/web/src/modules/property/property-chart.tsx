@@ -75,23 +75,23 @@ const PropertyChart = () => {
   const chartConfig = {
     'difference.water': {
       label: t('WATER'),
-      color: 'var(--chart-1)',
+      color: 'var(--water)',
     },
     'difference.gas': {
       label: t('GAS'),
-      color: 'var(--chart-2)',
+      color: 'var(--gas)',
     },
     'difference.electricity.single': {
       label: t('ELECTRICITY'),
-      color: 'var(--chart-3)',
+      color: 'var(--electricity-day)',
     },
     'difference.electricity.day': {
       label: t('ELECTRICITY_DAY'),
-      color: 'var(--chart-3)',
+      color: 'var(--electricity-day)',
     },
     'difference.electricity.night': {
       label: t('ELECTRICITY_NIGHT'),
-      color: 'var(--chart-3)',
+      color: 'var(--electricity-night)',
     },
   } satisfies ChartConfig;
 
@@ -121,14 +121,14 @@ const PropertyChart = () => {
               strokeWidth={2}
               dot={false}
               isAnimationActive
-              stroke='#00BFFF'
+              stroke='var(--water)'
             />
             <Line
               type='monotone'
               dataKey='difference.gas'
               strokeWidth={2}
               dot={false}
-              stroke='#FF8C00'
+              stroke='var(--gas)'
             />
             {electricityType === 'single' && (
               <Line
@@ -136,7 +136,7 @@ const PropertyChart = () => {
                 dataKey='difference.electricity.single'
                 strokeWidth={2}
                 dot={false}
-                stroke='#FFD700'
+                stroke='var(--electricity-day)'
               />
             )}
             {electricityType === 'double' ? (
@@ -145,7 +145,7 @@ const PropertyChart = () => {
                 dataKey='difference.electricity.day'
                 strokeWidth={2}
                 dot={false}
-                stroke='#FFD700'
+                stroke='var(--electricity-day)'
               />
             ) : null}
             {electricityType === 'double' ? (
@@ -154,7 +154,7 @@ const PropertyChart = () => {
                 dataKey='difference.electricity.night'
                 strokeWidth={2}
                 dot={false}
-                stroke='#6A5ACD'
+                stroke='var(--electricity-night)'
               />
             ) : null}
             <Tooltip content={<PropertyChartTooltip />} />

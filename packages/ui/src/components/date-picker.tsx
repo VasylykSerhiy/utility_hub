@@ -1,16 +1,18 @@
+'use client';
+
 import * as React from 'react';
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@radix-ui/react-popover';
 import { Language } from '@workspace/types';
 import { formatDate, localeDateMap } from '@workspace/utils';
 import { CalendarIcon } from 'lucide-react';
 
 import { Button } from '@workspace/ui/components/button';
 import { Calendar } from '@workspace/ui/components/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@workspace/ui/components/popover';
 import { cn } from '@workspace/ui/lib/utils';
 
 interface IDatePickerWithRangeProps
@@ -28,6 +30,11 @@ export function DatePicker({
   placeholder,
   language,
 }: IDatePickerWithRangeProps) {
+  const currentLocale = React.useMemo(
+    () => localeDateMap[language],
+    [language],
+  );
+
   return (
     <div className={cn('grid gap-2', className)}>
       <Popover>
@@ -38,11 +45,11 @@ export function DatePicker({
             className={cn('relative justify-between text-left font-normal')}
           >
             <span className='flex items-center gap-2'>
-              <CalendarIcon />
+              <CalendarIcon className='h-4 w-4' />
               {date ? (
                 formatDate({
                   date,
-                  ...(language && { locale: localeDateMap[language] }),
+                  ...(language && { locale: currentLocale }),
                 })
               ) : (
                 <span>{placeholder ?? 'Pick a date'}</span>
@@ -52,10 +59,12 @@ export function DatePicker({
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0' align='start'>
           <Calendar
-            locale={localeDateMap[language]}
-            mode={'single'}
+            locale={currentLocale}
+            mode='single'
             selected={date}
             onSelect={setDate}
+            defaultMonth={date}
+            autoFocus
           />
         </PopoverContent>
       </Popover>

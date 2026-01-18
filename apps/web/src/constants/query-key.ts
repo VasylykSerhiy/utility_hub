@@ -1,5 +1,6 @@
 export const queryKeys = {
   user: 'user',
+  dashboard: 'dashboard',
   property: 'property',
   months: 'months',
   tariff: 'tariff',

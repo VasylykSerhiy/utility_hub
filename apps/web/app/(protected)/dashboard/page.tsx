@@ -1,5 +1,5 @@
-'use client';
+import DashboardContent from '@/modules/dashboard/dashboard-content';
 
 export default function Page() {
-  return <div className='mx-auto max-w-4xl p-8'>Coming soon...</div>;
+  return <DashboardContent />;
 }

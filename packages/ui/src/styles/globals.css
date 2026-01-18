@@ -43,6 +43,13 @@
     --sidebar-border: #8FBC8F;
     --sidebar-ring: #61bc84;
     --radius: 0.75rem;
+    --warning: #b45309;
+    --warning-foreground: #FFFFFF;
+
+    --water: #00BFFF;
+    --gas: #FF8C00;
+    --electricity-day: #FFD700;
+    --electricity-night: #6A5ACD;
 }
 
 .dark {
@@ -79,9 +86,19 @@
     --sidebar-accent-foreground: #1E1E1E;
     --sidebar-border: #345e37;
     --sidebar-ring: #61bc84;
+    --warning: #f97316;
+    --warning-foreground: #1E1E1E;
 
+    --water: #00BFFF;
+    --gas: #FF8C00;
+    --electricity-day: #FFD700;
+    --electricity-night: #6A5ACD;
 }
 
+
+@theme {
+    --height-chart: 350px
+}
 
 @theme inline {
     --color-background: var(--background);
@@ -121,6 +138,13 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+
+    --color-water: var(--water);
+    --color-gas: var(--gas);
+    --color-electricity-day: var(--electricity-day);
+    --color-electricity-night: var(--electricity-night);
 }
 
 @layer base {

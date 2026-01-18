@@ -11,6 +11,15 @@ const en = {
   'FORM.ERROR.REQUIRED': 'This field is required',
   'FORM.ERROR.NON_NEGATIVE': 'Value must be non-negative',
 
+  // DASHBOARD
+  'DASHBOARD.CARD.TITLE.TOTAL_COSTS': 'Total Costs',
+  'DASHBOARD.CARD.TITLE.PENDING_READINGS': 'Pending Readings',
+  'DASHBOARD.CARD.VALUE.PENDING_READINGS': '{{count}} Meters',
+  'DASHBOARD.CARD.TITLE.ACTIVE_PROPERTIES': 'Active Properties',
+  'DASHBOARD.CARD.TITLE.SPENDING_BREAKDOWN': 'Spending Breakdown',
+  'DASHBOARD.CARD.TITLE.COST_BY_PROPERTY': 'Cost by Property',
+  'DASHBOARD.CARD.TITLE.COST_TREND': '6-Month Cost Trend',
+
   // PROPERTY
   'PROPERTY.CREATE.TITLE': 'Create New Property',
 
@@ -72,6 +81,7 @@ const en = {
   WATER: 'Water',
   GAS: 'Gas',
   INTERNET: 'Internet',
+  FIXED: 'Fixed',
   MAINTENANCE: 'Maintenance',
   GAS_DELIVERY: 'Gas Delivery',
   TARIFF: 'Tariff',

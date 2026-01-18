@@ -1,4 +1,5 @@
 import {
+  type Locale,
   differenceInDays,
   differenceInMinutes,
   format,
@@ -10,10 +11,29 @@ import {
   set,
 } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
+import { enUS } from 'date-fns/locale';
 
 const DEFAULT_FALLBACK = 'N/A';
 const DEFAULT_SEPARATOR = ' - ';
 const TIME_REGEX = /^(\d{1,2}):(\d{2})(:\d{2})?$/;
+
+const RELATIVE_LABELS: Record<
+  string,
+  { today: string; yesterday: string; tomorrow: string; now: string }
+> = {
+  uk: {
+    today: 'Сьогодні',
+    yesterday: 'Вчора',
+    tomorrow: 'Завтра',
+    now: 'Щойно',
+  },
+  'en-US': {
+    today: 'Today',
+    yesterday: 'Yesterday',
+    tomorrow: 'Tomorrow',
+    now: 'Just now',
+  },
+};
 
 export const DATE_FORMATS = {
   default: 'dd.MM.yyyy',
@@ -39,10 +59,8 @@ export interface FormatDateOptions {
   relativeThreshold?: number;
   smartYear?: boolean;
   separator?: string;
-  /** * Якщо true, дата буде відображена в UTC, ігноруючи локальний зсув.
-   * If true, the date will be displayed in UTC, ignoring the local offset.
-   */
   ignoreTimezone?: boolean;
+  locale?: Locale;
 }
 
 const parseDateInput = (date: DateInput, now: Date): Date | null => {
@@ -64,32 +82,36 @@ const parseDateInput = (date: DateInput, now: Date): Date | null => {
 const formatWrapper = (
   date: Date,
   formatStr: string,
-  ignoreTimezone: boolean,
+  options: Pick<FormatDateOptions, 'ignoreTimezone' | 'locale'>,
 ): string => {
+  const { ignoreTimezone, locale } = options;
   return ignoreTimezone
-    ? formatInTimeZone(date, 'UTC', formatStr)
-    : format(date, formatStr);
+    ? formatInTimeZone(date, 'UTC', formatStr, { locale })
+    : format(date, formatStr, { locale });
 };
 
 const getRelativeTimeString = (
   parsedDate: Date,
   now: Date,
   threshold: number,
+  locale: Locale = enUS,
 ): string | null => {
   const diffInMinutes = Math.abs(differenceInMinutes(now, parsedDate));
   const diffInDays = Math.abs(differenceInDays(now, parsedDate));
 
-  if (diffInMinutes < 1) return 'Just now';
+  const labels =
+    RELATIVE_LABELS[locale.code as string] || RELATIVE_LABELS['en-US'];
+
+  if (diffInMinutes < 1) return labels.now;
   if (diffInDays > threshold) return null;
 
-  if (isToday(parsedDate))
-    return `Today, ${format(parsedDate, DATE_FORMATS.onlyTime)}`;
-  if (isYesterday(parsedDate))
-    return `Yesterday, ${format(parsedDate, DATE_FORMATS.onlyTime)}`;
-  if (isTomorrow(parsedDate))
-    return `Tomorrow, ${format(parsedDate, DATE_FORMATS.onlyTime)}`;
+  const timeStr = format(parsedDate, DATE_FORMATS.onlyTime, { locale });
 
-  return formatDistanceToNow(parsedDate, { addSuffix: true });
+  if (isToday(parsedDate)) return `${labels.today}, ${timeStr}`;
+  if (isYesterday(parsedDate)) return `${labels.yesterday}, ${timeStr}`;
+  if (isTomorrow(parsedDate)) return `${labels.tomorrow}, ${timeStr}`;
+
+  return formatDistanceToNow(parsedDate, { addSuffix: true, locale });
 };
 
 function handleRangeFormatting(
@@ -103,6 +125,7 @@ function handleRangeFormatting(
     variant = 'default',
     customFormat,
     ignoreTimezone = false,
+    locale,
   } = options;
 
   const d1 = parseDateInput(start, now);
@@ -115,18 +138,16 @@ function handleRangeFormatting(
   const [first, second] = d1 > d2 ? [d2, d1] : [d1, d2];
 
   if (variant === 'default' && !customFormat) {
-    // Перевірка на однаковий місяць/рік через обертку (локально або UTC)
-    // Checking for same month/year via wrapper (local or UTC)
-    const fMonth = formatWrapper(first, 'yyyy-MM', ignoreTimezone);
-    const sMonth = formatWrapper(second, 'yyyy-MM', ignoreTimezone);
-    const fYear = formatWrapper(first, 'yyyy', ignoreTimezone);
-    const sYear = formatWrapper(second, 'yyyy', ignoreTimezone);
+    const fMonth = formatWrapper(first, 'yyyy-MM', { ignoreTimezone, locale });
+    const sMonth = formatWrapper(second, 'yyyy-MM', { ignoreTimezone, locale });
+    const fYear = formatWrapper(first, 'yyyy', { ignoreTimezone, locale });
+    const sYear = formatWrapper(second, 'yyyy', { ignoreTimezone, locale });
 
     if (fMonth === sMonth) {
-      return `${formatWrapper(first, 'dd', ignoreTimezone)}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
+      return `${formatWrapper(first, 'dd', { ignoreTimezone, locale })}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
     }
     if (fYear === sYear) {
-      return `${formatWrapper(first, 'dd MMM', ignoreTimezone)}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
+      return `${formatWrapper(first, 'dd MMM', { ignoreTimezone, locale })}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
     }
   }
 
@@ -143,6 +164,7 @@ function formatDateInternal(options: FormatDateOptions, now: Date): string {
     relativeThreshold = 7,
     smartYear = false,
     ignoreTimezone = false,
+    locale = enUS,
   } = options;
 
   if (Array.isArray(date)) {
@@ -152,13 +174,12 @@ function formatDateInternal(options: FormatDateOptions, now: Date): string {
   const parsedDate = parseDateInput(date, now);
   if (!parsedDate) return fallback;
 
-  // Відносний час зазвичай працює в локальному контексті
-  // Relative time usually works in local context
   if (relative && !ignoreTimezone) {
     const relativeStr = getRelativeTimeString(
       parsedDate,
       now,
       relativeThreshold,
+      locale,
     );
     if (relativeStr) return relativeStr;
   }
@@ -175,12 +196,12 @@ function formatDateInternal(options: FormatDateOptions, now: Date): string {
   let formatStr = customFormat || DATE_FORMATS[effectiveVariant];
 
   if (smartYear && !customFormat && effectiveVariant === 'default') {
-    const pYear = formatWrapper(parsedDate, 'yyyy', ignoreTimezone);
-    const nYear = formatWrapper(now, 'yyyy', ignoreTimezone);
+    const pYear = formatWrapper(parsedDate, 'yyyy', { ignoreTimezone, locale });
+    const nYear = formatWrapper(now, 'yyyy', { ignoreTimezone, locale });
     if (pYear === nYear) formatStr = DATE_FORMATS.noYear;
   }
 
-  return formatWrapper(parsedDate, formatStr, ignoreTimezone);
+  return formatWrapper(parsedDate, formatStr, { ignoreTimezone, locale });
 }
 
 export const formatDate = (options: FormatDateOptions): string => {

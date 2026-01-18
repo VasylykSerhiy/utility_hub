@@ -11,6 +11,15 @@ const uk = {
   'FORM.ERROR.REQUIRED': "Це поле є обов'язковим",
   'FORM.ERROR.NON_NEGATIVE': "Значення має бути невід'ємним",
 
+  // DASHBOARD
+  'DASHBOARD.CARD.TITLE.TOTAL_COSTS': 'Загальні витрати',
+  'DASHBOARD.CARD.TITLE.PENDING_READINGS': 'Очікувані показники',
+  'DASHBOARD.CARD.VALUE.PENDING_READINGS': '{{count}} лічильника',
+  'DASHBOARD.CARD.TITLE.ACTIVE_PROPERTIES': 'Активні власності',
+  'DASHBOARD.CARD.TITLE.SPENDING_BREAKDOWN': 'Розподіл витрат',
+  'DASHBOARD.CARD.TITLE.COST_BY_PROPERTY': 'Витрати за власністю',
+  'DASHBOARD.CARD.TITLE.COST_TREND': 'Динаміка витрат за 6 місяців',
+
   // PROPERTY
   'PROPERTY.CREATE.TITLE': 'Створити власність',
 
@@ -72,6 +81,7 @@ const uk = {
   WATER: 'Вода',
   GAS: 'Газ',
   INTERNET: 'Інтернет',
+  FIXED: 'Фіксовані',
   MAINTENANCE: 'Обслуговування',
   GAS_DELIVERY: 'Поставка газу',
   TARIFF: 'Тариф',

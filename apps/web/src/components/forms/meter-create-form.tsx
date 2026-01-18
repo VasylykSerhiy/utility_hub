@@ -84,7 +84,7 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
               <FormLabel>{t('DATE')}</FormLabel>
               <FormControl>
                 <DatePicker
-                  date={field.value as any}
+                  date={field.value}
                   setDate={date => {
                     field.onChange(date);
                   }}
@@ -201,7 +201,7 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
         />
         <hr className='my-3' />
         <Button className='mt-2' type='submit'>
-          {t('BUTTONS.CREATE')}
+          {t(meter?.id ? 'BUTTONS.EDIT' : 'BUTTONS.CREATE')}
         </Button>
       </form>
     </Form>

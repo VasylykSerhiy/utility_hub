@@ -7,6 +7,7 @@ export enum API {
   AUTH = '/auth',
   ME = '/users/me',
   PROPERTIES = '/properties',
+  DASHBOARD = '/dashboard',
 }
 
 export const api: AxiosInstance = axios.create({
