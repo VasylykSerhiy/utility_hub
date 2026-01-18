@@ -10,13 +10,14 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@typescript-eslint/parser": "^8.39.0",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "turbo": "^2.5.5",
-    "typescript": "5.7.3",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "prettier-plugin-tailwindcss": "^0.6.14"
+    "typescript": "5.7.3"
   },
   "packageManager": "pnpm@10.4.1",
   "engines": {

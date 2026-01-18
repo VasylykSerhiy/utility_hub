@@ -35,6 +35,7 @@ const en = {
   'BUTTONS.SAVE': 'Save',
   'BUTTONS.CANCEL': 'Cancel',
   'BUTTONS.CREATE': 'Create',
+  'BUTTONS.EDIT': 'Edit',
   'BUTTONS.DELETE': 'Delete',
   'BUTTONS.MORE': 'More',
   'BUTTONS.ADD_METER': 'Add Meter',

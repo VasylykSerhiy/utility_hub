@@ -1,10 +1,10 @@
 'use client';
 
-import { useCreateMeter } from '@/hooks/use-property';
+import { useCreateMeter, useUpdateMeter } from '@/hooks/use-property';
 import { useLanguage } from '@/providers/language-provider';
 import { useModalStore } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IElectricityType, IProperty } from '@workspace/types';
+import { IElectricityType, IMonth, IProperty } from '@workspace/types';
 import { MonthSchema, monthSchemaClient } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,31 +22,54 @@ import {
 import NumberInput from '@workspace/ui/components/number-input';
 import { cn } from '@workspace/ui/lib/utils';
 
-export function MeterCreateForm({ property }: { property: IProperty }) {
+interface MeterCreateFormProps {
+  property: IProperty;
+  meter?: IMonth;
+}
+
+export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const { mutateAsync } = useCreateMeter();
+  const { mutateAsync: updateMeterAsync } = useUpdateMeter();
   const closeModal = useModalStore(s => s.closeModal);
 
-  const electricityType = property.electricityType;
+  const electricityType = meter?.electricityType ?? property.electricityType;
   const form = useForm<MonthSchema>({
     resolver: zodResolver(monthSchemaClient),
     defaultValues: {
-      date: new Date(),
+      date: meter?.date ? new Date(meter?.date) : new Date(),
       meters: {
         electricity: {
           type: electricityType,
+          ...(electricityType === IElectricityType.SINGLE
+            ? {
+                single: meter?.meters.electricity.single ?? undefined,
+              }
+            : {
+                day: meter?.meters.electricity.day ?? undefined,
+                night: meter?.meters.electricity.night ?? undefined,
+              }),
         },
+        gas: meter?.meters.gas ?? undefined,
+        water: meter?.meters.water ?? undefined,
       },
     },
   });
 
   const onSubmit = async (data: MonthSchema) => {
-    console.log(data);
-    await mutateAsync({
-      id: property.id,
-      data,
-    });
+    if (meter?.id) {
+      await updateMeterAsync({
+        id: property.id,
+        meterId: meter.id,
+        data,
+      });
+    } else {
+      await mutateAsync({
+        id: property.id,
+        data,
+      });
+    }
     closeModal();
   };
 

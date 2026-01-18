@@ -1,8 +1,10 @@
 import { API, apiAuth } from '@/lib/axios';
 import {
+  GetPropertyMonth,
   GetPropertyMonths,
   GetPropertyTariffs,
   IMetrics,
+  IMonth,
   IProperty,
   IPropertyMonths,
   IPropertyTariff,
@@ -22,6 +24,10 @@ export const propertyService = {
     apiAuth.get<IPropertyMonths>(
       `${API.PROPERTIES}/${id}/months?page=${page}&pageSize=${pageSize}`,
     ),
+  getPropertyMonth: async ({ propertyId, monthId }: GetPropertyMonth) =>
+    apiAuth.get<IMonth>(`${API.PROPERTIES}/${propertyId}/months/${monthId}`),
+  deletePropertyMonth: async ({ propertyId, monthId }: GetPropertyMonth) =>
+    apiAuth.delete<IMonth>(`${API.PROPERTIES}/${propertyId}/months/${monthId}`),
   createProperty: async (data: CreatePropertySchema) =>
     apiAuth.post(API.PROPERTIES, data),
   deleteProperty: async (id: string) =>
@@ -35,6 +41,15 @@ export const propertyService = {
   }) => apiAuth.put(`${API.PROPERTIES}/${id}`, data),
   createMeter: async ({ id, data }: { id: string; data: MonthSchema }) =>
     apiAuth.post(`${API.PROPERTIES}/${id}/months`, data),
+  updateMeter: async ({
+    id,
+    meterId,
+    data,
+  }: {
+    id: string;
+    meterId: string;
+    data: MonthSchema;
+  }) => apiAuth.put(`${API.PROPERTIES}/${id}/months/${meterId}`, data),
   getPropertyLastTariff: async ({ id }: { id: string }) =>
     apiAuth.get<ITariff>(`${API.PROPERTIES}/${id}/last-tariff`),
   getPropertyTariffs: async ({ id, page, pageSize }: GetPropertyTariffs) =>

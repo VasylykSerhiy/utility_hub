@@ -1,3 +1,15 @@
+import { MonthSchema } from '@workspace/utils';
+
+interface ReadingsDbRow {
+  property_id?: string;
+  date?: Date;
+  water?: number;
+  gas?: number;
+  electricity_single?: number | null;
+  electricity_day?: number | null;
+  electricity_night?: number | null;
+}
+
 export const createEmptyReading = (
   electricityType: 'single' | 'double' | null = 'single',
 ) => ({
@@ -80,6 +92,34 @@ export const calculateTotal = (diff: any, tariff: any) => {
   );
 };
 
+export const mapFormDataToDb = (
+  data: Partial<MonthSchema>,
+  propertyId?: string,
+): ReadingsDbRow => {
+  const payload: ReadingsDbRow = {};
+
+  if (propertyId) payload.property_id = propertyId;
+  if (data.date) payload.date = data.date;
+  if (data.meters?.water !== undefined) payload.water = data.meters.water;
+  if (data.meters?.gas !== undefined) payload.gas = data.meters.gas;
+
+  if (data.meters?.electricity) {
+    const { electricity } = data.meters;
+
+    if (electricity.type === 'single') {
+      payload.electricity_single = electricity.single;
+      payload.electricity_day = null;
+      payload.electricity_night = null;
+    } else {
+      payload.electricity_day = electricity.day;
+      payload.electricity_night = electricity.night;
+      payload.electricity_single = null;
+    }
+  }
+
+  return payload;
+};
+
 export const mapReadingToFrontend = (
   reading: any,
   tariff: any = null,
@@ -93,12 +133,9 @@ export const mapReadingToFrontend = (
 
   let actualType = propertyElectricityType || 'single';
 
-  // Перевірка: чи є дані в двозонних колонках? (non-null check)
   if (reading.electricity_day !== null || reading.electricity_night !== null) {
     actualType = 'double';
-  }
-  // Перевірка: чи є дані в однозонній колонці?
-  else if (reading.electricity_single !== null) {
+  } else if (reading.electricity_single !== null) {
     actualType = 'single';
   }
 
@@ -114,6 +151,7 @@ export const mapReadingToFrontend = (
 
   return {
     id: reading.id,
+    propertyId: reading.property_id,
     electricityType: actualType,
     date: reading.date,
     meters: {

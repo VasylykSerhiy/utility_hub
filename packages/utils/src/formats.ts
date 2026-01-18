@@ -31,5 +31,3 @@ export const formatVolume = (num: number | string | undefined) => {
 export const formatCurrencySymbol = (num: number | string | undefined) => {
   return numericFormatter(num, { suffix: ` ${i18n.t('₴')}` });
 };
-
-export const formatDate = 'dd.MM.yyyy';

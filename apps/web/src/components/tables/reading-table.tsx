@@ -1,11 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useParams } from 'next/navigation';
 
-import { getPropertyMonths } from '@/hooks/use-property';
-import { IElectricityType } from '@workspace/types';
+import { DropdownActions } from '@/components/dropdown-actions';
+import {
+  getPropertyMonths,
+  useDeletePropertyMonth,
+} from '@/hooks/use-property';
+import { useModalStore } from '@/stores/use-modal-state';
+import { IElectricityType, IMonth } from '@workspace/types';
 import {
   formatDate,
   formatEnergy,
@@ -13,9 +18,9 @@ import {
   isDoubleElectricity,
   isSingleElectricity,
 } from '@workspace/utils';
-import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
+import { ButtonProps } from '@workspace/ui/components/button';
 import {
   Table,
   TableBody,
@@ -26,19 +31,66 @@ import {
 } from '@workspace/ui/components/table';
 
 const ReadingTable = () => {
+  const { openModal, closeModal } = useModalStore();
   const [page, setPage] = useState(1);
   const { t } = useTranslation();
   const { slug } = useParams();
+  const { mutateAsync: deleteMutateAsync, isPending } =
+    useDeletePropertyMonth();
+
   const { data, isLoading } = getPropertyMonths({
     id: slug as string,
     page: page,
     pageSize: 10,
   });
 
-  console.log({ data });
   const electricityType = data?.data?.[0]?.meters.electricity.single
     ? IElectricityType.SINGLE
     : IElectricityType.DOUBLE;
+
+  const actions = useCallback(
+    (month: IMonth): ButtonProps[] => [
+      {
+        children: t('BUTTONS.EDIT'),
+        variant: 'ghost',
+        onClick: () =>
+          openModal('createMeter', {
+            id: month?.propertyId,
+            meterId: month?.id,
+          }),
+      },
+
+      {
+        children: t('BUTTONS.DELETE'),
+        variant: 'destructive',
+        onClick: () => {
+          openModal('alertModal', {
+            title: t('MODALS.DELETE_METER_TITLE'),
+            message: t('MODALS.DELETE_METER_MESSAGE'),
+            actions: [
+              {
+                children: t('BUTTONS.CANCEL'),
+                variant: 'default',
+                onClick: () => closeModal(),
+              },
+              {
+                children: t('BUTTONS.DELETE'),
+                variant: 'destructive',
+                isLoading: isPending,
+                onClick: async () => {
+                  await deleteMutateAsync({
+                    propertyId: month?.propertyId as string,
+                    monthId: month.id!,
+                  });
+                },
+              },
+            ],
+          });
+        },
+      },
+    ],
+    [closeModal, deleteMutateAsync, isPending, openModal, t],
+  );
 
   return (
     <Table
@@ -61,12 +113,17 @@ const ReadingTable = () => {
           )}
           <TableHead>{t('GAS')}</TableHead>
           <TableHead>{t('WATER')}</TableHead>
+          <TableHead className='w-1' />
         </TableRow>
       </TableHeader>
       <TableBody isLoading={isLoading}>
         {data?.data.map(month => (
           <TableRow key={month.id}>
-            <TableCell>{format(new Date(month.date), formatDate)}</TableCell>
+            <TableCell>
+              {formatDate({
+                date: month.date,
+              })}
+            </TableCell>
             {isSingleElectricity(electricityType) && (
               <TableCell>
                 {formatEnergy(month?.meters?.electricity?.single)}
@@ -85,6 +142,9 @@ const ReadingTable = () => {
 
             <TableCell>{formatVolume(month?.meters?.gas)}</TableCell>
             <TableCell>{formatVolume(month?.meters?.water)}</TableCell>
+            <TableCell>
+              <DropdownActions actions={actions(month)} />
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

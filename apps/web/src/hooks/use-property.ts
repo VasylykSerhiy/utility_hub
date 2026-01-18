@@ -6,7 +6,11 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { GetPropertyMonths, GetPropertyTariffs } from '@workspace/types';
+import {
+  GetPropertyMonth,
+  GetPropertyMonths,
+  GetPropertyTariffs,
+} from '@workspace/types';
 import { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
 
 export const getProperties = () => {
@@ -58,6 +62,31 @@ export const getPropertyMonths = ({
   });
 };
 
+export const getPropertyMonth = ({ propertyId, monthId }: GetPropertyMonth) => {
+  return useQuery({
+    queryKey: [queryKeys.months, propertyId, monthId],
+    queryFn: () => propertyService.getPropertyMonth({ propertyId, monthId }),
+    select: ({ data }) => data,
+    enabled: !!propertyId && !!monthId,
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useDeletePropertyMonth = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: GetPropertyMonth) =>
+      propertyService.deletePropertyMonth(data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.property],
+        exact: true,
+      });
+      void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
+    },
+  });
+};
+
 export const useCreateProperty = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -94,6 +123,21 @@ export const useCreateMeter = () => {
   return useMutation({
     mutationKey: [mutationKey.meter_create],
     mutationFn: propertyService.createMeter,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.property],
+        exact: true,
+      });
+      void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
+    },
+  });
+};
+
+export const useUpdateMeter = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: [mutationKey.meter_update],
+    mutationFn: propertyService.updateMeter,
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: [queryKeys.property],

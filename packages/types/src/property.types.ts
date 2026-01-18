@@ -28,6 +28,7 @@ export interface IMonth {
   difference: IMeter;
   tariff: ITariff;
   total: number;
+  electricityType: IElectricityType;
 }
 
 export interface LastReading {
@@ -62,6 +63,11 @@ export interface IPropertyTariff extends PaginatedResult<ITariff> {}
 
 export interface GetPropertyMonths extends PaginateOptions {
   id: string;
+}
+
+export interface GetPropertyMonth {
+  propertyId: string;
+  monthId: string;
 }
 
 export interface GetPropertyTariffs extends PaginateOptions {

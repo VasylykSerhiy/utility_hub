@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation';
 
 import { getPropertyTariffs } from '@/hooks/use-property';
 import { formatCurrencySymbol, formatDate } from '@workspace/utils';
-import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -51,9 +50,9 @@ const TariffsTable = () => {
         {data?.data.map(tariff => (
           <TableRow key={tariff.id}>
             <TableCell>
-              {format(new Date(tariff.startDate), formatDate)}{' '}
+              {formatDate({ date: tariff.startDate })}{' '}
               {tariff.endDate
-                ? `- ${format(new Date(tariff.endDate), formatDate)}`
+                ? `- ${formatDate({ date: tariff.endDate })}`
                 : ''}
             </TableCell>
             <TableCell>

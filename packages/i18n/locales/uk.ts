@@ -35,6 +35,7 @@ const uk = {
   'BUTTONS.SAVE': 'Зберегти',
   'BUTTONS.CANCEL': 'Скасувати',
   'BUTTONS.CREATE': 'Створити',
+  'BUTTONS.EDIT': 'Редагувати',
   'BUTTONS.DELETE': 'Видалити',
   'BUTTONS.MORE': 'Більше',
   'BUTTONS.ADD_METER': 'Додати показник',

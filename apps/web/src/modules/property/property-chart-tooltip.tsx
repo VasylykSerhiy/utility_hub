@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { formatCurrencySymbol, formatDate } from '@workspace/utils';
-import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import * as RechartsPrimitive from 'recharts';
 
@@ -25,7 +24,7 @@ const PropertyChartTooltip = ({
 
   if (!active || !payload || payload.length === 0) return null;
   const [item] = payload;
-  const selectLabel = format(item?.payload?.date, formatDate);
+  const selectLabel = formatDate({ date: item?.payload?.date });
   const isSingle = Boolean(item?.payload?.cost?.electricity?.single > 0);
 
   return (

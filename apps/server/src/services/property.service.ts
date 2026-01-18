@@ -33,6 +33,14 @@ const getProperties = async (userId: string) => {
         historicalTariff = await findTariffForDate(prop.id, lastReading.date);
       }
 
+      const { data: currentTariff } = await supabase
+        .from('tariffs')
+        .select('*')
+        .eq('property_id', prop.id)
+        .order('start_date', { ascending: false })
+        .limit(1)
+        .single();
+
       const mappedLastReading = lastReading
         ? mapReadingToFrontend(
             lastReading,
@@ -41,7 +49,15 @@ const getProperties = async (userId: string) => {
           )
         : createEmptyReading(prop.electricity_type);
 
-      return mapPropertyToFrontend(prop, mappedLastReading);
+      const mappedCurrentTariff = currentTariff
+        ? mapTariffToFrontend(currentTariff)
+        : null;
+
+      return mapPropertyToFrontend(
+        prop,
+        mappedLastReading,
+        mappedCurrentTariff,
+      );
     }),
   );
 };

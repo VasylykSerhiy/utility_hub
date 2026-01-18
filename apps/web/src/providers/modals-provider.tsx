@@ -24,10 +24,12 @@ export const ModalsProvider = () => {
   const SpecificModal = ModalComponents[type];
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <Suspense fallback={null}>
-        <SpecificModal {...(props as any)} />
-      </Suspense>
-    </Dialog>
+    isOpen && (
+      <Dialog open={true} onOpenChange={handleOpenChange}>
+        <Suspense fallback={null}>
+          <SpecificModal {...(props as any)} />
+        </Suspense>
+      </Dialog>
+    )
   );
 };

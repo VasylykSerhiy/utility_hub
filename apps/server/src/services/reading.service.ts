@@ -1,7 +1,10 @@
 import { MonthSchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
-import { mapReadingToFrontend } from '../mappers/property.mappers';
+import {
+  mapFormDataToDb,
+  mapReadingToFrontend,
+} from '../mappers/property.mappers';
 import { findTariffForDate } from './tariff.service';
 
 const getMonths = async ({
@@ -16,7 +19,6 @@ const getMonths = async ({
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  // Отримуємо тип з property
   const { data: property } = await supabase
     .from('properties')
     .select('electricity_type')
@@ -51,6 +53,40 @@ const getMonths = async ({
     page,
     totalPages: Math.ceil((count || 0) / pageSize),
   };
+};
+
+const getMonth = async ({ userId, propertyId, monthId }: any) => {
+  const { data: property, error: propError } = await supabase
+    .from('properties')
+    .select('electricity_type, user_id')
+    .eq('id', propertyId)
+    .single();
+
+  if (propError || !property) {
+    throw new Error('Property not found');
+  }
+
+  if (property.user_id !== userId) {
+    console.log(property.user_id, userId);
+    throw new Error('Access denied');
+  }
+
+  const electricityType = property.electricity_type || 'single';
+
+  const { data: reading, error: readingError } = await supabase
+    .from('view_readings_stats')
+    .select('*')
+    .eq('id', monthId)
+    .eq('property_id', propertyId)
+    .single();
+
+  if (readingError || !reading) {
+    throw new Error('Reading record not found');
+  }
+
+  const tariff = await findTariffForDate(propertyId, reading.date);
+
+  return mapReadingToFrontend(reading, tariff, electricityType);
 };
 
 const createMonth = async ({
@@ -107,6 +143,32 @@ const createMonth = async ({
   );
 };
 
+const editMonth = async ({
+  propertyId,
+  monthId,
+  data,
+}: {
+  propertyId: string;
+  monthId: string;
+  data: Partial<MonthSchema>;
+}) => {
+  const updatePayload = mapFormDataToDb(data);
+
+  const { data: updatedData, error } = await supabase
+    .from('readings')
+    .update(updatePayload)
+    .eq('id', monthId)
+    .eq('property_id', propertyId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update month: ${error.message}`);
+  }
+
+  return updatedData;
+};
+
 const deleteMonth = async ({
   propertyId,
   monthId,
@@ -134,4 +196,4 @@ const deleteMonth = async ({
   return { success: true };
 };
 
-export default { getMonths, createMonth, deleteMonth };
+export default { getMonth, getMonths, createMonth, editMonth, deleteMonth };

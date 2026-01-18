@@ -5,7 +5,6 @@ import React from 'react';
 import MeterTable from '@/components/tables/meter-table';
 import { LastReading } from '@workspace/types';
 import { formatDate, numericFormatter } from '@workspace/utils';
-import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -78,7 +77,9 @@ const PropertyLastMonthDetail = ({
       {name && (
         <CardHeader className='flex items-center justify-between'>
           <CardTitle className='text-lg font-semibold'>{name}</CardTitle>
-          {lastReading?.date && <p>{format(lastReading?.date, formatDate)}</p>}
+          {lastReading?.date && (
+            <p>{formatDate({ date: lastReading?.date })}</p>
+          )}
         </CardHeader>
       )}
       <CardContent className='space-y-2'>

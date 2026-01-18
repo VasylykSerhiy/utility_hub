@@ -7,7 +7,6 @@ import {
 } from '@radix-ui/react-popover';
 import { Language } from '@workspace/types';
 import { formatDate, localeDateMap } from '@workspace/utils';
-import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 
 import { Button } from '@workspace/ui/components/button';
@@ -41,7 +40,8 @@ export function DatePicker({
             <span className='flex items-center gap-2'>
               <CalendarIcon />
               {date ? (
-                format(date, formatDate, {
+                formatDate({
+                  date,
                   ...(language && { locale: localeDateMap[language] }),
                 })
               ) : (

@@ -120,6 +120,49 @@ const getMonths = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getMonth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = getUserId(req);
+    const { id, monthId } = req.params;
+    if (!id)
+      return res.status(400).json({ message: 'Property ID is required' });
+
+    if (!monthId)
+      return res.status(400).json({ message: 'Month ID is required' });
+
+    const month = await readingService.getMonth({
+      propertyId: id,
+      monthId,
+      userId,
+    });
+
+    res.json(month);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const editMonth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id, monthId } = req.params;
+
+    if (!id)
+      return res.status(400).json({ message: 'Property ID is required' });
+    if (!monthId)
+      return res.status(400).json({ message: 'Month ID is required' });
+
+    const month = await readingService.editMonth({
+      propertyId: id,
+      monthId,
+      data: req.body,
+    });
+
+    res.json(month);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteMonth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id, monthId } = req.params;
@@ -214,7 +257,9 @@ export default {
   updateProperty,
   deleteProperty,
   getMonths,
+  getMonth,
   createMonth,
+  editMonth,
   deleteMonth,
   getProperty,
   getLastTariff,

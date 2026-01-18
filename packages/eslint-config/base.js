@@ -1,8 +1,9 @@
-import js from "@eslint/js"
-import eslintConfigPrettier from "eslint-config-prettier"
-import onlyWarn from "eslint-plugin-only-warn"
-import turboPlugin from "eslint-plugin-turbo"
-import tseslint from "typescript-eslint"
+import js from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import onlyWarn from 'eslint-plugin-only-warn';
+import turboPlugin from 'eslint-plugin-turbo';
+import unusedImports from 'eslint-plugin-unused-imports';
+import tseslint from 'typescript-eslint';
 
 /**
  * A shared ESLint configuration for the repository.
@@ -16,9 +17,21 @@ export const config = [
   {
     plugins: {
       turbo: turboPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
-      "turbo/no-undeclared-env-vars": "warn",
+      'turbo/no-undeclared-env-vars': 'warn',
+      'no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   {
@@ -27,6 +40,6 @@ export const config = [
     },
   },
   {
-    ignores: ["dist/**"],
+    ignores: ['dist/**'],
   },
-]
+];
