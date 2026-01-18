@@ -38,12 +38,12 @@ interface DatabaseProperty {
 }
 
 /**
- * EN: Threshold for "Accounting Month" (1st-10th belongs to prev month).
- * UA: Поріг для "Розрахункового місяця" (1-10 число відноситься до попереднього місяця).
+ * EN: Threshold for "Accounting Month" (1st-5th belongs to prev month).
+ * UA: Поріг для "Розрахункового місяця" (1-5 число відноситься до попереднього місяця).
  */
 const getLogicalMonthKey = (date: Date): string => {
   const day = getDate(date);
-  if (day <= 10) return format(subMonths(date, 1), 'yyyy-MM');
+  if (day <= 5) return format(subMonths(date, 1), 'yyyy-MM');
   return format(date, 'yyyy-MM');
 };
 
@@ -159,9 +159,9 @@ export const getDashboardAnalytics = async (
       if (logicalKey > latestDataKey) latestDataKey = logicalKey;
     });
 
-    // 1. Якщо сьогодні до 26-го числа, нас цікавить лише чи закритий ПОПЕРЕДНІЙ місяць.
-    // 2. Якщо сьогодні 26-те і пізніше, ми очікуємо, що і поточний місяць буде закритий.
-    const isLateInMonth = currentDay >= 26;
+    // 1. Якщо сьогодні до 28-го числа, нас цікавить лише чи закритий ПОПЕРЕДНІЙ місяць.
+    // 2. Якщо сьогодні 28-те і пізніше, ми очікуємо, що і поточний місяць буде закритий.
+    const isLateInMonth = currentDay >= 28;
     const targetKey = isLateInMonth ? currentLogicalKey : prevMonthKey;
 
     if (!latestReadingLogicalKey || latestReadingLogicalKey < targetKey) {

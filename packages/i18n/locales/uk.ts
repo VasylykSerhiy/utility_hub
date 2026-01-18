@@ -14,7 +14,7 @@ const uk = {
   // DASHBOARD
   'DASHBOARD.CARD.TITLE.TOTAL_COSTS': 'Загальні витрати',
   'DASHBOARD.CARD.TITLE.PENDING_READINGS': 'Очікувані показники',
-  'DASHBOARD.CARD.VALUE.PENDING_READINGS': '{{count}} лічильника',
+  'DASHBOARD.CARD.VALUE.PENDING_READINGS': '{{count}} власності(ей)',
   'DASHBOARD.CARD.TITLE.ACTIVE_PROPERTIES': 'Активні власності',
   'DASHBOARD.CARD.TITLE.SPENDING_BREAKDOWN': 'Розподіл витрат',
   'DASHBOARD.CARD.TITLE.COST_BY_PROPERTY': 'Витрати за власністю',
