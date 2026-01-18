@@ -11,16 +11,20 @@ import {
   set,
 } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import { enUS } from 'date-fns/locale';
+import { enUS, uk } from 'date-fns/locale';
 
 const DEFAULT_FALLBACK = 'N/A';
 const DEFAULT_SEPARATOR = ' - ';
 const TIME_REGEX = /^(\d{1,2}):(\d{2})(:\d{2})?$/;
 
-const RELATIVE_LABELS: Record<
-  string,
-  { today: string; yesterday: string; tomorrow: string; now: string }
-> = {
+interface RelativeLabels {
+  today: string;
+  yesterday: string;
+  tomorrow: string;
+  now: string;
+}
+
+const RELATIVE_LABELS: Record<string, RelativeLabels> = {
   uk: {
     today: 'Сьогодні',
     yesterday: 'Вчора',
@@ -75,10 +79,6 @@ const parseDateInput = (date: DateInput, now: Date): Date | null => {
   return isValid(parsed) ? parsed : null;
 };
 
-/**
- * Обертка для форматування, яка обирає між локальним часом та UTC.
- * Formatting wrapper that chooses between local time and UTC.
- */
 const formatWrapper = (
   date: Date,
   formatStr: string,
@@ -99,10 +99,14 @@ const getRelativeTimeString = (
   const diffInMinutes = Math.abs(differenceInMinutes(now, parsedDate));
   const diffInDays = Math.abs(differenceInDays(now, parsedDate));
 
-  const labels =
-    RELATIVE_LABELS[locale.code as string] || RELATIVE_LABELS['en-US'];
+  const localeKey = locale.code || 'en-US';
+  const labels = RELATIVE_LABELS[localeKey] ?? RELATIVE_LABELS['en-US'];
 
-  if (diffInMinutes < 1) return labels?.now;
+  if (!labels) {
+    return null;
+  }
+
+  if (diffInMinutes < 1) return labels.now;
   if (diffInDays > threshold) return null;
 
   const timeStr = format(parsedDate, DATE_FORMATS.onlyTime, { locale });
@@ -144,14 +148,21 @@ function handleRangeFormatting(
     const sYear = formatWrapper(second, 'yyyy', { ignoreTimezone, locale });
 
     if (fMonth === sMonth) {
-      return `${formatWrapper(first, 'dd', { ignoreTimezone, locale })}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
+      const day = formatWrapper(first, 'dd', { ignoreTimezone, locale });
+      return `${day}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
     }
     if (fYear === sYear) {
-      return `${formatWrapper(first, 'dd MMM', { ignoreTimezone, locale })}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
+      const dayMonth = formatWrapper(first, 'dd MMM', {
+        ignoreTimezone,
+        locale,
+      });
+      return `${dayMonth}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
     }
   }
 
-  return `${formatDateInternal({ ...options, date: first }, now)}${separator}${formatDateInternal({ ...options, date: second }, now)}`;
+  const part1 = formatDateInternal({ ...options, date: first }, now);
+  const part2 = formatDateInternal({ ...options, date: second }, now);
+  return `${part1}${separator}${part2}`;
 }
 
 function formatDateInternal(options: FormatDateOptions, now: Date): string {
@@ -181,10 +192,11 @@ function formatDateInternal(options: FormatDateOptions, now: Date): string {
       relativeThreshold,
       locale,
     );
-    if (relativeStr) return relativeStr;
+    if (relativeStr !== null) return relativeStr;
   }
 
   let effectiveVariant = variant;
+
   if (
     typeof date === 'string' &&
     TIME_REGEX.test(date) &&
