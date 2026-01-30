@@ -1,17 +1,19 @@
 'use client';
 
+import { useRef } from 'react';
+
 import type { IProperty } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import { Card, CardFooter } from '@workspace/ui/components/card';
 import domtoimage from 'dom-to-image';
 import { Camera } from 'lucide-react';
 import Link from 'next/link';
-import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Routes } from '@/constants/router';
-import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
+
 import { useModalStore } from '@/stores/use-modal-state';
+import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
+import { Routes } from '@/constants/router';
 
 export function PropertyCard({ lastReading, name, id }: IProperty) {
   const { t } = useTranslation();

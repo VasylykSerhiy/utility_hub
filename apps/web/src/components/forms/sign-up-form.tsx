@@ -1,5 +1,7 @@
 'use client';
 
+import { type HTMLAttributes, useState } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -15,9 +17,9 @@ import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
 import { type UserCreateShema, userCreateShema } from '@workspace/utils';
 import { useRouter } from 'next/navigation';
-import { type HTMLAttributes, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+
 import GoogleButton from '@/components/forms/components/google-button';
 import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/client';

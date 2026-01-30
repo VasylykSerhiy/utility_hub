@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import {
   Card,
   CardContent,
@@ -9,7 +11,6 @@ import {
   useChart,
 } from '@workspace/ui/components/chart';
 import { formatCurrencySymbol, formatDate } from '@workspace/utils';
-import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import type * as RechartsPrimitive from 'recharts';
 

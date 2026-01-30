@@ -1,9 +1,10 @@
 'use client';
 
-import { Toaster } from '@workspace/ui/components/sonner';
-
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import type * as React from 'react';
+
+import { Toaster } from '@workspace/ui/components/sonner';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+
 import { LanguageProvider } from '@/providers/language-provider';
 import { ModalsProvider } from '@/providers/modals-provider';
 import QueryProvider from '@/providers/query-provider';

@@ -13,8 +13,9 @@ import type {
   CreatePropertySchema,
   UpdatePropertySchema,
 } from '@workspace/utils';
-import { mutationKey, queryKeys } from '@/constants/query-key';
+
 import { propertyService } from '@/services/property.service';
+import { mutationKey, queryKeys } from '@/constants/query-key';
 
 export const getProperties = () => {
   return useQuery({

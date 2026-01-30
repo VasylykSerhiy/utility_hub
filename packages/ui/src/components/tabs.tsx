@@ -1,9 +1,9 @@
 'use client';
 
-import { cn } from '@workspace/ui/lib/utils';
-
-import { AnimatePresence, motion } from 'framer-motion';
 import type { ReactNode } from 'react';
+
+import { cn } from '@workspace/ui/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type Tab = {
   label: string;

@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import {
   Card,
   CardContent,
@@ -12,8 +14,8 @@ import {
   formatDate,
   localeDateMap,
 } from '@workspace/utils';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
 import DashboardConstByProperty from '@/modules/dashboard/dashboard-const-by-property';
 import DashboardConstTrend from '@/modules/dashboard/dashboard-cost-trend';

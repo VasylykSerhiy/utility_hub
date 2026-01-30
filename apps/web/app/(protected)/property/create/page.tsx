@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 import { useTranslation } from 'react-i18next';
+
 import { PropertyCreateForm } from '@/components/forms/property-create-form';
 
 const Page = () => {

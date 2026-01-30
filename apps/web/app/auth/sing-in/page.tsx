@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
-
 import Link from 'next/link';
+
 import { UserAuthForm } from '@/components/forms/user-auth-form';
 import { Routes } from '@/constants/router';
 

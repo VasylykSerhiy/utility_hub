@@ -1,8 +1,10 @@
+import { useState } from 'react';
+
 import { Button } from '@workspace/ui/components/button';
 import GoogleIcon from '@workspace/ui/components/icons/google';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
+
 import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/client';
 

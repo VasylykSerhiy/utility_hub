@@ -1,5 +1,7 @@
 'use client';
 
+import type { HTMLAttributes } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IElectricityType } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
@@ -28,9 +30,9 @@ import {
   type PropertySchema,
 } from '@workspace/utils';
 import { useRouter } from 'next/navigation';
-import type { HTMLAttributes } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
 import { useCreateProperty } from '@/hooks/use-property';
 
 interface PropertyCreateForm extends HTMLAttributes<HTMLFormElement> {}

@@ -7,12 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@workspace/ui/components/select';
-
 import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+
 import { ProfileDropdown } from '@/components/profile-dropdown';
-import { links } from '@/constants/router';
 import { useLanguage } from '@/providers/language-provider';
+import { links } from '@/constants/router';
 
 import { ThemeToggleButton } from './theme-toggle-button';
 

@@ -1,4 +1,5 @@
 import type { NextRequest } from 'next/server';
+
 import { Routes } from '@/constants/router';
 import { updateSession } from '@/lib/supabase/middleware';
 

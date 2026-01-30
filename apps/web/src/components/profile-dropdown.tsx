@@ -17,8 +17,9 @@ import {
 } from '@workspace/ui/components/dropdown-menu';
 import { Skeleton } from '@workspace/ui/components/skeleton';
 import { useRouter } from 'next/navigation';
-import { Routes } from '@/constants/router';
+
 import { getMyInfo } from '@/hooks/use-user';
+import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/client';
 
 export function ProfileDropdown() {

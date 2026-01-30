@@ -9,6 +9,7 @@ import {
 import { Skeleton } from '@workspace/ui/components/skeleton';
 import { formatDate, numericFormatter } from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
+
 import MeterTable from '@/components/tables/meter-table';
 
 interface PropertyLastMonthDetailProps {
@@ -51,7 +52,7 @@ const LoadingSkeleton = ({ hasName }: { hasName: boolean }) => {
 
         <div className='flex justify-between gap-1 pt-2'>
           <span className='font-medium'>{t('TOTAL')}:</span>
-          <span className='font font-medium'>
+          <span className='font-medium'>
             <Skeleton className='h-6 w-20' />
           </span>
         </div>

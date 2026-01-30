@@ -57,8 +57,42 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ["react", "react-dom"],
+              ":BLANK_LINE:",
+              [":NODE:", ":PACKAGE_WITH_PROTOCOL:", ":PACKAGE:"],
+              ":BLANK_LINE:",
+              ["@workspace/**"],
+              ":BLANK_LINE:",
+              ["@/api/**", "@/api"],
+              ["@/services/**", "@/services"],
+              ["@/store/**", "@/store"],
+              ["@/stores/**", "@/stores"],
+              ["@/hooks/**", "@/hooks"],
+              ["@/components/**", "@/components"],
+              ["@/modules/**", "@/modules"],
+              ["@/providers/**", "@/providers"],
+              ["@/constants/**", "@/constants"],
+              ["@/utils/**", "@/utils"],
+              ["@/schemas/**", "@/schemas"],
+              ["@/types/**", "@/types"],
+              ["@/lib/**", "@/lib"],
+              ["@/**"],
+              ":BLANK_LINE:",
+              ":PATH:"
+            ],
+            "identifierOrder": "natural"
+          }
+        }
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }

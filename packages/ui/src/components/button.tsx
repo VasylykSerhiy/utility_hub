@@ -1,7 +1,8 @@
+import type * as React from 'react';
+
 import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@workspace/ui/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import type * as React from 'react';
 import { BeatLoader } from 'react-spinners';
 
 const buttonVariants = cva(

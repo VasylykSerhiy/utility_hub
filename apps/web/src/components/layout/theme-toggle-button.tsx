@@ -1,7 +1,8 @@
+import type React from 'react';
+
 import { Switch } from '@workspace/ui/components/switch';
 import { MoonIcon, SunMediumIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import type React from 'react';
 
 export const ThemeToggleButton: React.FC = () => {
   const { setTheme, theme } = useTheme();

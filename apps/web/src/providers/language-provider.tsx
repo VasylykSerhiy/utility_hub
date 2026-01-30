@@ -1,7 +1,4 @@
 'use client';
-
-import i18n from '@workspace/i18n/i18n';
-import { Language } from '@workspace/types';
 import {
   createContext,
   type PropsWithChildren,
@@ -9,6 +6,9 @@ import {
   useEffect,
   useState,
 } from 'react';
+
+import i18n from '@workspace/i18n/i18n';
+import { Language } from '@workspace/types';
 
 export const LanguageContext = createContext<
   | {

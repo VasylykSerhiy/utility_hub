@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import {
   Table,
   TableBody,
@@ -10,8 +12,8 @@ import {
 } from '@workspace/ui/components/table';
 import { formatCurrencySymbol, formatDate } from '@workspace/utils';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { getPropertyTariffs } from '@/hooks/use-property';
 
 const TariffsTable = () => {

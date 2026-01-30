@@ -8,9 +8,10 @@ import {
 } from '@workspace/ui/components/card';
 import Tabs from '@workspace/ui/components/tabs';
 import { useTranslation } from 'react-i18next';
+
+import { useTabs } from '@/hooks/use-tabs';
 import ReadingTable from '@/components/tables/reading-table';
 import TariffsTable from '@/components/tables/tariffs-table';
-import { useTabs } from '@/hooks/use-tabs';
 
 const PropertyHistory = () => {
   const { t } = useTranslation();

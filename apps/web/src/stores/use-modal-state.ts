@@ -2,6 +2,7 @@
 
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
+
 import type { ModalMap, ModalType } from '@/components/modals/modal-registry';
 
 interface ModalState {

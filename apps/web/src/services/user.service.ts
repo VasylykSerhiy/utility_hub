@@ -1,5 +1,6 @@
 import type { IUser } from '@workspace/types';
 import type { AuthInput } from '@workspace/utils';
+
 import { API, api, apiAuth } from '@/lib/axios';
 
 export const userService = {

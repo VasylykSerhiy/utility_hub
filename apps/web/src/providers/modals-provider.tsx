@@ -1,13 +1,14 @@
 'use client';
 
+import { type ComponentType, Suspense } from 'react';
+
 import { Dialog } from '@workspace/ui/components/dialog';
-import type { ComponentType } from 'react';
-import { Suspense } from 'react';
+
+import { useModalStore } from '@/stores/use-modal-state';
 import {
   ModalComponents,
   type ModalMap,
 } from '@/components/modals/modal-registry';
-import { useModalStore } from '@/stores/use-modal-state';
 
 export const ModalsProvider = () => {
   const { isOpen, type, props, closeModal } = useModalStore(state => ({

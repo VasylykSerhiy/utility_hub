@@ -1,5 +1,7 @@
 'use client';
 
+import * as React from 'react';
+
 import { Button, buttonVariants } from '@workspace/ui/components/button';
 import { cn } from '@workspace/ui/lib/utils';
 import {
@@ -7,7 +9,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react';
-import * as React from 'react';
 import {
   type DayButton,
   DayPicker,

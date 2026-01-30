@@ -28,8 +28,9 @@ import {
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useUpdateTariff } from '@/hooks/use-property';
+
 import { useModalStore } from '@/stores/use-modal-state';
+import { useUpdateTariff } from '@/hooks/use-property';
 
 interface TariffChangeFormProps {
   property: IProperty;

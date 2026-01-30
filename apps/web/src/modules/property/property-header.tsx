@@ -16,14 +16,15 @@ import {
 } from '@workspace/utils';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { Routes } from '@/constants/router';
+
+import { useModalStore } from '@/stores/use-modal-state';
 import {
   getProperty,
   getPropertyLastTariff,
   useDeleteProperty,
 } from '@/hooks/use-property';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
-import { useModalStore } from '@/stores/use-modal-state';
+import { Routes } from '@/constants/router';
 
 const PropertyHeader = ({ id }: { id: string }) => {
   const { data, isLoading } = getProperty(id);

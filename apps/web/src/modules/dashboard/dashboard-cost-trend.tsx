@@ -17,6 +17,7 @@ import {
 } from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+
 import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
 import { useLanguage } from '@/providers/language-provider';
 

@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
+
 import { UpdatePasswordForm } from '@/components/forms/update-password-form';
 
 const Page = () => {

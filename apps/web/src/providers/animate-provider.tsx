@@ -1,10 +1,10 @@
 'use client';
 
-import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import { type ReactNode, useContext, useRef } from 'react';
 
+import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { LayoutRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { usePathname } from 'next/navigation';
-import { type ReactNode, useContext, useRef } from 'react';
 
 function FrozenRouter(props: Readonly<{ children: ReactNode }>) {
   const context = useContext(LayoutRouterContext);

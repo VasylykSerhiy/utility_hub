@@ -1,5 +1,7 @@
 'use client';
 
+import { type HTMLAttributes, useState } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -13,8 +15,8 @@ import {
 import { Input } from '@workspace/ui/components/input';
 import { cn } from '@workspace/ui/lib/utils';
 import { type UserForgotPassword, userForgotPassword } from '@workspace/utils';
-import { type HTMLAttributes, useState } from 'react';
 import { useForm } from 'react-hook-form';
+
 import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/client';
 

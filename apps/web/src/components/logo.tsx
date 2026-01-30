@@ -1,5 +1,4 @@
 import { cn } from '@workspace/ui/lib/utils';
-
 import Link from 'next/link';
 
 interface ILogoProps {

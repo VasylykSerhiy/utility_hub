@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import {
   Select,
   SelectContent,
@@ -9,7 +11,7 @@ import {
 } from '@workspace/ui/components/select';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+
 import Logo from '@/components/logo';
 import { useLanguage } from '@/providers/language-provider';
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import {
   Card,
   CardContent,
@@ -13,9 +15,9 @@ import {
 import { numericFormatter } from '@workspace/utils';
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CartesianGrid, Line, LineChart, Tooltip, YAxis } from 'recharts';
+
 import { getPropertyMetrics } from '@/hooks/use-property';
 import PropertyChartTooltip from '@/modules/property/property-chart-tooltip';
 

@@ -1,10 +1,11 @@
 'use client';
 
+import * as React from 'react';
+
 import { Button } from '@workspace/ui/components/button';
 import { Input } from '@workspace/ui/components/input';
 import { cn } from '@workspace/ui/lib/utils';
 import { Eye, EyeOff } from 'lucide-react';
-import * as React from 'react';
 
 type PasswordInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
