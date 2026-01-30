@@ -5,9 +5,7 @@ import { getQueryClient } from '@workspace/utils';
 
 const QueryProvider = ({ children }: PropsWithChildren) => {
   const queryClient = getQueryClient();
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
 
 export default QueryProvider;

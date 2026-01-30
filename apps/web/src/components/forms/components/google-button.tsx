@@ -31,12 +31,7 @@ const GoogleButton = () => {
   };
 
   return (
-    <Button
-      variant='outline'
-      type='button'
-      disabled={isLoading}
-      onClick={signInWithGoogle}
-    >
+    <Button variant='outline' type='button' disabled={isLoading} onClick={signInWithGoogle}>
       <GoogleIcon />
       Google
     </Button>

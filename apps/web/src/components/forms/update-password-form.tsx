@@ -23,10 +23,7 @@ import { createClient } from '@/lib/supabase/client';
 
 interface UpdatePasswordFormProps extends HTMLAttributes<HTMLFormElement> {}
 
-export function UpdatePasswordForm({
-  className,
-  ...props
-}: UpdatePasswordFormProps) {
+export function UpdatePasswordForm({ className, ...props }: UpdatePasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { push } = useRouter();
   const supabase = createClient();

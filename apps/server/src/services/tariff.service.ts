@@ -1,10 +1,7 @@
 import { supabase } from '../configs/supabase';
 import { mapTariffToFrontend } from '../mappers/property.mappers';
 
-export const findTariffForDate = async (
-  propertyId: string,
-  date: string | Date,
-) => {
+export const findTariffForDate = async (propertyId: string, date: string | Date) => {
   const { data } = await supabase
     .from('tariffs')
     .select('*')

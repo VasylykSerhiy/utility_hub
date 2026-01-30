@@ -24,11 +24,7 @@ interface ForgotPasswordFormProps extends HTMLAttributes<HTMLFormElement> {
   setSuccess: (success: boolean) => void;
 }
 
-export function ForgotPasswordForm({
-  className,
-  setSuccess,
-  ...props
-}: ForgotPasswordFormProps) {
+export function ForgotPasswordForm({ className, setSuccess, ...props }: ForgotPasswordFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const supabase = createClient();

@@ -1,11 +1,5 @@
 'use client';
-import {
-  createContext,
-  type PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, type PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import i18n from '@workspace/i18n/i18n';
 import { Language } from '@workspace/types';
@@ -25,9 +19,7 @@ export const LanguageProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     const cookieLang = document.cookie.match(/i18next=(\w+)/)?.[1] ?? 'en';
     if (i18n.language !== cookieLang) {
-      i18n
-        .changeLanguage(cookieLang)
-        .then(() => setLanguage(cookieLang as Language));
+      i18n.changeLanguage(cookieLang).then(() => setLanguage(cookieLang as Language));
     } else {
       setLanguage(cookieLang as Language);
     }

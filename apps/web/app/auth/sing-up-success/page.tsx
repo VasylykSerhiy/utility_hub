@@ -15,8 +15,8 @@ const Page = () => {
       </CardHeader>
       <CardContent>
         <p className='text-muted-foreground text-sm'>
-          You&apos;ve successfully signed up. Please check your email to confirm
-          your account before signing in.
+          You&apos;ve successfully signed up. Please check your email to confirm your account before
+          signing in.
         </p>
       </CardContent>
     </Card>

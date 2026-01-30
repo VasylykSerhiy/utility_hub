@@ -12,12 +12,7 @@ import QueryProvider from '@/providers/query-provider';
 export function Provides({ children }: { children: React.ReactNode }) {
   return (
     <QueryProvider>
-      <NextThemesProvider
-        attribute='class'
-        defaultTheme='system'
-        enableSystem
-        enableColorScheme
-      >
+      <NextThemesProvider attribute='class' defaultTheme='system' enableSystem enableColorScheme>
         <Toaster />
         <LanguageProvider>
           <ModalsProvider />

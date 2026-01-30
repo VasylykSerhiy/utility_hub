@@ -3,11 +3,7 @@ import type { ReactNode } from 'react';
 import { MainLayout } from '@/components/layout';
 import PageTransitionEffect from '@/providers/animate-provider';
 
-export default async function Layout({
-  children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
     <MainLayout>
       <PageTransitionEffect>

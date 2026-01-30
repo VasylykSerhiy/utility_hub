@@ -20,11 +20,7 @@ const Alert = ({ title, message, actions }: AlertModalProps) => {
       <DialogFooter>
         {actions?.map((action, idx) => (
           <Button
-            key={
-              typeof action.children === 'string'
-                ? action.children
-                : `alert-${idx}`
-            }
+            key={typeof action.children === 'string' ? action.children : `alert-${idx}`}
             {...action}
           />
         ))}

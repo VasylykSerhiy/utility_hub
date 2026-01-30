@@ -5,17 +5,12 @@ import * as React from 'react';
 import type { Language } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import { Calendar } from '@workspace/ui/components/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@workspace/ui/components/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@workspace/ui/components/popover';
 import { cn } from '@workspace/ui/lib/utils';
 import { formatDate, localeDateMap } from '@workspace/utils';
 import { CalendarIcon } from 'lucide-react';
 
-interface IDatePickerWithRangeProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface IDatePickerWithRangeProps extends React.HTMLAttributes<HTMLDivElement> {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
   placeholder?: string;
@@ -29,10 +24,7 @@ export function DatePicker({
   placeholder,
   language,
 }: IDatePickerWithRangeProps) {
-  const currentLocale = React.useMemo(
-    () => localeDateMap[language],
-    [language],
-  );
+  const currentLocale = React.useMemo(() => localeDateMap[language], [language]);
 
   return (
     <div className={cn('grid gap-2', className)}>

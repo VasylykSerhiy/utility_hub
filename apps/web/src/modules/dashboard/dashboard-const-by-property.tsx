@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import {
   type ChartConfig,
   ChartContainer,
@@ -33,18 +28,10 @@ const DashboardConstByProperty = () => {
         <CardTitle>{t('DASHBOARD.CARD.TITLE.COST_BY_PROPERTY')}</CardTitle>
       </CardHeader>
       <CardContent className='flex-1'>
-        <ChartContainer
-          config={chartConfig}
-          className='h-(--height-chart) w-full'
-        >
+        <ChartContainer config={chartConfig} className='h-(--height-chart) w-full'>
           <BarChart accessibilityLayer data={data?.costByProperty}>
             <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey='name'
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
+            <XAxis dataKey='name' tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis
               dataKey='total'
               tickLine={false}
@@ -52,10 +39,7 @@ const DashboardConstByProperty = () => {
               axisLine={false}
               tickFormatter={value => formatCurrencySymbol(value)}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey='total' fill='var(--primary)' radius={8} />
           </BarChart>
         </ChartContainer>

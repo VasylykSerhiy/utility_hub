@@ -24,10 +24,7 @@ import GoogleButton from '@/components/forms/components/google-button';
 import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/client';
 
-const SignUpForm = ({
-  className,
-  ...props
-}: HTMLAttributes<HTMLFormElement>) => {
+const SignUpForm = ({ className, ...props }: HTMLAttributes<HTMLFormElement>) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -115,9 +112,7 @@ const SignUpForm = ({
             <span className='w-full border-t' />
           </div>
           <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-card text-muted-foreground px-2'>
-              Or continue with
-            </span>
+            <span className='bg-card text-muted-foreground px-2'>Or continue with</span>
           </div>
         </div>
 

@@ -3,11 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { dashboardService } from '../services';
 import { getUserId } from '../utils';
 
-const getDashboardAnalytics = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const getDashboardAnalytics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
 

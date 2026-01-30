@@ -6,9 +6,9 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
+import { Routes } from '@/constants/router';
 import { getProperties } from '@/hooks/use-property';
 import { PropertyCard } from '@/modules/property/property-card';
-import { Routes } from '@/constants/router';
 
 const PropertyContent = () => {
   const { data } = getProperties();

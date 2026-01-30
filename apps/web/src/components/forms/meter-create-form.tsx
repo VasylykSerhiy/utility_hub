@@ -1,11 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  IElectricityType,
-  type IMonth,
-  type IProperty,
-} from '@workspace/types';
+import { IElectricityType, type IMonth, type IProperty } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import { DatePicker } from '@workspace/ui/components/date-picker';
 import {
@@ -22,9 +18,9 @@ import { type MonthSchema, monthSchemaClient } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useModalStore } from '@/stores/use-modal-state';
 import { useCreateMeter, useUpdateMeter } from '@/hooks/use-property';
 import { useLanguage } from '@/providers/language-provider';
+import { useModalStore } from '@/stores/use-modal-state';
 
 interface MeterCreateFormProps {
   property: IProperty;
@@ -112,9 +108,7 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
                   <NumberInput
                     {...field}
                     onChange={undefined}
-                    onValueChange={({ floatValue }) =>
-                      field.onChange(floatValue)
-                    }
+                    onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     placeholder={`${property?.lastReading?.meters?.electricity?.single ?? 0}`}
                   />
                 </FormControl>
@@ -135,9 +129,7 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                       placeholder={`${property?.lastReading?.meters?.electricity?.day ?? 0}`}
                     />
                   </FormControl>
@@ -155,9 +147,7 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                       placeholder={`${property?.lastReading?.meters?.electricity?.night ?? 0}`}
                     />
                   </FormControl>

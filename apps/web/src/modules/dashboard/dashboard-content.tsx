@@ -2,18 +2,9 @@
 
 import { useMemo } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import { cn } from '@workspace/ui/lib/utils';
-import {
-  formatCurrencySymbol,
-  formatDate,
-  localeDateMap,
-} from '@workspace/utils';
+import { formatCurrencySymbol, formatDate, localeDateMap } from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
 
 import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
@@ -65,9 +56,7 @@ const DashboardContent = () => {
         {cards.map(card => (
           <Card key={card.title} className='justify-between'>
             <CardHeader>
-              <CardTitle className='text-lg font-normal'>
-                {card.title}
-              </CardTitle>
+              <CardTitle className='text-lg font-normal'>{card.title}</CardTitle>
             </CardHeader>
             <CardContent
               className={cn('text-3xl font-bold', {

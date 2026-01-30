@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@workspace/ui/components/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
@@ -18,8 +14,8 @@ import {
 import { Skeleton } from '@workspace/ui/components/skeleton';
 import { useRouter } from 'next/navigation';
 
-import { getMyInfo } from '@/hooks/use-user';
 import { Routes } from '@/constants/router';
+import { getMyInfo } from '@/hooks/use-user';
 import { createClient } from '@/lib/supabase/client';
 
 export function ProfileDropdown() {

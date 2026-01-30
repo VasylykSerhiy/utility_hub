@@ -1,11 +1,7 @@
 'use client';
 
 import type { LastReading } from '@workspace/types';
-import {
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import { Skeleton } from '@workspace/ui/components/skeleton';
 import { formatDate, numericFormatter } from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
@@ -75,9 +71,7 @@ const PropertyLastMonthDetail = ({
       {name && (
         <CardHeader className='flex items-center justify-between'>
           <CardTitle className='text-lg font-semibold'>{name}</CardTitle>
-          {lastReading?.date && (
-            <p>{formatDate({ date: lastReading?.date })}</p>
-          )}
+          {lastReading?.date && <p>{formatDate({ date: lastReading?.date })}</p>}
         </CardHeader>
       )}
       <CardContent className='space-y-2'>
@@ -94,30 +88,21 @@ const PropertyLastMonthDetail = ({
             {[
               {
                 label: t('INTERNET'),
-                value: numericFormatter(
-                  lastReading.tariff?.fixedCosts?.internet,
-                  {
-                    suffix: ' ₴',
-                  },
-                ),
+                value: numericFormatter(lastReading.tariff?.fixedCosts?.internet, {
+                  suffix: ' ₴',
+                }),
               },
               {
                 label: t('MAINTENANCE'),
-                value: numericFormatter(
-                  lastReading.tariff?.fixedCosts?.maintenance,
-                  {
-                    suffix: ' ₴',
-                  },
-                ),
+                value: numericFormatter(lastReading.tariff?.fixedCosts?.maintenance, {
+                  suffix: ' ₴',
+                }),
               },
               {
                 label: t('GAS_DELIVERY'),
-                value: numericFormatter(
-                  lastReading.tariff?.fixedCosts?.gas_delivery,
-                  {
-                    suffix: ' ₴',
-                  },
-                ),
+                value: numericFormatter(lastReading.tariff?.fixedCosts?.gas_delivery, {
+                  suffix: ' ₴',
+                }),
               },
             ].map(item => (
               <div className='flex justify-between gap-1' key={item.label}>

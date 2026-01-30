@@ -2,12 +2,7 @@
 
 import type { IElectricityType, LastReading } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import { Skeleton } from '@workspace/ui/components/skeleton';
 import {
   formatCurrencySymbol,
@@ -17,14 +12,10 @@ import {
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-import { useModalStore } from '@/stores/use-modal-state';
-import {
-  getProperty,
-  getPropertyLastTariff,
-  useDeleteProperty,
-} from '@/hooks/use-property';
-import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { Routes } from '@/constants/router';
+import { getProperty, getPropertyLastTariff, useDeleteProperty } from '@/hooks/use-property';
+import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
+import { useModalStore } from '@/stores/use-modal-state';
 
 const PropertyHeader = ({ id }: { id: string }) => {
   const { data, isLoading } = getProperty(id);
@@ -59,7 +50,7 @@ const PropertyHeader = ({ id }: { id: string }) => {
                   variant: 'destructive',
                   isLoading: isPending,
                   onClick: async () => {
-                    deleteProperty(id, {
+                    await deleteProperty(id, {
                       onSuccess: () => {
                         closeModal();
                         push(Routes.PROPERTY);
@@ -96,36 +87,26 @@ const PropertyHeader = ({ id }: { id: string }) => {
               {isLoading ? (
                 <Skeleton className='h-5 w-20' />
               ) : (
-                getElectricityMeterLabel(
-                  data?.electricityType as IElectricityType,
-                )
+                getElectricityMeterLabel(data?.electricityType as IElectricityType)
               )}
             </div>
             <div>
               {[
-                ...(isSingleElectricity(
-                  data?.electricityType as IElectricityType,
-                )
+                ...(isSingleElectricity(data?.electricityType as IElectricityType)
                   ? [
                       {
                         label: t('ELECTRICITY'),
-                        value: formatCurrencySymbol(
-                          lastTariff?.tariffs?.electricity.single,
-                        ),
+                        value: formatCurrencySymbol(lastTariff?.tariffs?.electricity.single),
                       },
                     ]
                   : [
                       {
                         label: t('ELECTRICITY_DAY'),
-                        value: formatCurrencySymbol(
-                          lastTariff?.tariffs?.electricity.day,
-                        ),
+                        value: formatCurrencySymbol(lastTariff?.tariffs?.electricity.day),
                       },
                       {
                         label: t('ELECTRICITY_NIGHT'),
-                        value: formatCurrencySymbol(
-                          lastTariff?.tariffs?.electricity.night,
-                        ),
+                        value: formatCurrencySymbol(lastTariff?.tariffs?.electricity.night),
                       },
                     ]),
                 {
@@ -142,15 +123,11 @@ const PropertyHeader = ({ id }: { id: string }) => {
                 },
                 {
                   label: t('MAINTENANCE'),
-                  value: formatCurrencySymbol(
-                    lastTariff?.fixedCosts?.maintenance,
-                  ),
+                  value: formatCurrencySymbol(lastTariff?.fixedCosts?.maintenance),
                 },
                 {
                   label: t('GAS_DELIVERY'),
-                  value: formatCurrencySymbol(
-                    lastTariff?.fixedCosts?.gas_delivery,
-                  ),
+                  value: formatCurrencySymbol(lastTariff?.fixedCosts?.gas_delivery),
                 },
               ].map(item => (
                 <div key={item.label} className='mt-2 flex gap-2'>
@@ -161,16 +138,10 @@ const PropertyHeader = ({ id }: { id: string }) => {
             </div>
           </div>
           <div className='mt-4 grid grid-cols-1 gap-2 md:grid-cols-2'>
-            <Button
-              className='w-full'
-              onClick={() => openModal('changeTariff', { id })}
-            >
+            <Button className='w-full' onClick={() => openModal('changeTariff', { id })}>
               {t('BUTTONS.CHANGE_TARIFF')}
             </Button>
-            <Button
-              onClick={() => openModal('createMeter', { id })}
-              className='w-full'
-            >
+            <Button onClick={() => openModal('createMeter', { id })} className='w-full'>
               {t('BUTTONS.ADD_METER')}
             </Button>{' '}
           </div>

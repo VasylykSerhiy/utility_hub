@@ -10,11 +10,7 @@ const getSuccessResponseWithData = (
   success,
 });
 
-const getSuccessResponse = (
-  message = 'Success',
-  status = 200,
-  success = true,
-) => ({
+const getSuccessResponse = (message = 'Success', status = 200, success = true) => ({
   message,
   status,
   success,

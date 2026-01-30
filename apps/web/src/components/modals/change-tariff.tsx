@@ -1,12 +1,8 @@
-import {
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@workspace/ui/components/dialog';
+import { DialogContent, DialogDescription, DialogTitle } from '@workspace/ui/components/dialog';
 import { useTranslation } from 'react-i18next';
 
-import { getProperty } from '@/hooks/use-property';
 import { ChangeTariffForm } from '@/components/forms/tariff-change-form';
+import { getProperty } from '@/hooks/use-property';
 
 export interface ChangeTariffProps {
   id: string;

@@ -186,22 +186,13 @@ function formatDateInternal(options: FormatDateOptions, now: Date): string {
   if (!parsedDate) return fallback;
 
   if (relative && !ignoreTimezone) {
-    const relativeStr = getRelativeTimeString(
-      parsedDate,
-      now,
-      relativeThreshold,
-      locale,
-    );
+    const relativeStr = getRelativeTimeString(parsedDate, now, relativeThreshold, locale);
     if (relativeStr !== null) return relativeStr;
   }
 
   let effectiveVariant = variant;
 
-  if (
-    typeof date === 'string' &&
-    TIME_REGEX.test(date) &&
-    variant === 'default'
-  ) {
+  if (typeof date === 'string' && TIME_REGEX.test(date) && variant === 'default') {
     effectiveVariant = 'onlyTimeAMPM';
   }
 

@@ -2,16 +2,8 @@
 
 import { useMemo } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
-import {
-  type ChartConfig,
-  ChartContainer,
-} from '@workspace/ui/components/chart';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
+import { type ChartConfig, ChartContainer } from '@workspace/ui/components/chart';
 import { numericFormatter } from '@workspace/utils';
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
@@ -46,24 +38,14 @@ const PropertyChart = () => {
             ...(item.difference.electricity.single && {
               type: 'single',
               single:
-                Number(
-                  item.difference.electricity.single *
-                    (tariff.electricity.single ?? 0),
-                ) ?? 0,
+                Number(item.difference.electricity.single * (tariff.electricity.single ?? 0)) ?? 0,
             }),
             ...(item.difference.electricity.day &&
               item.difference.electricity.night && {
                 type: 'double',
-                day:
-                  Number(
-                    item.difference.electricity.day *
-                      (tariff.electricity.day ?? 0),
-                  ) ?? 0,
+                day: Number(item.difference.electricity.day * (tariff.electricity.day ?? 0)) ?? 0,
                 night:
-                  Number(
-                    item.difference.electricity.night *
-                      (tariff.electricity.day ?? 0),
-                  ) ?? 0,
+                  Number(item.difference.electricity.night * (tariff.electricity.day ?? 0)) ?? 0,
               }),
           },
           total: item.total,

@@ -15,9 +15,7 @@ const Page = () => {
   return (
     <Card className='gap-4'>
       <CardHeader>
-        <CardTitle className='text-lg tracking-tight'>
-          Create an account
-        </CardTitle>
+        <CardTitle className='text-lg tracking-tight'>Create an account</CardTitle>
         <CardDescription>
           Enter your email and password below to <br />
           create your account

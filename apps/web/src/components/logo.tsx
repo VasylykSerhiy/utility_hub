@@ -22,12 +22,7 @@ const Logo = ({ size = 64, className }: ILogoProps) => {
 
         <circle cx='32' cy='32' r='14' fill='#FFFFFF' />
 
-        <path
-          d='M22 36 Q27 30 32 36 T42 36'
-          stroke='#61bc84'
-          strokeWidth='3'
-          fill='none'
-        />
+        <path d='M22 36 Q27 30 32 36 T42 36' stroke='#61bc84' strokeWidth='3' fill='none' />
 
         <circle cx='26' cy='28' r='2' fill='#4CA86C' />
         <circle cx='32' cy='28' r='2' fill='#61bc84' />

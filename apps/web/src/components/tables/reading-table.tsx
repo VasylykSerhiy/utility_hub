@@ -22,20 +22,16 @@ import {
 import { useParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-import { useModalStore } from '@/stores/use-modal-state';
-import {
-  getPropertyMonths,
-  useDeletePropertyMonth,
-} from '@/hooks/use-property';
 import { DropdownActions } from '@/components/dropdown-actions';
+import { getPropertyMonths, useDeletePropertyMonth } from '@/hooks/use-property';
+import { useModalStore } from '@/stores/use-modal-state';
 
 const ReadingTable = () => {
   const { openModal, closeModal } = useModalStore();
   const [page, setPage] = useState(1);
   const { t } = useTranslation();
   const { slug } = useParams();
-  const { mutateAsync: deleteMutateAsync, isPending } =
-    useDeletePropertyMonth();
+  const { mutateAsync: deleteMutateAsync, isPending } = useDeletePropertyMonth();
 
   const { data, isLoading } = getPropertyMonths({
     id: slug as string,
@@ -93,18 +89,11 @@ const ReadingTable = () => {
   );
 
   return (
-    <Table
-      withPagination
-      handlePage={setPage}
-      page={page}
-      totalPages={data?.totalPages || 1}
-    >
+    <Table withPagination handlePage={setPage} page={page} totalPages={data?.totalPages || 1}>
       <TableHeader>
         <TableRow>
           <TableHead>{t('DATE')}</TableHead>
-          {electricityType === IElectricityType.SINGLE && (
-            <TableHead>{t('ELECTRICITY')}</TableHead>
-          )}
+          {electricityType === IElectricityType.SINGLE && <TableHead>{t('ELECTRICITY')}</TableHead>}
           {electricityType === IElectricityType.DOUBLE && (
             <>
               <TableHead>{t('ELECTRICITY_DAY')}</TableHead>
@@ -125,18 +114,12 @@ const ReadingTable = () => {
               })}
             </TableCell>
             {isSingleElectricity(electricityType) && (
-              <TableCell>
-                {formatEnergy(month?.meters?.electricity?.single)}
-              </TableCell>
+              <TableCell>{formatEnergy(month?.meters?.electricity?.single)}</TableCell>
             )}
             {isDoubleElectricity(electricityType) && (
               <>
-                <TableCell>
-                  {formatEnergy(month?.meters?.electricity?.day)}
-                </TableCell>
-                <TableCell>
-                  {formatEnergy(month?.meters?.electricity?.night)}
-                </TableCell>
+                <TableCell>{formatEnergy(month?.meters?.electricity?.day)}</TableCell>
+                <TableCell>{formatEnergy(month?.meters?.electricity?.night)}</TableCell>
               </>
             )}
 

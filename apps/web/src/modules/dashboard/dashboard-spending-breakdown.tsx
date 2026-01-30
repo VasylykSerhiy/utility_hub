@@ -2,12 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import {
   type ChartConfig,
   ChartContainer,
@@ -17,14 +12,7 @@ import {
   ChartTooltipContent,
 } from '@workspace/ui/components/chart';
 import { useTranslation } from 'react-i18next';
-import {
-  Cell,
-  Label,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Sector,
-} from 'recharts';
+import { Cell, Label, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 
 import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
@@ -94,14 +82,11 @@ const DashboardSpendingBreakdown = () => {
     [chartData],
   );
 
-  const chartConfig = useMemo<ChartConfig>(() => {
+  const chartConfig = useMemo(() => {
     const config: ChartConfig = {};
-    chartData.forEach(item => {
-      config[item.name] = {
-        label: `${item.displayLabel} (${item.percentage})`,
-        color: item.fill,
-      };
-    });
+    for (const item of chartData) {
+      config[item.name] = { label: item.displayLabel, color: item.fill };
+    }
     return config;
   }, [chartData]);
 
@@ -110,22 +95,14 @@ const DashboardSpendingBreakdown = () => {
   return (
     <Card>
       <CardHeader className='items-center pb-0'>
-        <CardTitle className='text-xl'>
-          {t('DASHBOARD.CARD.TITLE.SPENDING_BREAKDOWN')}
-        </CardTitle>
+        <CardTitle className='text-xl'>{t('DASHBOARD.CARD.TITLE.SPENDING_BREAKDOWN')}</CardTitle>
       </CardHeader>
 
       <CardContent className='flex-1 pb-0'>
-        <ChartContainer
-          config={chartConfig}
-          className='h-(--height-chart) mx-auto w-full'
-        >
+        <ChartContainer config={chartConfig} className='h-(--height-chart) mx-auto w-full'>
           <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
               <Pie
                 data={chartData}
                 dataKey='value'
@@ -149,10 +126,7 @@ const DashboardSpendingBreakdown = () => {
                 <Label
                   content={({ viewBox }) => {
                     if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                      const hoveredItem =
-                        activeIndex !== undefined
-                          ? chartData[activeIndex]
-                          : null;
+                      const hoveredItem = activeIndex !== undefined ? chartData[activeIndex] : null;
 
                       return (
                         <text
@@ -166,18 +140,14 @@ const DashboardSpendingBreakdown = () => {
                             y={(viewBox.cy || 0) - 5}
                             className='fill-foreground text-2xl font-extrabold transition-all duration-300'
                           >
-                            {hoveredItem
-                              ? hoveredItem.percentage
-                              : totalSpending.toLocaleString()}
+                            {hoveredItem ? hoveredItem.percentage : totalSpending.toLocaleString()}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 20}
                             className='fill-muted-foreground text-[10px] font-medium uppercase tracking-widest transition-all duration-300'
                           >
-                            {hoveredItem
-                              ? hoveredItem.displayLabel
-                              : t('TOTAL')}
+                            {hoveredItem ? hoveredItem.displayLabel : t('TOTAL')}
                           </tspan>
                         </text>
                       );
@@ -190,10 +160,7 @@ const DashboardSpendingBreakdown = () => {
                     fill={entry.fill}
                     className='stroke-background outline-none transition-opacity duration-300'
                     style={{
-                      opacity:
-                        activeIndex === undefined || activeIndex === index
-                          ? 1
-                          : 0.6,
+                      opacity: activeIndex === undefined || activeIndex === index ? 1 : 0.6,
                     }}
                   />
                 ))}

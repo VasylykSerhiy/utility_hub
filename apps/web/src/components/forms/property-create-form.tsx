@@ -37,10 +37,7 @@ import { useCreateProperty } from '@/hooks/use-property';
 
 interface PropertyCreateForm extends HTMLAttributes<HTMLFormElement> {}
 
-export function PropertyCreateForm({
-  className,
-  ...props
-}: PropertyCreateForm) {
+export function PropertyCreateForm({ className, ...props }: PropertyCreateForm) {
   const { t } = useTranslation();
   const { mutateAsync, isPending } = useCreateProperty();
   const router = useRouter();
@@ -74,10 +71,7 @@ export function PropertyCreateForm({
             <FormItem>
               <FormLabel>{t('FORM.PROPERTY.NAME')}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t('FORM.PROPERTY.PLACEHOLDER')}
-                  {...field}
-                />
+                <Input placeholder={t('FORM.PROPERTY.PLACEHOLDER')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,9 +112,7 @@ export function PropertyCreateForm({
                   <NumberInput
                     {...field}
                     onChange={undefined}
-                    onValueChange={({ floatValue }) =>
-                      field.onChange(floatValue)
-                    }
+                    onValueChange={({ floatValue }) => field.onChange(floatValue)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -140,9 +132,7 @@ export function PropertyCreateForm({
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -159,9 +149,7 @@ export function PropertyCreateForm({
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -230,9 +218,7 @@ export function PropertyCreateForm({
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     />
                   </FormControl>
                   <FormMessage />

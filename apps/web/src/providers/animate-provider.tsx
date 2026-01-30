@@ -11,9 +11,7 @@ function FrozenRouter(props: Readonly<{ children: ReactNode }>) {
   const frozen = useRef(context).current;
 
   return (
-    <LayoutRouterContext.Provider value={frozen}>
-      {props.children}
-    </LayoutRouterContext.Provider>
+    <LayoutRouterContext.Provider value={frozen}>{props.children}</LayoutRouterContext.Provider>
   );
 }
 

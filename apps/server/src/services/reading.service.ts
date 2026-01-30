@@ -1,10 +1,7 @@
 import type { MonthSchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
-import {
-  mapFormDataToDb,
-  mapReadingToFrontend,
-} from '../mappers/property.mappers';
+import { mapFormDataToDb, mapReadingToFrontend } from '../mappers/property.mappers';
 import { findTariffForDate } from './tariff.service';
 
 const getMonths = async ({
@@ -142,11 +139,7 @@ const createMonth = async ({
 
   const tariff = await findTariffForDate(propertyId, data.date);
 
-  return mapReadingToFrontend(
-    readingWithStats || newReading,
-    tariff,
-    property.electricity_type,
-  );
+  return mapReadingToFrontend(readingWithStats || newReading, tariff, property.electricity_type);
 };
 
 const editMonth = async ({
@@ -175,13 +168,7 @@ const editMonth = async ({
   return updatedData;
 };
 
-const deleteMonth = async ({
-  propertyId,
-  monthId,
-}: {
-  propertyId: string;
-  monthId: string;
-}) => {
+const deleteMonth = async ({ propertyId, monthId }: { propertyId: string; monthId: string }) => {
   const { data, error } = await supabase
     .from('readings')
     .delete()

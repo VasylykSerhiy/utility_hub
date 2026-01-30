@@ -11,9 +11,9 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { useModalStore } from '@/stores/use-modal-state';
-import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { Routes } from '@/constants/router';
+import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
+import { useModalStore } from '@/stores/use-modal-state';
 
 export function PropertyCard({ lastReading, name, id }: IProperty) {
   const { t } = useTranslation();
@@ -27,9 +27,9 @@ export function PropertyCard({ lastReading, name, id }: IProperty) {
       const originalBlock = blockRef.current;
       const clonedBlock = originalBlock.cloneNode(true) as HTMLElement;
 
-      clonedBlock.querySelectorAll('button').forEach(btn => {
+      for (const btn of clonedBlock.querySelectorAll('button')) {
         btn.style.visibility = 'hidden';
-      });
+      }
 
       const container = document.createElement('div');
       container.style.position = 'fixed';
@@ -44,9 +44,7 @@ export function PropertyCard({ lastReading, name, id }: IProperty) {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
 
-      await navigator.clipboard.write([
-        new ClipboardItem({ [blob.type]: blob }),
-      ]);
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
 
       document.body.removeChild(container);
 

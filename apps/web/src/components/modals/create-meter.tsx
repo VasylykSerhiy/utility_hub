@@ -1,13 +1,9 @@
 import type { IMonth } from '@workspace/types';
-import {
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@workspace/ui/components/dialog';
+import { DialogContent, DialogDescription, DialogTitle } from '@workspace/ui/components/dialog';
 import { useTranslation } from 'react-i18next';
 
-import { getProperty, getPropertyMonth } from '@/hooks/use-property';
 import { MeterCreateForm } from '@/components/forms/meter-create-form';
+import { getProperty, getPropertyMonth } from '@/hooks/use-property';
 
 export interface CreateMeterProps {
   id: string;
@@ -29,9 +25,7 @@ const CreateMeter = ({ id, meterId }: CreateMeterProps) => {
       <DialogTitle>{t('MODAL.CREATE_METER.TITLE')}</DialogTitle>
       <DialogDescription>{t('MODAL.CREATE_METER.DESC')}</DialogDescription>
       {isLoading && <div>Loading...</div>}
-      {data && !isLoading && (
-        <MeterCreateForm property={data} meter={monthData} />
-      )}
+      {data && !isLoading && <MeterCreateForm property={data} meter={monthData} />}
     </DialogContent>
   );
 };

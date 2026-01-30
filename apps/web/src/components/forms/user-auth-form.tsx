@@ -21,9 +21,9 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { useAuthUser } from '@/hooks/use-user';
 import GoogleButton from '@/components/forms/components/google-button';
 import { Routes } from '@/constants/router';
+import { useAuthUser } from '@/hooks/use-user';
 import { createClient } from '@/lib/supabase/client';
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
@@ -61,10 +61,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
       router.push(Routes.DASHBOARD);
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error ? error.message : 'An error occurred',
-        { duration: 1000 },
-      );
+      toast.error(error instanceof Error ? error.message : 'An error occurred', { duration: 1000 });
     } finally {
       setIsLoading(false);
     }
@@ -118,9 +115,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             <span className='w-full border-t' />
           </div>
           <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-card text-muted-foreground px-2'>
-              Or continue with
-            </span>
+            <span className='bg-card text-muted-foreground px-2'>Or continue with</span>
           </div>
         </div>
 

@@ -1,7 +1,4 @@
-import type {
-  CreatePropertySchema,
-  UpdatePropertySchema,
-} from '@workspace/utils';
+import type { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
 import {
@@ -45,22 +42,12 @@ const getProperties = async (userId: string) => {
         .single();
 
       const mappedLastReading = lastReading
-        ? mapReadingToFrontend(
-            lastReading,
-            historicalTariff,
-            prop.electricity_type,
-          )
+        ? mapReadingToFrontend(lastReading, historicalTariff, prop.electricity_type)
         : createEmptyReading(prop.electricity_type, prop.id);
 
-      const mappedCurrentTariff = currentTariff
-        ? mapTariffToFrontend(currentTariff)
-        : null;
+      const mappedCurrentTariff = currentTariff ? mapTariffToFrontend(currentTariff) : null;
 
-      return mapPropertyToFrontend(
-        prop,
-        mappedLastReading,
-        mappedCurrentTariff,
-      );
+      return mapPropertyToFrontend(prop, mappedLastReading, mappedCurrentTariff);
     }),
   );
 };
@@ -97,31 +84,15 @@ const getProperty = async (userId: string, propertyId: string) => {
     .single();
 
   const mappedLastReading = lastReading
-    ? mapReadingToFrontend(
-        lastReading,
-        historicalTariff,
-        property.electricity_type,
-      )
+    ? mapReadingToFrontend(lastReading, historicalTariff, property.electricity_type)
     : createEmptyReading(property.electricity_type, propertyId);
 
-  const mappedCurrentTariff = currentTariff
-    ? mapTariffToFrontend(currentTariff)
-    : null;
+  const mappedCurrentTariff = currentTariff ? mapTariffToFrontend(currentTariff) : null;
 
-  return mapPropertyToFrontend(
-    property,
-    mappedLastReading,
-    mappedCurrentTariff,
-  );
+  return mapPropertyToFrontend(property, mappedLastReading, mappedCurrentTariff);
 };
 
-const createProperty = async ({
-  userId,
-  data,
-}: {
-  userId: string;
-  data: CreatePropertySchema;
-}) => {
+const createProperty = async ({ userId, data }: { userId: string; data: CreatePropertySchema }) => {
   const { tariffs, fixedCosts, ...propData } = data;
 
   const { data: newProp, error: propError } = await supabase
@@ -134,8 +105,7 @@ const createProperty = async ({
     .select()
     .single();
 
-  if (propError)
-    throw new Error(`Failed to create property: ${propError.message}`);
+  if (propError) throw new Error(`Failed to create property: ${propError.message}`);
 
   const { error: tariffError } = await supabase.from('tariffs').insert({
     property_id: newProp.id,
@@ -228,13 +198,7 @@ const updateProperty = async ({
   return { success: true };
 };
 
-const deleteProperty = async ({
-  userId,
-  propertyId,
-}: {
-  userId: string;
-  propertyId: string;
-}) => {
+const deleteProperty = async ({ userId, propertyId }: { userId: string; propertyId: string }) => {
   const { data, error } = await supabase
     .from('properties')
     .delete()
@@ -257,11 +221,7 @@ const deleteProperty = async ({
 
 const getMetrics = async ({ propertyId }: { propertyId: string }) => {
   const today = new Date();
-  const oneYearAgo = new Date(
-    today.getFullYear() - 1,
-    today.getMonth() - 1,
-    1,
-  ).toISOString();
+  const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth() - 1, 1).toISOString();
 
   const { data: property } = await supabase
     .from('properties')

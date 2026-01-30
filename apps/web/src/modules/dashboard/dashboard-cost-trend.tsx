@@ -1,20 +1,11 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@workspace/ui/components/chart';
-import {
-  formatCurrencySymbol,
-  formatDate,
-  localeDateMap,
-} from '@workspace/utils';
+import { formatCurrencySymbol, formatDate, localeDateMap } from '@workspace/utils';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
@@ -39,10 +30,7 @@ const DashboardConstTrend = () => {
         <CardTitle>{t('DASHBOARD.CARD.TITLE.COST_TREND')}</CardTitle>
       </CardHeader>
       <CardContent className='flex-1'>
-        <ChartContainer
-          config={chartConfig}
-          className='h-(--height-chart) w-full'
-        >
+        <ChartContainer config={chartConfig} className='h-(--height-chart) w-full'>
           <BarChart accessibilityLayer data={data?.sixMonthTrend}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -65,10 +53,7 @@ const DashboardConstTrend = () => {
               axisLine={false}
               tickFormatter={value => formatCurrencySymbol(value)}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey='total' fill='var(--primary)' radius={8} />
           </BarChart>
         </ChartContainer>

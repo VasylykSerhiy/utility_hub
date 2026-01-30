@@ -6,6 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
+    "ignoreUnknown": false,
     "includes": [
       "**/*.ts",
       "**/*.tsx",
@@ -13,17 +14,20 @@
       "**/*.jsx",
       "**/*.json",
       "**/*.md",
-      "!**/node_modules",
-      "!**/dist",
-      "!**/.next",
-      "!**/build"
+      "!node_modules",
+      "!dist",
+      "!.next",
+      "!build",
+      "!coverage",
+      "!**/package-lock.json",
+      "!**/yarn.lock"
     ]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 80,
+    "lineWidth": 100,
     "lineEnding": "lf"
   },
   "javascript": {
@@ -40,17 +44,34 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "noUnusedImports": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "error"
+      },
+      "complexity": {
+        "noForEach": "error",
+        "noExcessiveCognitiveComplexity": {
           "level": "error",
-          "fix": "safe"
-        },
-        "noUnusedVariables": "warn"
+          "options": { "maxAllowedComplexity": 20 }
+        }
       },
       "style": {
-        "noNonNullAssertion": "warn"
+        "noNonNullAssertion": "warn",
+        "useImportType": "error",
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": { "syntax": "shorthand" }
+        }
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "error",
+        "noImplicitAnyLet": "error",
+        "useAwait": "error",
+        "noDoubleEquals": "error"
+      },
+      "performance": {
+        "noDelete": "error",
+        "noAccumulatingSpread": "error"
       }
     }
   },
@@ -67,20 +88,13 @@
               ":BLANK_LINE:",
               ["@workspace/**"],
               ":BLANK_LINE:",
-              ["@/api/**", "@/api"],
-              ["@/services/**", "@/services"],
-              ["@/store/**", "@/store"],
-              ["@/stores/**", "@/stores"],
-              ["@/hooks/**", "@/hooks"],
-              ["@/components/**", "@/components"],
-              ["@/modules/**", "@/modules"],
-              ["@/providers/**", "@/providers"],
-              ["@/constants/**", "@/constants"],
-              ["@/utils/**", "@/utils"],
-              ["@/schemas/**", "@/schemas"],
-              ["@/types/**", "@/types"],
-              ["@/lib/**", "@/lib"],
-              ["@/**"],
+              ["^@/types", "^@/schemas"],
+              ["^@/api", "^@/services", "^@/store", "^@/stores"],
+              ["^@/hooks", "^@/providers"],
+              ["^@/components", "^@/modules"],
+              ["^@/constants", "^@/utils", "^@/lib"],
+              ":BLANK_LINE:",
+              ":RELATIVE_PATH:",
               ":BLANK_LINE:",
               ":PATH:"
             ],
@@ -93,6 +107,9 @@
   "css": {
     "parser": {
       "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": true
     }
   }
 }

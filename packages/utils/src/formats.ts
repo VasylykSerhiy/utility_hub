@@ -9,10 +9,7 @@ export const localeDateMap: { [k in Language]: Locale } = {
   en: enUS,
 };
 
-export const numericFormatter = (
-  num: number | string | undefined,
-  props?: NumericFormatProps,
-) => {
+export const numericFormatter = (num: number | string | undefined, props?: NumericFormatProps) => {
   return _numericFormatter(String(num ?? 0), {
     thousandSeparator: ',',
     decimalScale: 2,

@@ -10,11 +10,10 @@ import {
 import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-import { ProfileDropdown } from '@/components/profile-dropdown';
-import { useLanguage } from '@/providers/language-provider';
-import { links } from '@/constants/router';
-
 import { ThemeToggleButton } from './theme-toggle-button';
+import { ProfileDropdown } from '@/components/profile-dropdown';
+import { links } from '@/constants/router';
+import { useLanguage } from '@/providers/language-provider';
 
 const Header = () => {
   const { t } = useTranslation();
@@ -25,9 +24,7 @@ const Header = () => {
 
   return (
     <div className='bg-background top-14 z-10 hidden h-[52px] w-full items-center justify-between px-4 lg:sticky lg:top-0 lg:ml-[280px] lg:mr-[280px] lg:flex lg:h-[72px] lg:w-[calc(100%-280px)] lg:px-6'>
-      <h1 className='text:lg hover:text-accent font-semibold lg:text-2xl'>
-        {t(title)}
-      </h1>
+      <h1 className='text:lg hover:text-accent font-semibold lg:text-2xl'>{t(title)}</h1>
       <div className='flex gap-4'>
         <Select onValueChange={changeLanguage} value={language}>
           <SelectTrigger className='gap-0.5 rounded-full px-3 py-1 font-medium max-lg:hidden'>

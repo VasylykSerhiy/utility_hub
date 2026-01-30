@@ -23,10 +23,7 @@ interface IMeterTableProps {
   lastReading: LastReading;
 }
 
-export const generateRows = (
-  lastReading: LastReading,
-  t: (key: string) => string,
-): Row[] => {
+export const generateRows = (lastReading: LastReading, t: (key: string) => string): Row[] => {
   const tariffs = lastReading?.tariff?.tariffs ?? {};
   const meters = lastReading?.meters ?? {};
   const diff = lastReading?.difference ?? {};
@@ -44,7 +41,7 @@ export const generateRows = (
       const: consumption * (tariffs?.electricity?.single ?? 0),
     });
   } else if (lastReading?.electricityType === IElectricityType.DOUBLE) {
-    (['day', 'night'] as const).forEach(period => {
+    for (const period of ['day', 'night'] as const) {
       const consumption = diff?.electricity?.[period] ?? 0;
       rows.push({
         meter: t(`ELECTRICITY_${period.toUpperCase()}`),
@@ -52,7 +49,7 @@ export const generateRows = (
         consumption,
         const: consumption * (tariffs?.electricity?.[period] ?? 0),
       });
-    });
+    }
   }
 
   // 💧 Вода

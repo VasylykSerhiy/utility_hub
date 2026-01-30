@@ -29,8 +29,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useModalStore } from '@/stores/use-modal-state';
 import { useUpdateTariff } from '@/hooks/use-property';
+import { useModalStore } from '@/stores/use-modal-state';
 
 interface TariffChangeFormProps {
   property: IProperty;
@@ -42,11 +42,9 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
   const router = useRouter();
   const closeModal = useModalStore(s => s.closeModal);
 
-  const defaultTariffs =
-    property.currentTariff?.tariffs || property.lastReading?.tariff?.tariffs;
+  const defaultTariffs = property.currentTariff?.tariffs || property.lastReading?.tariff?.tariffs;
   const defaultFixed =
-    property.currentTariff?.fixedCosts ||
-    property.lastReading?.tariff?.fixedCosts;
+    property.currentTariff?.fixedCosts || property.lastReading?.tariff?.fixedCosts;
 
   const form = useForm<UpdatePropertySchema>({
     resolver: zodResolver(updatePropertySchema),
@@ -87,11 +85,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('ELECTRICITY_SELECT')}</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={true}
-              >
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={true}>
                 <FormControl>
                   <SelectTrigger className='w-full capitalize'>
                     <SelectValue placeholder={t('ELECTRICITY_SELECT')} />
@@ -121,9 +115,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                   <NumberInput
                     {...field}
                     onChange={undefined}
-                    onValueChange={({ floatValue }) =>
-                      field.onChange(floatValue)
-                    }
+                    onValueChange={({ floatValue }) => field.onChange(floatValue)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -144,9 +136,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -163,9 +153,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -187,9 +175,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                   <NumberInput
                     {...field}
                     onChange={undefined}
-                    onValueChange={({ floatValue }) =>
-                      field.onChange(floatValue)
-                    }
+                    onValueChange={({ floatValue }) => field.onChange(floatValue)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -206,9 +192,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                   <NumberInput
                     {...field}
                     onChange={undefined}
-                    onValueChange={({ floatValue }) =>
-                      field.onChange(floatValue)
-                    }
+                    onValueChange={({ floatValue }) => field.onChange(floatValue)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -243,9 +227,7 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
                     <NumberInput
                       {...field}
                       onChange={undefined}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
+                      onValueChange={({ floatValue }) => field.onChange(floatValue)}
                     />
                   </FormControl>
                   <FormMessage />

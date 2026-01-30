@@ -1,5 +1,8 @@
 import type { MonthSchema } from '@workspace/utils';
 
+// --- DB row types (snake_case from database) ---
+// Типи рядків БД (snake_case з бази даних)
+
 interface ReadingsDbRow {
   property_id?: string;
   date?: Date;
@@ -10,11 +13,10 @@ interface ReadingsDbRow {
   electricity_night?: number | null;
 }
 
-/** DB/API tariff shape (snake_case) */
-interface TariffDb {
+interface TariffDbRow {
   id: string;
-  start_date: string;
-  end_date: string;
+  start_date: Date | string;
+  end_date: Date | string | null;
   rate_electricity_single: number;
   rate_electricity_day: number;
   rate_electricity_night: number;
@@ -25,8 +27,41 @@ interface TariffDb {
   fixed_gas_delivery: number;
 }
 
-/** Difference shape for calculateTotal */
-interface DiffShape {
+interface ReadingDbRow {
+  id: string;
+  property_id: string;
+  date: Date | string;
+  water: number | null;
+  gas: number | null;
+  electricity_single: number | null;
+  electricity_day: number | null;
+  electricity_night: number | null;
+  diff_water?: number | null;
+  diff_gas?: number | null;
+  diff_electricity_single?: number | null;
+  diff_electricity_day?: number | null;
+  diff_electricity_night?: number | null;
+  prev_water?: number | null;
+  prev_gas?: number | null;
+  prev_electricity_single?: number | null;
+  prev_electricity_day?: number | null;
+  prev_electricity_night?: number | null;
+  created_at: string | null;
+}
+
+interface PropertyDbRow {
+  id: string;
+  user_id: string;
+  name: string;
+  electricity_type: 'single' | 'double' | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// --- Diff shape for calculateTotal ---
+// Форма різниці для calculateTotal
+
+interface DiffForTotal {
   water: number;
   gas: number;
   electricity_single: number;
@@ -34,45 +69,125 @@ interface DiffShape {
   electricity_night: number;
 }
 
-/** DB/API reading shape (snake_case) */
-interface ReadingDb {
-  id: string;
-  property_id: string;
-  date: string;
-  water: number;
-  gas: number;
-  electricity_single: number | null;
-  electricity_day: number | null;
-  electricity_night: number | null;
-  diff_water?: number;
-  diff_gas?: number;
-  diff_electricity_single?: number;
-  diff_electricity_day?: number;
-  diff_electricity_night?: number;
-  prev_water?: number;
-  prev_gas?: number;
-  prev_electricity_single?: number;
-  prev_electricity_day?: number;
-  prev_electricity_night?: number;
-  created_at: string;
+// --- Frontend (mapped) types ---
+// Типи для фронту (результати маппінгу)
+
+interface ElectricityRates {
+  single: number;
+  day: number;
+  night: number;
 }
 
-/** DB/API property shape (snake_case) */
-interface PropertyDb {
+interface TariffFrontend {
   id: string;
-  user_id: string;
-  name: string;
-  electricity_type: 'single' | 'double';
-  created_at: string;
-  updated_at: string;
+  startDate: Date | string;
+  endDate: Date | string | null;
+  tariffs: {
+    electricity: ElectricityRates;
+    water: number;
+    gas: number;
+  };
+  fixedCosts: {
+    internet: number;
+    maintenance: number;
+    gas_delivery: number;
+  };
 }
+
+interface MetersShape {
+  water: number | null;
+  gas: number | null;
+  electricity: {
+    single: number | null;
+    day: number | null;
+    night: number | null;
+  };
+}
+
+interface DifferenceShape {
+  water: number;
+  gas: number;
+  electricity: {
+    single: number;
+    day: number;
+    night: number;
+  };
+}
+
+interface EmptyReadingReturn {
+  id: null;
+  electricityType: 'single' | 'double' | null;
+  date: null;
+  meters: {
+    water: number;
+    gas: number;
+    electricity: { single: number; day: number; night: number };
+  };
+  difference: {
+    water: number;
+    gas: number;
+    electricity: { single: number; day: number; night: number };
+  };
+  prevMeters: {
+    water: number;
+    gas: number;
+    electricity: { single: number; day: number; night: number };
+  };
+  tariff: null;
+  total: number;
+  createdAt: null;
+}
+
+interface ReadingFrontend {
+  id: string;
+  propertyId: string;
+  electricityType: 'single' | 'double';
+  date: Date | string;
+  meters: MetersShape;
+  difference: DifferenceShape;
+  prevMeters: {
+    water: number;
+    gas: number;
+    electricity: { single: number; day: number; night: number };
+  };
+  tariff: TariffFrontend | null;
+  total: number;
+  createdAt: string | null;
+}
+
+interface PropertyFrontend {
+  id: string;
+  userId: string;
+  name: string;
+  electricityType: 'single' | 'double' | null;
+  createdAt: string;
+  updatedAt: string;
+  lastReading: ReadingFrontend | EmptyReadingReturn | null;
+  currentTariff: TariffFrontend | null;
+}
+
+// --- Helpers ---
+
+function resolveElectricityType(
+  reading: ReadingDbRow,
+  propertyElectricityType: 'single' | 'double' | null,
+): 'single' | 'double' {
+  if (reading.electricity_day !== null || reading.electricity_night !== null) {
+    return 'double';
+  }
+  if (reading.electricity_single !== null) {
+    return 'single';
+  }
+  return (propertyElectricityType as 'single' | 'double') || 'single';
+}
+
+// --- Mappers ---
 
 export const createEmptyReading = (
   electricityType: 'single' | 'double' | null = 'single',
-  propertyId: string | null = null,
-) => ({
+  _propertyId?: string,
+): EmptyReadingReturn => ({
   id: null,
-  propertyId,
   electricityType,
   date: null,
   meters: {
@@ -107,7 +222,7 @@ export const createEmptyReading = (
   createdAt: null,
 });
 
-export const mapTariffToFrontend = (tariff: TariffDb) => ({
+export const mapTariffToFrontend = (tariff: TariffDbRow): TariffFrontend => ({
   id: tariff.id,
   startDate: tariff.start_date,
   endDate: tariff.end_date,
@@ -127,7 +242,7 @@ export const mapTariffToFrontend = (tariff: TariffDb) => ({
   },
 });
 
-export const calculateTotal = (diff: DiffShape, tariff: TariffDb) => {
+export const calculateTotal = (diff: DiffForTotal, tariff: TariffDbRow | null): number => {
   if (!tariff) return 0;
 
   let electricityCost: number;
@@ -141,20 +256,12 @@ export const calculateTotal = (diff: DiffShape, tariff: TariffDb) => {
 
   const waterCost = diff.water * tariff.rate_water;
   const gasCost = diff.gas * tariff.rate_gas;
-  const fixedCost =
-    tariff.fixed_internet +
-    tariff.fixed_maintenance +
-    tariff.fixed_gas_delivery;
+  const fixedCost = tariff.fixed_internet + tariff.fixed_maintenance + tariff.fixed_gas_delivery;
 
-  return (
-    Math.round((electricityCost + waterCost + gasCost + fixedCost) * 100) / 100
-  );
+  return Math.round((electricityCost + waterCost + gasCost + fixedCost) * 100) / 100;
 };
 
-export const mapFormDataToDb = (
-  data: Partial<MonthSchema>,
-  propertyId?: string,
-): ReadingsDbRow => {
+export const mapFormDataToDb = (data: Partial<MonthSchema>, propertyId?: string): ReadingsDbRow => {
   const payload: ReadingsDbRow = {};
 
   if (propertyId) payload.property_id = propertyId;
@@ -180,19 +287,23 @@ export const mapFormDataToDb = (
 };
 
 export const mapReadingToFrontend = (
-  reading: ReadingDb,
-  tariff: TariffDb | null = null,
+  reading: ReadingDbRow,
+  tariff: TariffDbRow | null = null,
   propertyElectricityType: 'single' | 'double' | null = null,
-) => {
-  let actualType = propertyElectricityType || 'single';
+): ReadingFrontend => {
+  // --- ЛОГІКА АВТОВИЗНАЧЕННЯ ТИПУ ---
+  // Ми використовуємо тип з Property як дефолтний.
+  // Але якщо ми бачимо, що в базі заповнені поля day/night (і вони не null),
+  // то ми примусово ставимо тип 'double' для цього конкретного запису.
+  // Це рятує історію, якщо ти поміняв лічильник.
+  //
+  // --- Type auto-detection logic ---
+  // We use Property type as default. If day/night are filled in DB (not null),
+  // we force 'double' for this record (handles meter type change in history).
 
-  if (reading.electricity_day !== null || reading.electricity_night !== null) {
-    actualType = 'double';
-  } else if (reading.electricity_single !== null) {
-    actualType = 'single';
-  }
+  const actualType = resolveElectricityType(reading, propertyElectricityType);
 
-  const diff = {
+  const diff: DiffForTotal = {
     water: Math.max(reading.diff_water ?? 0, 0),
     gas: Math.max(reading.diff_gas ?? 0, 0),
     electricity_single: Math.max(reading.diff_electricity_single ?? 0, 0),
@@ -241,21 +352,16 @@ export const mapReadingToFrontend = (
 };
 
 export const mapPropertyToFrontend = (
-  prop: PropertyDb,
-  lastReading:
-    | ReturnType<typeof mapReadingToFrontend>
-    | ReturnType<typeof createEmptyReading>
-    | null = null,
-  currentTariff: ReturnType<typeof mapTariffToFrontend> | null = null,
-) => {
-  return {
-    id: prop.id,
-    userId: prop.user_id,
-    name: prop.name,
-    electricityType: prop.electricity_type,
-    createdAt: prop.created_at,
-    updatedAt: prop.updated_at,
-    lastReading,
-    currentTariff,
-  };
-};
+  prop: PropertyDbRow,
+  lastReading: ReadingFrontend | EmptyReadingReturn | null = null,
+  currentTariff: TariffFrontend | null = null,
+): PropertyFrontend => ({
+  id: prop.id,
+  userId: prop.user_id,
+  name: prop.name,
+  electricityType: prop.electricity_type,
+  createdAt: prop.created_at,
+  updatedAt: prop.updated_at,
+  lastReading,
+  currentTariff,
+});

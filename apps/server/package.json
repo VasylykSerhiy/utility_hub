@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "ts-node-dev --transpile-only src/main.ts",
     "build": "tsc",
-    "lint": "pnpm -w exec biome check .",
-    "lint:fix": "pnpm -w exec biome check --write .",
+    "lint": "eslint .",
     "start": "node dist/main.js"
   },
   "dependencies": {
@@ -30,6 +29,7 @@
     "@types/cors": "2.8.19",
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
+    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*"
   }
 }

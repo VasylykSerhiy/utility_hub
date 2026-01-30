@@ -12,9 +12,7 @@ export const ModalComponents = {
 } as const;
 
 export type ModalMap = {
-  [K in keyof typeof ModalComponents]: ComponentProps<
-    (typeof ModalComponents)[K]
-  >;
+  [K in keyof typeof ModalComponents]: ComponentProps<(typeof ModalComponents)[K]>;
 };
 
 export type ModalType = keyof ModalMap;

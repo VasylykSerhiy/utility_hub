@@ -25,17 +25,10 @@ export function DropdownActions({ actions }: DropdownActionsProps) {
       <DropdownMenuContent align='end' className='flex flex-col gap-0.5'>
         {actions.map(({ className, ...action }, index) => (
           <DropdownMenuItem
-            key={
-              typeof action.children === 'string'
-                ? action.children
-                : `action-${index}`
-            }
+            key={typeof action.children === 'string' ? action.children : `action-${index}`}
             asChild
           >
-            <Button
-              {...action}
-              className={cn('w-full justify-start', className)}
-            />
+            <Button {...action} className={cn('w-full justify-start', className)} />
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

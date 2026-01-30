@@ -1,8 +1,5 @@
 import { monthSchema } from '@workspace/utils/schemas/month';
-import {
-  createPropertySchema,
-  updatePropertySchema,
-} from '@workspace/utils/schemas/property';
+import { createPropertySchema, updatePropertySchema } from '@workspace/utils/schemas/property';
 import { Router } from 'express';
 
 import { propertyController } from '../controllers';
@@ -11,17 +8,9 @@ import { validateRequest } from '../utils/validation.util';
 
 const propertyRouter = Router();
 
-propertyRouter.get(
-  '/',
-  authMiddleware.requireAuth,
-  propertyController.getProperties,
-);
+propertyRouter.get('/', authMiddleware.requireAuth, propertyController.getProperties);
 
-propertyRouter.get(
-  '/:id',
-  authMiddleware.requireAuth,
-  propertyController.getProperty,
-);
+propertyRouter.get('/:id', authMiddleware.requireAuth, propertyController.getProperty);
 
 propertyRouter.post(
   '/',
@@ -37,23 +26,11 @@ propertyRouter.put(
   propertyController.updateProperty,
 );
 
-propertyRouter.delete(
-  '/:id',
-  authMiddleware.requireAuth,
-  propertyController.deleteProperty,
-);
+propertyRouter.delete('/:id', authMiddleware.requireAuth, propertyController.deleteProperty);
 
-propertyRouter.get(
-  '/:id/months',
-  authMiddleware.requireAuth,
-  propertyController.getMonths,
-);
+propertyRouter.get('/:id/months', authMiddleware.requireAuth, propertyController.getMonths);
 
-propertyRouter.get(
-  '/:id/months/:monthId',
-  authMiddleware.requireAuth,
-  propertyController.getMonth,
-);
+propertyRouter.get('/:id/months/:monthId', authMiddleware.requireAuth, propertyController.getMonth);
 
 propertyRouter.post(
   '/:id/months',
@@ -79,16 +56,8 @@ propertyRouter.get(
   propertyController.getLastTariff,
 );
 
-propertyRouter.get(
-  '/:id/tariffs',
-  authMiddleware.requireAuth,
-  propertyController.getTariffs,
-);
+propertyRouter.get('/:id/tariffs', authMiddleware.requireAuth, propertyController.getTariffs);
 
-propertyRouter.get(
-  '/:id/metrics',
-  authMiddleware.requireAuth,
-  propertyController.getMetrics,
-);
+propertyRouter.get('/:id/metrics', authMiddleware.requireAuth, propertyController.getMetrics);
 
 export default propertyRouter;

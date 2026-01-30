@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { AuthInput } from '@workspace/utils';
 
-import { userService } from '@/services/user.service';
 import { mutationKey, queryKeys } from '@/constants/query-key';
+import { userService } from '@/services/user.service';
 
 export const useAuthUser = () => {
   return useMutation({

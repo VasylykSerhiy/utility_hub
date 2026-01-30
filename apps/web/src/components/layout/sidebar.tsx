@@ -1,8 +1,7 @@
 'use client';
 
-import Logo from '@/components/logo';
-
 import Navigations from './navigations';
+import Logo from '@/components/logo';
 
 const Sidebar = () => {
   return (

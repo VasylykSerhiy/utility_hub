@@ -23,19 +23,12 @@ async function triggerHeartbeat(): Promise<void> {
     if (fetchError) throw fetchError;
 
     if (latestRecords && latestRecords.length > 0) {
-      const idsToDelete: number[] = latestRecords.map(
-        (record: { id: number }) => record.id,
-      );
+      const idsToDelete: number[] = latestRecords.map((record: { id: number }) => record.id);
 
-      const { error: deleteError } = await supabase
-        .from('p_activo')
-        .delete()
-        .in('id', idsToDelete);
+      const { error: deleteError } = await supabase.from('p_activo').delete().in('id', idsToDelete);
 
       if (deleteError) throw deleteError;
-      console.log(
-        `Step 2: Cleaned up ${idsToDelete.length} old heartbeat records.`,
-      );
+      console.log(`Step 2: Cleaned up ${idsToDelete.length} old heartbeat records.`);
     }
 
     console.log('--- Heartbeat Task Completed Successfully ---');

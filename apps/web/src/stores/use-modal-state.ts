@@ -10,10 +10,7 @@ interface ModalState {
   type: ModalType | null;
   props: Record<string, unknown>;
 
-  openModal: <T extends ModalType>(
-    type: T,
-    props: Omit<ModalMap[T], 'closeModal'>,
-  ) => void;
+  openModal: <T extends ModalType>(type: T, props: Omit<ModalMap[T], 'closeModal'>) => void;
 
   closeModal: () => void;
 }

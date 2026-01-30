@@ -2,11 +2,7 @@ import type z from 'zod';
 
 import type { authSchema } from './auth';
 import type { monthSchemaClient } from './month';
-import type {
-  createPropertySchema,
-  propertySchema,
-  updatePropertySchema,
-} from './property';
+import type { createPropertySchema, propertySchema, updatePropertySchema } from './property';
 import type {
   userAuthShema,
   userCreateShema,

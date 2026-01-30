@@ -4,7 +4,7 @@ import app from './app';
 
 const port = Number(process?.env?.PORT || 3010);
 
-const init = async (): Promise<void> => {
+const init = () => {
   const server = http.createServer(app);
 
   server.listen(port, '::', () => {

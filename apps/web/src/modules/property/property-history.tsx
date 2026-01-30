@@ -1,17 +1,12 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 import Tabs from '@workspace/ui/components/tabs';
 import { useTranslation } from 'react-i18next';
 
-import { useTabs } from '@/hooks/use-tabs';
 import ReadingTable from '@/components/tables/reading-table';
 import TariffsTable from '@/components/tables/tariffs-table';
+import { useTabs } from '@/hooks/use-tabs';
 
 const PropertyHistory = () => {
   const { t } = useTranslation();
@@ -40,11 +35,7 @@ const PropertyHistory = () => {
         <CardTitle>{t('HISTORY')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs
-          tabs={tabs}
-          activeTabId={activeTabId}
-          onTabChangeAction={changeTab}
-        />
+        <Tabs tabs={tabs} activeTabId={activeTabId} onTabChangeAction={changeTab} />
       </CardContent>
     </Card>
   );

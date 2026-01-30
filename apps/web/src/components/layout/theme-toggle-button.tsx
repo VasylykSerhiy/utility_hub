@@ -10,13 +10,7 @@ export const ThemeToggleButton: React.FC = () => {
 
   return (
     <Switch
-      icon={
-        isDarkMode ? (
-          <MoonIcon className='h-5 w-5' />
-        ) : (
-          <SunMediumIcon className='h-5 w-5' />
-        )
-      }
+      icon={isDarkMode ? <MoonIcon className='h-5 w-5' /> : <SunMediumIcon className='h-5 w-5' />}
       checked={isDarkMode}
       onCheckedChange={() => setTheme(ps => (ps === 'dark' ? 'light' : 'dark'))}
       className='w-15 h-9'

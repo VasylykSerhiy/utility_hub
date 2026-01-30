@@ -27,12 +27,7 @@ const TariffsTable = () => {
   });
 
   return (
-    <Table
-      withPagination
-      handlePage={setPage}
-      page={page}
-      totalPages={data?.totalPages || 1}
-    >
+    <Table withPagination handlePage={setPage} page={page} totalPages={data?.totalPages || 1}>
       <TableHeader>
         <TableRow>
           <TableHead>{t('DATE')}</TableHead>
@@ -50,32 +45,19 @@ const TariffsTable = () => {
           <TableRow key={tariff.id}>
             <TableCell>
               {formatDate({ date: tariff.startDate })}{' '}
-              {tariff.endDate
-                ? `- ${formatDate({ date: tariff.endDate })}`
-                : ''}
+              {tariff.endDate ? `- ${formatDate({ date: tariff.endDate })}` : ''}
             </TableCell>
             <TableCell>
               {formatCurrencySymbol(
-                tariff?.tariffs?.electricity?.single ??
-                  tariff?.tariffs?.electricity?.day,
+                tariff?.tariffs?.electricity?.single ?? tariff?.tariffs?.electricity?.day,
               )}
             </TableCell>
-            <TableCell>
-              {formatCurrencySymbol(tariff?.tariffs?.electricity?.night)}
-            </TableCell>
+            <TableCell>{formatCurrencySymbol(tariff?.tariffs?.electricity?.night)}</TableCell>
             <TableCell>{formatCurrencySymbol(tariff?.tariffs?.gas)}</TableCell>
-            <TableCell>
-              {formatCurrencySymbol(tariff?.tariffs?.water)}
-            </TableCell>
-            <TableCell>
-              {formatCurrencySymbol(tariff?.fixedCosts?.internet)}
-            </TableCell>
-            <TableCell>
-              {formatCurrencySymbol(tariff?.fixedCosts?.maintenance)}
-            </TableCell>
-            <TableCell>
-              {formatCurrencySymbol(tariff?.fixedCosts?.gas_delivery)}
-            </TableCell>
+            <TableCell>{formatCurrencySymbol(tariff?.tariffs?.water)}</TableCell>
+            <TableCell>{formatCurrencySymbol(tariff?.fixedCosts?.internet)}</TableCell>
+            <TableCell>{formatCurrencySymbol(tariff?.fixedCosts?.maintenance)}</TableCell>
+            <TableCell>{formatCurrencySymbol(tariff?.fixedCosts?.gas_delivery)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

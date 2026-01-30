@@ -1,10 +1,7 @@
 import type { PaginateOptions } from '@workspace/types';
 import type mongoose from 'mongoose';
 
-export const findWithPagination = async <
-  TDoc extends mongoose.Document,
-  TResult = TDoc,
->(
+export const findWithPagination = async <TDoc extends mongoose.Document, TResult = TDoc>(
   model: mongoose.Model<TDoc>,
   filter: mongoose.FilterQuery<TDoc>,
   sort: Record<string, mongoose.SortOrder> = {},

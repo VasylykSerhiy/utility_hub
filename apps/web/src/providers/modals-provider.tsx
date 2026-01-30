@@ -4,11 +4,8 @@ import { type ComponentType, Suspense } from 'react';
 
 import { Dialog } from '@workspace/ui/components/dialog';
 
+import { ModalComponents, type ModalMap } from '@/components/modals/modal-registry';
 import { useModalStore } from '@/stores/use-modal-state';
-import {
-  ModalComponents,
-  type ModalMap,
-} from '@/components/modals/modal-registry';
 
 export const ModalsProvider = () => {
   const { isOpen, type, props, closeModal } = useModalStore(state => ({
@@ -24,9 +21,7 @@ export const ModalsProvider = () => {
 
   if (!type) return null;
 
-  const SpecificModal = ModalComponents[type] as ComponentType<
-    ModalMap[typeof type]
-  >;
+  const SpecificModal = ModalComponents[type] as ComponentType<ModalMap[typeof type]>;
 
   return (
     isOpen && (

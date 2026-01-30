@@ -27,20 +27,17 @@ const Page = () => {
           </CardHeader>
           <CardContent>
             <p className='text-muted-foreground text-sm'>
-              If you registered using your email and password, you will receive
-              a password reset email.
+              If you registered using your email and password, you will receive a password reset
+              email.
             </p>
           </CardContent>
         </>
       ) : (
         <>
           <CardHeader>
-            <CardTitle className='text-lg tracking-tight'>
-              Forgot Password
-            </CardTitle>
+            <CardTitle className='text-lg tracking-tight'>Forgot Password</CardTitle>
             <CardDescription>
-              Enter your registered email and <br /> we will send you a link to
-              reset your password.
+              Enter your registered email and <br /> we will send you a link to reset your password.
             </CardDescription>
           </CardHeader>
           <CardContent>

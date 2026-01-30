@@ -1,21 +1,9 @@
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-import type {
-  GetPropertyMonth,
-  GetPropertyMonths,
-  GetPropertyTariffs,
-} from '@workspace/types';
-import type {
-  CreatePropertySchema,
-  UpdatePropertySchema,
-} from '@workspace/utils';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { GetPropertyMonth, GetPropertyMonths, GetPropertyTariffs } from '@workspace/types';
+import type { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
 
-import { propertyService } from '@/services/property.service';
 import { mutationKey, queryKeys } from '@/constants/query-key';
+import { propertyService } from '@/services/property.service';
 
 export const getProperties = () => {
   return useQuery({
@@ -52,11 +40,7 @@ export const useDeleteProperty = () => {
   });
 };
 
-export const getPropertyMonths = ({
-  id,
-  page,
-  pageSize,
-}: GetPropertyMonths) => {
+export const getPropertyMonths = ({ id, page, pageSize }: GetPropertyMonths) => {
   return useQuery({
     queryKey: [queryKeys.months, id, page, pageSize],
     queryFn: () => propertyService.getPropertyMonths({ id, page, pageSize }),
@@ -79,8 +63,7 @@ export const getPropertyMonth = ({ propertyId, monthId }: GetPropertyMonth) => {
 export const useDeletePropertyMonth = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: GetPropertyMonth) =>
-      propertyService.deletePropertyMonth(data),
+    mutationFn: (data: GetPropertyMonth) => propertyService.deletePropertyMonth(data),
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: [queryKeys.property],
@@ -99,10 +82,8 @@ export const useCreateProperty = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: [mutationKey.property_create],
-    mutationFn: (data: CreatePropertySchema) =>
-      propertyService.createProperty(data),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: [queryKeys.property] }),
+    mutationFn: (data: CreatePropertySchema) => propertyService.createProperty(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [queryKeys.property] }),
   });
 };
 
@@ -166,11 +147,7 @@ export const getPropertyLastTariff = ({ id }: GetPropertyMonths) => {
   });
 };
 
-export const getPropertyTariffs = ({
-  id,
-  page,
-  pageSize,
-}: GetPropertyTariffs) => {
+export const getPropertyTariffs = ({ id, page, pageSize }: GetPropertyTariffs) => {
   return useQuery({
     queryKey: [queryKeys.tariff, id, page, pageSize],
     queryFn: () => propertyService.getPropertyTariffs({ id, page, pageSize }),

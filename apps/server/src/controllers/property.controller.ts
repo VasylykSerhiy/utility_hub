@@ -7,11 +7,7 @@ const getUserId = (req: Request): string => {
   return req.user.id;
 };
 
-const getProperties = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const getProperties = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
     const properties = await propertyService.getProperties(userId);
@@ -26,8 +22,7 @@ const getProperty = async (req: Request, res: Response, next: NextFunction) => {
     const userId = getUserId(req);
     const { id } = req.params;
 
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const property = await propertyService.getProperty(userId, id);
     res.json(property);
@@ -36,11 +31,7 @@ const getProperty = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const createProperty = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const createProperty = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
 
@@ -55,17 +46,12 @@ const createProperty = async (
   }
 };
 
-const updateProperty = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const updateProperty = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
     const { id } = req.params;
 
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const property = await propertyService.updateProperty({
       userId,
@@ -79,17 +65,12 @@ const updateProperty = async (
   }
 };
 
-const deleteProperty = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const deleteProperty = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
     const { id } = req.params;
 
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     await propertyService.deleteProperty({
       userId,
@@ -105,8 +86,7 @@ const deleteProperty = async (
 const getMonths = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const months = await readingService.getMonths({
       propertyId: id,
@@ -124,11 +104,9 @@ const getMonth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
     const { id, monthId } = req.params;
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
-    if (!monthId)
-      return res.status(400).json({ message: 'Month ID is required' });
+    if (!monthId) return res.status(400).json({ message: 'Month ID is required' });
 
     const month = await readingService.getMonth({
       propertyId: id,
@@ -146,10 +124,8 @@ const editMonth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id, monthId } = req.params;
 
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
-    if (!monthId)
-      return res.status(400).json({ message: 'Month ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
+    if (!monthId) return res.status(400).json({ message: 'Month ID is required' });
 
     const month = await readingService.editMonth({
       propertyId: id,
@@ -167,10 +143,8 @@ const deleteMonth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id, monthId } = req.params;
 
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
-    if (!monthId)
-      return res.status(400).json({ message: 'Month ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
+    if (!monthId) return res.status(400).json({ message: 'Month ID is required' });
 
     await readingService.deleteMonth({
       propertyId: id,
@@ -188,8 +162,7 @@ const createMonth = async (req: Request, res: Response, next: NextFunction) => {
     const userId = getUserId(req);
     const { id } = req.params;
 
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const month = await readingService.createMonth({
       userId,
@@ -203,15 +176,10 @@ const createMonth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getLastTariff = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const getLastTariff = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const tariff = await tariffService.getLastTariff(id);
     res.json(tariff);
@@ -223,8 +191,7 @@ const getLastTariff = async (
 const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const tariffs = await tariffService.getTariffs({
       propertyId: id,
@@ -241,8 +208,7 @@ const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
 const getMetrics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    if (!id)
-      return res.status(400).json({ message: 'Property ID is required' });
+    if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     const result = await propertyService.getMetrics({ propertyId: id });
     res.json(result);

@@ -1,10 +1,6 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import morgan from 'morgan';
 
 import { ClientError } from './models/errors';
@@ -30,9 +26,7 @@ app.use('/v1', routes);
 
 app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof ClientError) {
-    res
-      .status(error.status || 400)
-      .json(errorResponseHandler.getClientErrorResponse(error));
+    res.status(error.status || 400).json(errorResponseHandler.getClientErrorResponse(error));
 
     return;
   }
