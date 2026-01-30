@@ -69,8 +69,10 @@ interface PropertyDb {
 
 export const createEmptyReading = (
   electricityType: 'single' | 'double' | null = 'single',
+  propertyId: string | null = null,
 ) => ({
   id: null,
+  propertyId,
   electricityType,
   date: null,
   meters: {
@@ -182,12 +184,6 @@ export const mapReadingToFrontend = (
   tariff: TariffDb | null = null,
   propertyElectricityType: 'single' | 'double' | null = null,
 ) => {
-  // --- ЛОГІКА АВТОВИЗНАЧЕННЯ ТИПУ ---
-  // Ми використовуємо тип з Property як дефолтний.
-  // Але якщо ми бачимо, що в базі заповнені поля day/night (і вони не null),
-  // то ми примусово ставимо тип 'double' для цього конкретного запису.
-  // Це рятує історію, якщо ти поміняв лічильник.
-
   let actualType = propertyElectricityType || 'single';
 
   if (reading.electricity_day !== null || reading.electricity_night !== null) {
@@ -246,7 +242,10 @@ export const mapReadingToFrontend = (
 
 export const mapPropertyToFrontend = (
   prop: PropertyDb,
-  lastReading: ReturnType<typeof mapReadingToFrontend> | null = null,
+  lastReading:
+    | ReturnType<typeof mapReadingToFrontend>
+    | ReturnType<typeof createEmptyReading>
+    | null = null,
   currentTariff: ReturnType<typeof mapTariffToFrontend> | null = null,
 ) => {
   return {

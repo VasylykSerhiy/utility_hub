@@ -50,7 +50,7 @@ const getProperties = async (userId: string) => {
             historicalTariff,
             prop.electricity_type,
           )
-        : createEmptyReading(prop.electricity_type);
+        : createEmptyReading(prop.electricity_type, prop.id);
 
       const mappedCurrentTariff = currentTariff
         ? mapTariffToFrontend(currentTariff)
@@ -102,7 +102,7 @@ const getProperty = async (userId: string, propertyId: string) => {
         historicalTariff,
         property.electricity_type,
       )
-    : createEmptyReading(property.electricity_type);
+    : createEmptyReading(property.electricity_type, propertyId);
 
   const mappedCurrentTariff = currentTariff
     ? mapTariffToFrontend(currentTariff)

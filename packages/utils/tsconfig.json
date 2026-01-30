@@ -1,11 +1,17 @@
 {
   "extends": "@workspace/typescript-config/utils.json",
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@workspace/utils/*": ["./src/*"]
+      "@workspace/utils/*": [
+        "./src/*"
+      ]
     }
   }
 }
