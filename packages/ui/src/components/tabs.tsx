@@ -1,10 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { cn } from '@workspace/ui/lib/utils';
 
 import { AnimatePresence, motion } from 'framer-motion';
-
-import { cn } from '@workspace/ui/lib/utils';
+import type { ReactNode } from 'react';
 
 type Tab = {
   label: string;
@@ -34,6 +33,7 @@ export default function Tabs({
       <div className={cn('mb-6 flex gap-4 border-b', className)}>
         {tabs.map(tab => (
           <button
+            type='button'
             key={tab.id}
             onClick={() => onTabChangeAction(tab.id)}
             className={cn(

@@ -1,11 +1,13 @@
 'use client';
 
-import { Suspense } from 'react';
-
-import { ModalComponents } from '@/components/modals/modal-registry';
-import { useModalStore } from '@/stores/use-modal-state';
-
 import { Dialog } from '@workspace/ui/components/dialog';
+import type { ComponentType } from 'react';
+import { Suspense } from 'react';
+import {
+  ModalComponents,
+  type ModalMap,
+} from '@/components/modals/modal-registry';
+import { useModalStore } from '@/stores/use-modal-state';
 
 export const ModalsProvider = () => {
   const { isOpen, type, props, closeModal } = useModalStore(state => ({
@@ -21,13 +23,15 @@ export const ModalsProvider = () => {
 
   if (!type) return null;
 
-  const SpecificModal = ModalComponents[type];
+  const SpecificModal = ModalComponents[type] as ComponentType<
+    ModalMap[typeof type]
+  >;
 
   return (
     isOpen && (
       <Dialog open={true} onOpenChange={handleOpenChange}>
         <Suspense fallback={null}>
-          <SpecificModal {...(props as any)} />
+          <SpecificModal {...(props as unknown as ModalMap[typeof type])} />
         </Suspense>
       </Dialog>
     )

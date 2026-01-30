@@ -1,15 +1,6 @@
 'use client';
 
-import { HTMLAttributes, useState } from 'react';
-
-import { useRouter } from 'next/navigation';
-
-import { Routes } from '@/constants/router';
-import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserUpdatePassword, userUpdatePassword } from '@workspace/utils';
-import { useForm } from 'react-hook-form';
-
 import { Button } from '@workspace/ui/components/button';
 import {
   Form,
@@ -21,6 +12,12 @@ import {
 } from '@workspace/ui/components/form';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
+import { type UserUpdatePassword, userUpdatePassword } from '@workspace/utils';
+import { useRouter } from 'next/navigation';
+import { type HTMLAttributes, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Routes } from '@/constants/router';
+import { createClient } from '@/lib/supabase/client';
 
 interface UpdatePasswordFormProps extends HTMLAttributes<HTMLFormElement> {}
 

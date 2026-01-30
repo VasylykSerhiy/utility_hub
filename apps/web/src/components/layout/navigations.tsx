@@ -1,14 +1,11 @@
 'use client';
 
-import React from 'react';
+import { cn } from '@workspace/ui/lib/utils';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import { type ILink, links } from '@/constants/router';
 import { useTranslation } from 'react-i18next';
-
-import { cn } from '@workspace/ui/lib/utils';
+import { type ILink, links } from '@/constants/router';
 
 interface INavigationsProps {
   onClick?: (link: ILink) => void;

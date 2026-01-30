@@ -1,14 +1,11 @@
 'use client';
 
-import { useCreateMeter, useUpdateMeter } from '@/hooks/use-property';
-import { useLanguage } from '@/providers/language-provider';
-import { useModalStore } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IElectricityType, IMonth, IProperty } from '@workspace/types';
-import { MonthSchema, monthSchemaClient } from '@workspace/utils';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
+import {
+  IElectricityType,
+  type IMonth,
+  type IProperty,
+} from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import { DatePicker } from '@workspace/ui/components/date-picker';
 import {
@@ -21,6 +18,12 @@ import {
 } from '@workspace/ui/components/form';
 import NumberInput from '@workspace/ui/components/number-input';
 import { cn } from '@workspace/ui/lib/utils';
+import { type MonthSchema, monthSchemaClient } from '@workspace/utils';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useCreateMeter, useUpdateMeter } from '@/hooks/use-property';
+import { useLanguage } from '@/providers/language-provider';
+import { useModalStore } from '@/stores/use-modal-state';
 
 interface MeterCreateFormProps {
   property: IProperty;

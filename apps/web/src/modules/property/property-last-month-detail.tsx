@@ -1,18 +1,15 @@
 'use client';
 
-import React from 'react';
-
-import MeterTable from '@/components/tables/meter-table';
-import { LastReading } from '@workspace/types';
-import { formatDate, numericFormatter } from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-
+import type { LastReading } from '@workspace/types';
 import {
   CardContent,
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
 import { Skeleton } from '@workspace/ui/components/skeleton';
+import { formatDate, numericFormatter } from '@workspace/utils';
+import { useTranslation } from 'react-i18next';
+import MeterTable from '@/components/tables/meter-table';
 
 interface PropertyLastMonthDetailProps {
   name?: string;

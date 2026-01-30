@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import type { Request } from 'express';
 
 export const getUserId = (req: Request): string => {
   if (!req.user?.id) throw new Error('User ID missing in request');

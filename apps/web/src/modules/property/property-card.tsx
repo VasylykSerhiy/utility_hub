@@ -1,20 +1,17 @@
 'use client';
 
-import { useRef } from 'react';
-
+import type { IProperty } from '@workspace/types';
+import { Button } from '@workspace/ui/components/button';
+import { Card, CardFooter } from '@workspace/ui/components/card';
+import domtoimage from 'dom-to-image';
+import { Camera } from 'lucide-react';
 import Link from 'next/link';
-
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Routes } from '@/constants/router';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { useModalStore } from '@/stores/use-modal-state';
-import { IProperty } from '@workspace/types';
-import domtoimage from 'dom-to-image';
-import { Camera } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
-
-import { Button } from '@workspace/ui/components/button';
-import { Card, CardFooter } from '@workspace/ui/components/card';
 
 export function PropertyCard({ lastReading, name, id }: IProperty) {
   const { t } = useTranslation();
@@ -28,9 +25,9 @@ export function PropertyCard({ lastReading, name, id }: IProperty) {
       const originalBlock = blockRef.current;
       const clonedBlock = originalBlock.cloneNode(true) as HTMLElement;
 
-      clonedBlock
-        .querySelectorAll('button')
-        .forEach(btn => (btn.style.visibility = 'hidden'));
+      clonedBlock.querySelectorAll('button').forEach(btn => {
+        btn.style.visibility = 'hidden';
+      });
 
       const container = document.createElement('div');
       container.style.position = 'fixed';
@@ -74,7 +71,7 @@ export function PropertyCard({ lastReading, name, id }: IProperty) {
       <PropertyLastMonthDetail name={name} lastReading={lastReading} />
       <CardFooter>
         <div className='grid w-full grid-cols-2 gap-2'>
-          <Link href={Routes.PROPERTY + '/' + id}>
+          <Link href={`${Routes.PROPERTY}/${id}`}>
             <Button className='w-full'>{t('BUTTONS.MORE')}</Button>
           </Link>
           <Button

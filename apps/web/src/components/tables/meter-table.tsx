@@ -1,11 +1,6 @@
 'use client';
 
-import React from 'react';
-
-import { IElectricityType, LastReading } from '@workspace/types';
-import { numericFormatter } from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-
+import { IElectricityType, type LastReading } from '@workspace/types';
 import {
   Table,
   TableBody,
@@ -14,6 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from '@workspace/ui/components/table';
+import { numericFormatter } from '@workspace/utils';
+import { useTranslation } from 'react-i18next';
 
 interface Row {
   meter: string;

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint *.ts*"
+    "lint": "pnpm -w exec biome check .",
+    "lint:fix": "pnpm -w exec biome check --write ."
   },
   "dependencies": {
     "i18next": "^25.0.0",

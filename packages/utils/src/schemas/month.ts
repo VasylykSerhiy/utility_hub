@@ -1,6 +1,5 @@
-import { z } from 'zod';
-
 import { electricitySchema } from '@workspace/utils/schemas/electricity';
+import { z } from 'zod';
 
 export const monthSchema = z.object({
   date: z.preprocess(arg => {

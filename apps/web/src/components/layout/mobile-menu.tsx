@@ -1,12 +1,5 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
-import Logo from '@/components/logo';
-import { useLanguage } from '@/providers/language-provider';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
-
 import {
   Select,
   SelectContent,
@@ -14,6 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@workspace/ui/components/select';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Logo from '@/components/logo';
+import { useLanguage } from '@/providers/language-provider';
 
 import Navigations from './navigations';
 import { ThemeToggleButton } from './theme-toggle-button';
@@ -61,6 +59,7 @@ const MobileHeader = () => {
           </Select>
           <ThemeToggleButton />
           <button
+            type='button'
             onClick={() => {
               setOpen(!open);
             }}

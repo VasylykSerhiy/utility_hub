@@ -1,16 +1,18 @@
 'use client';
 
-import * as React from 'react';
-
+import { Button, buttonVariants } from '@workspace/ui/components/button';
+import { cn } from '@workspace/ui/lib/utils';
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react';
-import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
-
-import { Button, buttonVariants } from '@workspace/ui/components/button';
-import { cn } from '@workspace/ui/lib/utils';
+import * as React from 'react';
+import {
+  type DayButton,
+  DayPicker,
+  getDefaultClassNames,
+} from 'react-day-picker';
 
 function Calendar({
   className,

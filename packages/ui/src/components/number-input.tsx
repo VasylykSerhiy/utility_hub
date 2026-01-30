@@ -1,9 +1,6 @@
-import React from 'react';
-
-import { NumericFormat, NumericFormatProps } from 'react-number-format';
-
 import { Input } from '@workspace/ui/components/input';
 import { cn } from '@workspace/ui/lib/utils';
+import { NumericFormat, type NumericFormatProps } from 'react-number-format';
 
 const NumberInput = ({ className, ...rest }: NumericFormatProps) => {
   return (

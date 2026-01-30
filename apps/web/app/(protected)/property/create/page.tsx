@@ -1,16 +1,13 @@
 'use client';
 
-import React from 'react';
-
-import { PropertyCreateForm } from '@/components/forms/property-create-form';
-import { useTranslation } from 'react-i18next';
-
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
+import { useTranslation } from 'react-i18next';
+import { PropertyCreateForm } from '@/components/forms/property-create-form';
 
 const Page = () => {
   const { t } = useTranslation();

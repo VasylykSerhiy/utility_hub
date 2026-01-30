@@ -11,9 +11,6 @@ export const ModalComponents = {
   createMeter: CreateMetter,
 } as const;
 
-type ModalComponentType =
-  (typeof ModalComponents)[keyof typeof ModalComponents];
-
 export type ModalMap = {
   [K in keyof typeof ModalComponents]: ComponentProps<
     (typeof ModalComponents)[K]

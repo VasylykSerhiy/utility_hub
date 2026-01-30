@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { Button, ButtonProps } from '@workspace/ui/components/button';
+import { Button, type ButtonProps } from '@workspace/ui/components/button';
 import {
   DialogContent,
   DialogDescription,
@@ -21,7 +19,14 @@ const Alert = ({ title, message, actions }: AlertModalProps) => {
       <DialogDescription>{message}</DialogDescription>
       <DialogFooter>
         {actions?.map((action, idx) => (
-          <Button key={idx} {...action} />
+          <Button
+            key={
+              typeof action.children === 'string'
+                ? action.children
+                : `alert-${idx}`
+            }
+            {...action}
+          />
         ))}
       </DialogFooter>
     </DialogContent>

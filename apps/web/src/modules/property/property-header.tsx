@@ -1,24 +1,6 @@
 'use client';
 
-import React from 'react';
-
-import { useRouter } from 'next/navigation';
-
-import { Routes } from '@/constants/router';
-import {
-  getProperty,
-  getPropertyLastTariff,
-  useDeleteProperty,
-} from '@/hooks/use-property';
-import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
-import { useModalStore } from '@/stores/use-modal-state';
-import {
-  formatCurrencySymbol,
-  getElectricityMeterLabel,
-  isSingleElectricity,
-} from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-
+import type { IElectricityType, LastReading } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import {
   Card,
@@ -27,6 +9,21 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 import { Skeleton } from '@workspace/ui/components/skeleton';
+import {
+  formatCurrencySymbol,
+  getElectricityMeterLabel,
+  isSingleElectricity,
+} from '@workspace/utils';
+import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import { Routes } from '@/constants/router';
+import {
+  getProperty,
+  getPropertyLastTariff,
+  useDeleteProperty,
+} from '@/hooks/use-property';
+import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
+import { useModalStore } from '@/stores/use-modal-state';
 
 const PropertyHeader = ({ id }: { id: string }) => {
   const { data, isLoading } = getProperty(id);
@@ -85,7 +82,7 @@ const PropertyHeader = ({ id }: { id: string }) => {
       <div className='grid grid-cols-1 md:grid-cols-2'>
         <div className='relative'>
           <PropertyLastMonthDetail
-            lastReading={data?.lastReading!}
+            lastReading={data?.lastReading as LastReading}
             isLoading={isLoading}
           />
           <div className='bg-border absolute right-0 top-0 h-full w-[1px] max-md:hidden' />
@@ -98,12 +95,16 @@ const PropertyHeader = ({ id }: { id: string }) => {
               {isLoading ? (
                 <Skeleton className='h-5 w-20' />
               ) : (
-                getElectricityMeterLabel(data?.electricityType!)
+                getElectricityMeterLabel(
+                  data?.electricityType as IElectricityType,
+                )
               )}
             </div>
             <div>
               {[
-                ...(isSingleElectricity(data?.electricityType!)
+                ...(isSingleElectricity(
+                  data?.electricityType as IElectricityType,
+                )
                   ? [
                       {
                         label: t('ELECTRICITY'),
@@ -150,8 +151,8 @@ const PropertyHeader = ({ id }: { id: string }) => {
                     lastTariff?.fixedCosts?.gas_delivery,
                   ),
                 },
-              ].map((item, index) => (
-                <div key={index} className='mt-2 flex gap-2'>
+              ].map(item => (
+                <div key={item.label} className='mt-2 flex gap-2'>
                   <span>{item.label}:</span>
                   <span>{item?.value ?? '-'} </span>
                 </div>

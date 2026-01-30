@@ -1,6 +1,5 @@
-import React, { type PropsWithChildren } from 'react';
-
 import { Toaster } from '@workspace/ui/components/sonner';
+import type { PropsWithChildren } from 'react';
 
 import Header from './header';
 import MobileMainMenu from './mobile-menu';

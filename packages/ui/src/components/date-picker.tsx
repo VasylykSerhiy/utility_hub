@@ -1,11 +1,6 @@
 'use client';
 
-import * as React from 'react';
-
-import { Language } from '@workspace/types';
-import { formatDate, localeDateMap } from '@workspace/utils';
-import { CalendarIcon } from 'lucide-react';
-
+import type { Language } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import { Calendar } from '@workspace/ui/components/calendar';
 import {
@@ -14,6 +9,9 @@ import {
   PopoverTrigger,
 } from '@workspace/ui/components/popover';
 import { cn } from '@workspace/ui/lib/utils';
+import { formatDate, localeDateMap } from '@workspace/utils';
+import { CalendarIcon } from 'lucide-react';
+import * as React from 'react';
 
 interface IDatePickerWithRangeProps
   extends React.HTMLAttributes<HTMLDivElement> {

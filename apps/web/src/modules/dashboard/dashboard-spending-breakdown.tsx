@@ -1,8 +1,20 @@
 'use client';
 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@workspace/ui/components/card';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@workspace/ui/components/chart';
 import { useMemo, useState } from 'react';
-
-import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
 import { useTranslation } from 'react-i18next';
 import {
   Cell,
@@ -12,23 +24,8 @@ import {
   ResponsiveContainer,
   Sector,
 } from 'recharts';
-import { PieSectorDataItem } from 'recharts/types/polar/Pie';
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@workspace/ui/components/chart';
+import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
+import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
 
 /**
  * Extended interface for chart data including percentage.
@@ -86,7 +83,7 @@ const DashboardSpendingBreakdown = () => {
     return rawItems.map(item => ({
       ...item,
       displayLabel: item.label,
-      percentage: ((item.value / total) * 100).toFixed(1) + '%',
+      percentage: `${((item.value / total) * 100).toFixed(1)}%`,
     }));
   }, [data, t]);
 
@@ -187,7 +184,7 @@ const DashboardSpendingBreakdown = () => {
                 />
                 {chartData.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={entry.name ?? `cell-${entry.fill ?? index}`}
                     fill={entry.fill}
                     className='stroke-background outline-none transition-opacity duration-300'
                     style={{

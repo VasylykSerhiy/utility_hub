@@ -1,13 +1,5 @@
 'use client';
 
-import React, { useState } from 'react';
-
-import { useParams } from 'next/navigation';
-
-import { getPropertyTariffs } from '@/hooks/use-property';
-import { formatCurrencySymbol, formatDate } from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-
 import {
   Table,
   TableBody,
@@ -16,6 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from '@workspace/ui/components/table';
+import { formatCurrencySymbol, formatDate } from '@workspace/utils';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { getPropertyTariffs } from '@/hooks/use-property';
 
 const TariffsTable = () => {
   const [page, setPage] = useState(1);

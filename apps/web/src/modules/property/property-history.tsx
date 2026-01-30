@@ -1,12 +1,5 @@
 'use client';
 
-import React from 'react';
-
-import ReadingTable from '@/components/tables/reading-table';
-import TariffsTable from '@/components/tables/tariffs-table';
-import { useTabs } from '@/hooks/use-tabs';
-import { useTranslation } from 'react-i18next';
-
 import {
   Card,
   CardContent,
@@ -14,6 +7,10 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 import Tabs from '@workspace/ui/components/tabs';
+import { useTranslation } from 'react-i18next';
+import ReadingTable from '@/components/tables/reading-table';
+import TariffsTable from '@/components/tables/tariffs-table';
+import { useTabs } from '@/hooks/use-tabs';
 
 const PropertyHistory = () => {
   const { t } = useTranslation();

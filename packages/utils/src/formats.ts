@@ -1,8 +1,8 @@
 import i18n from '@workspace/i18n/i18n';
-import { Language } from '@workspace/types';
-import { Locale, enUS, uk } from 'date-fns/locale';
+import type { Language } from '@workspace/types';
+import { enUS, type Locale, uk } from 'date-fns/locale';
 import { numericFormatter as _numericFormatter } from 'react-number-format';
-import { NumericFormatProps } from 'react-number-format/types/types';
+import type { NumericFormatProps } from 'react-number-format/types/types';
 
 export const localeDateMap: { [k in Language]: Locale } = {
   uk,

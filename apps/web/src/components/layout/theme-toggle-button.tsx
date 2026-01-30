@@ -1,10 +1,7 @@
-import React from 'react';
-
-import { useTheme } from 'next-themes';
-
-import { MoonIcon, SunMediumIcon } from 'lucide-react';
-
 import { Switch } from '@workspace/ui/components/switch';
+import { MoonIcon, SunMediumIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import type React from 'react';
 
 export const ThemeToggleButton: React.FC = () => {
   const { setTheme, theme } = useTheme();
@@ -12,7 +9,13 @@ export const ThemeToggleButton: React.FC = () => {
 
   return (
     <Switch
-      icon={isDarkMode ? <MoonIcon className='h-5 w-5' /> : <SunMediumIcon className='h-5 w-5' />}
+      icon={
+        isDarkMode ? (
+          <MoonIcon className='h-5 w-5' />
+        ) : (
+          <SunMediumIcon className='h-5 w-5' />
+        )
+      }
       checked={isDarkMode}
       onCheckedChange={() => setTheme(ps => (ps === 'dark' ? 'light' : 'dark'))}
       className='w-15 h-9'

@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
-
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 
 import { RootLayout } from '@/components/layout';
 import { Provides } from '@/providers';

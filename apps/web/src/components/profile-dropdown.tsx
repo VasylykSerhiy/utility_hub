@@ -1,11 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import { Routes } from '@/constants/router';
-import { getMyInfo } from '@/hooks/use-user';
-import { createClient } from '@/lib/supabase/client';
-
 import {
   Avatar,
   AvatarFallback,
@@ -22,6 +16,10 @@ import {
   DropdownMenuTrigger,
 } from '@workspace/ui/components/dropdown-menu';
 import { Skeleton } from '@workspace/ui/components/skeleton';
+import { useRouter } from 'next/navigation';
+import { Routes } from '@/constants/router';
+import { getMyInfo } from '@/hooks/use-user';
+import { createClient } from '@/lib/supabase/client';
 
 export function ProfileDropdown() {
   const router = useRouter();
@@ -38,29 +36,27 @@ export function ProfileDropdown() {
   }
 
   return (
-    <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant='ghost' className='relative size-9 rounded-full'>
-            <Avatar className='size-9'>
-              <AvatarImage src={data?.avatar} alt='avatar' />
-              <AvatarFallback>SN</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className='w-56' align='end' forceMount>
-          <DropdownMenuLabel className='font-normal'>
-            <div className='flex flex-col gap-1.5'>
-              <p className='text-sm font-medium leading-none'>{data?.email}</p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut}>
-            Sign out
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='relative size-9 rounded-full'>
+          <Avatar className='size-9'>
+            <AvatarImage src={data?.avatar} alt='avatar' />
+            <AvatarFallback>SN</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className='w-56' align='end' forceMount>
+        <DropdownMenuLabel className='font-normal'>
+          <div className='flex flex-col gap-1.5'>
+            <p className='text-sm font-medium leading-none'>{data?.email}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleSignOut}>
+          Sign out
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

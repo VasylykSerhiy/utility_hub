@@ -7,7 +7,8 @@
   "license": "ISC",
   "scripts": {
     "check-types": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "pnpm -w exec biome check .",
+    "lint:fix": "pnpm -w exec biome check --write ."
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
@@ -20,7 +21,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*"
   },
   "exports": {

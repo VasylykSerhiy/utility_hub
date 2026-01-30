@@ -1,4 +1,4 @@
-import { MonthSchema } from '@workspace/utils';
+import type { MonthSchema } from '@workspace/utils';
 
 interface ReadingsDbRow {
   property_id?: string;
@@ -8,6 +8,63 @@ interface ReadingsDbRow {
   electricity_single?: number | null;
   electricity_day?: number | null;
   electricity_night?: number | null;
+}
+
+/** DB/API tariff shape (snake_case) */
+interface TariffDb {
+  id: string;
+  start_date: string;
+  end_date: string;
+  rate_electricity_single: number;
+  rate_electricity_day: number;
+  rate_electricity_night: number;
+  rate_water: number;
+  rate_gas: number;
+  fixed_internet: number;
+  fixed_maintenance: number;
+  fixed_gas_delivery: number;
+}
+
+/** Difference shape for calculateTotal */
+interface DiffShape {
+  water: number;
+  gas: number;
+  electricity_single: number;
+  electricity_day: number;
+  electricity_night: number;
+}
+
+/** DB/API reading shape (snake_case) */
+interface ReadingDb {
+  id: string;
+  property_id: string;
+  date: string;
+  water: number;
+  gas: number;
+  electricity_single: number | null;
+  electricity_day: number | null;
+  electricity_night: number | null;
+  diff_water?: number;
+  diff_gas?: number;
+  diff_electricity_single?: number;
+  diff_electricity_day?: number;
+  diff_electricity_night?: number;
+  prev_water?: number;
+  prev_gas?: number;
+  prev_electricity_single?: number;
+  prev_electricity_day?: number;
+  prev_electricity_night?: number;
+  created_at: string;
+}
+
+/** DB/API property shape (snake_case) */
+interface PropertyDb {
+  id: string;
+  user_id: string;
+  name: string;
+  electricity_type: 'single' | 'double';
+  created_at: string;
+  updated_at: string;
 }
 
 export const createEmptyReading = (
@@ -48,7 +105,7 @@ export const createEmptyReading = (
   createdAt: null,
 });
 
-export const mapTariffToFrontend = (tariff: any) => ({
+export const mapTariffToFrontend = (tariff: TariffDb) => ({
   id: tariff.id,
   startDate: tariff.start_date,
   endDate: tariff.end_date,
@@ -68,7 +125,7 @@ export const mapTariffToFrontend = (tariff: any) => ({
   },
 });
 
-export const calculateTotal = (diff: any, tariff: any) => {
+export const calculateTotal = (diff: DiffShape, tariff: TariffDb) => {
   if (!tariff) return 0;
 
   let electricityCost: number;
@@ -121,8 +178,8 @@ export const mapFormDataToDb = (
 };
 
 export const mapReadingToFrontend = (
-  reading: any,
-  tariff: any = null,
+  reading: ReadingDb,
+  tariff: TariffDb | null = null,
   propertyElectricityType: 'single' | 'double' | null = null,
 ) => {
   // --- ЛОГІКА АВТОВИЗНАЧЕННЯ ТИПУ ---
@@ -188,9 +245,9 @@ export const mapReadingToFrontend = (
 };
 
 export const mapPropertyToFrontend = (
-  prop: any,
-  lastReading: any = null,
-  currentTariff: any = null,
+  prop: PropertyDb,
+  lastReading: ReturnType<typeof mapReadingToFrontend> | null = null,
+  currentTariff: ReturnType<typeof mapTariffToFrontend> | null = null,
 ) => {
   return {
     id: prop.id,

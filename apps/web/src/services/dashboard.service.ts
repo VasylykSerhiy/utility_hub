@@ -1,5 +1,5 @@
+import type { FullDashboardData } from '@workspace/types';
 import { API, apiAuth } from '@/lib/axios';
-import { FullDashboardData } from '@workspace/types';
 
 export const dashboardService = {
   getDashboardAnalytics: async () =>

@@ -8,10 +8,10 @@ export const mapId = <T>(doc: T): T => {
   }
 
   if (doc && typeof doc === 'object') {
-    const newObj: Record<string, any> = {};
+    const newObj: Record<string, unknown> = {};
     for (const key in doc) {
       if (key === '_id') {
-        newObj['id'] = doc[key]?.toString();
+        newObj.id = doc[key]?.toString();
       } else {
         newObj[key] = mapId(doc[key]);
       }

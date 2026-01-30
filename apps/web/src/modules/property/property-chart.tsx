@@ -1,23 +1,23 @@
 'use client';
 
-import React, { useMemo } from 'react';
-
-import { useParams } from 'next/navigation';
-
-import { getPropertyMetrics } from '@/hooks/use-property';
-import PropertyChartTooltip from '@/modules/property/property-chart-tooltip';
-import { numericFormatter } from '@workspace/utils';
-import { format } from 'date-fns';
-import { useTranslation } from 'react-i18next';
-import { CartesianGrid, Line, LineChart, Tooltip, YAxis } from 'recharts';
-
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
-import { ChartConfig, ChartContainer } from '@workspace/ui/components/chart';
+import {
+  type ChartConfig,
+  ChartContainer,
+} from '@workspace/ui/components/chart';
+import { numericFormatter } from '@workspace/utils';
+import { format } from 'date-fns';
+import { useParams } from 'next/navigation';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { CartesianGrid, Line, LineChart, Tooltip, YAxis } from 'recharts';
+import { getPropertyMetrics } from '@/hooks/use-property';
+import PropertyChartTooltip from '@/modules/property/property-chart-tooltip';
 
 const PropertyChart = () => {
   const { t } = useTranslation();

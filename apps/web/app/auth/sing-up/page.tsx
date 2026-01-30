@@ -1,10 +1,3 @@
-import React from 'react';
-
-import Link from 'next/link';
-
-import SignUpForm from '@/components/forms/sign-up-form';
-import { Routes } from '@/constants/router';
-
 import {
   Card,
   CardContent,
@@ -13,6 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
+
+import Link from 'next/link';
+import SignUpForm from '@/components/forms/sign-up-form';
+import { Routes } from '@/constants/router';
 
 const Page = () => {
   return (

@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { IconProps } from '@workspace/ui/components/icons/svg.js';
+import type { IconProps } from '@workspace/ui/components/icons/svg.js';
 import Svg from '@workspace/ui/icons/svg';
 
 const GoogleIcon = (props: IconProps) => {

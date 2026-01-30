@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { MainLayout } from '@/components/layout';
 import PageTransitionEffect from '@/providers/animate-provider';

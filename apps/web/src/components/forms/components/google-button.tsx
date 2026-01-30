@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
-
-import { useSearchParams } from 'next/navigation';
-
-import { Routes } from '@/constants/router';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
-
 import { Button } from '@workspace/ui/components/button';
 import GoogleIcon from '@workspace/ui/components/icons/google';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Routes } from '@/constants/router';
+import { createClient } from '@/lib/supabase/client';
 
 const GoogleButton = () => {
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
   const searchParams = useSearchParams();
-  const next = searchParams.get('next');
+  const _next = searchParams.get('next');
 
   const signInWithGoogle = async () => {
     setIsLoading(true);
@@ -25,7 +22,7 @@ const GoogleButton = () => {
         },
       });
       if (error) toast.error(error?.message);
-    } catch (error) {
+    } catch (_error) {
       toast('Error signing in with Google', { duration: 1000 });
       setIsLoading(false);
     }

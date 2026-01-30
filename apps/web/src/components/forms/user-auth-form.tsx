@@ -1,19 +1,6 @@
 'use client';
 
-import { HTMLAttributes, useState } from 'react';
-
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-
-import GoogleButton from '@/components/forms/components/google-button';
-import { Routes } from '@/constants/router';
-import { useAuthUser } from '@/hooks/use-user';
-import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserAuthShema, userAuthShema } from '@workspace/utils';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-
 import { Button } from '@workspace/ui/components/button';
 import {
   Form,
@@ -26,6 +13,16 @@ import {
 import { Input } from '@workspace/ui/components/input';
 import { PasswordInput } from '@workspace/ui/components/password-input';
 import { cn } from '@workspace/ui/lib/utils';
+import { type UserAuthShema, userAuthShema } from '@workspace/utils';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { type HTMLAttributes, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import GoogleButton from '@/components/forms/components/google-button';
+import { Routes } from '@/constants/router';
+import { useAuthUser } from '@/hooks/use-user';
+import { createClient } from '@/lib/supabase/client';
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLFormElement> {}
 

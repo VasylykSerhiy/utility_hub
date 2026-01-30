@@ -1,6 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/constants/query-key';
 import { dashboardService } from '@/services/dashboard.service';
-import { useQuery } from '@tanstack/react-query';
 
 export const useGetDashboardAnalytics = () => {
   return useQuery({

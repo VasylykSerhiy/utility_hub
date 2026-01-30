@@ -1,13 +1,13 @@
-import z from 'zod';
+import type z from 'zod';
 
-import { authSchema } from './auth';
-import { monthSchemaClient } from './month';
-import {
+import type { authSchema } from './auth';
+import type { monthSchemaClient } from './month';
+import type {
   createPropertySchema,
   propertySchema,
   updatePropertySchema,
 } from './property';
-import {
+import type {
   userAuthShema,
   userCreateShema,
   userForgotPassword,

@@ -1,4 +1,4 @@
-import { IMeter } from './property.types';
+import type { IMeter } from './property.types';
 
 export interface IFixedCosts {
   internet: number;

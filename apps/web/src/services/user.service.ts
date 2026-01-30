@@ -1,6 +1,6 @@
+import type { IUser } from '@workspace/types';
+import type { AuthInput } from '@workspace/utils';
 import { API, api, apiAuth } from '@/lib/axios';
-import { IUser } from '@workspace/types';
-import { AuthInput } from '@workspace/utils';
 
 export const userService = {
   getMe: async () => apiAuth.get<IUser>(API.ME),

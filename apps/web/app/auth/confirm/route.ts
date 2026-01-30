@@ -1,9 +1,8 @@
+import type { EmailOtpType } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
-import { type NextRequest } from 'next/server';
-
+import type { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { userService } from '@/services/user.service';
-import { type EmailOtpType } from '@supabase/supabase-js';
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -21,9 +20,9 @@ export async function GET(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession();
 
-    if (!error) {
+    if (!error && session?.access_token) {
       await userService.postAuth({
-        token: session?.access_token!,
+        token: session.access_token,
       });
 
       const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
@@ -51,9 +50,10 @@ export async function GET(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession();
 
-    await userService.postAuth({
-      token: session?.access_token!,
-    });
+    const accessToken = session?.access_token ?? '';
+    if (accessToken) {
+      await userService.postAuth({ token: accessToken });
+    }
 
     if (!error) {
       redirect(next);

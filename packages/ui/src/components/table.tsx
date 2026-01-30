@@ -1,11 +1,9 @@
 'use client';
 
-import * as React from 'react';
-
-import { useTranslation } from 'react-i18next';
-
 import { Button } from '@workspace/ui/components/button';
 import { cn } from '@workspace/ui/lib/utils';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type TTableBase = React.ComponentProps<'table'>;
 

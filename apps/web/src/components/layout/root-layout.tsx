@@ -1,8 +1,7 @@
 'use client';
 
-import type { PropsWithChildren } from 'react';
-
 import { Inter } from 'next/font/google';
+import type { PropsWithChildren } from 'react';
 
 import '@workspace/ui/globals.css';
 

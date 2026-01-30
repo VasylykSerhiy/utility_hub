@@ -1,6 +1,10 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { NextFunction, Request, Response } from 'express';
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express';
 import morgan from 'morgan';
 
 import { ClientError } from './models/errors';

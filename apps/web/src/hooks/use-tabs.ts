@@ -1,8 +1,7 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useState } from 'react';
 
 type Tab = {
   id: string;
@@ -35,7 +34,9 @@ export const useTabs = (tabs: Tab[], options?: Options) => {
     (id: string) => {
       setActiveTabId(id);
       if (syncWithUrl) {
-        const newParams = new URLSearchParams(Array.from(searchParams.entries()));
+        const newParams = new URLSearchParams(
+          Array.from(searchParams.entries()),
+        );
         newParams.set(urlKey, id);
         router.replace(`?${newParams.toString()}`, { scroll: false });
       }

@@ -1,4 +1,4 @@
-import { ClientError } from '../models/errors';
+import type { ClientError } from '../models/errors';
 
 const getClientErrorResponse = (error: ClientError) => {
   if (error.payload) {

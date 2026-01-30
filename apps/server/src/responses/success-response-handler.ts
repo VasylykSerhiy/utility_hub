@@ -1,5 +1,5 @@
 const getSuccessResponseWithData = (
-  data: any,
+  data: unknown,
   message = 'Success',
   status = 200,
   success = true,

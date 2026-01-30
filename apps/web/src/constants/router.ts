@@ -1,4 +1,4 @@
-import { LayoutGrid, LucideIcon, TableProperties } from 'lucide-react';
+import { LayoutGrid, type LucideIcon, TableProperties } from 'lucide-react';
 
 export interface ILink {
   title: string;

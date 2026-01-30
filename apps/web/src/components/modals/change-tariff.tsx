@@ -1,14 +1,11 @@
-import React from 'react';
-
-import { ChangeTariffForm } from '@/components/forms/tariff-change-form';
-import { getProperty } from '@/hooks/use-property';
-import { useTranslation } from 'react-i18next';
-
 import {
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from '@workspace/ui/components/dialog';
+import { useTranslation } from 'react-i18next';
+import { ChangeTariffForm } from '@/components/forms/tariff-change-form';
+import { getProperty } from '@/hooks/use-property';
 
 export interface ChangeTariffProps {
   id: string;
@@ -17,7 +14,7 @@ export interface ChangeTariffProps {
 const ChangeTariff = ({ id }: ChangeTariffProps) => {
   const { t } = useTranslation();
 
-  const { data, isLoading } = getProperty(id!);
+  const { data, isLoading } = getProperty(id);
 
   return (
     <DialogContent className='w-full lg:max-w-[400px]'>

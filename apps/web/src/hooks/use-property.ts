@@ -1,17 +1,20 @@
-import { mutationKey, queryKeys } from '@/constants/query-key';
-import { propertyService } from '@/services/property.service';
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import {
+import type {
   GetPropertyMonth,
   GetPropertyMonths,
   GetPropertyTariffs,
 } from '@workspace/types';
-import { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
+import type {
+  CreatePropertySchema,
+  UpdatePropertySchema,
+} from '@workspace/utils';
+import { mutationKey, queryKeys } from '@/constants/query-key';
+import { propertyService } from '@/services/property.service';
 
 export const getProperties = () => {
   return useQuery({
@@ -108,7 +111,7 @@ export const useUpdateTariff = () => {
     mutationKey: [mutationKey.property_create],
     mutationFn: (props: { id: string; data: UpdatePropertySchema }) =>
       propertyService.updateProperty(props),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys.property, variables.id],
       });

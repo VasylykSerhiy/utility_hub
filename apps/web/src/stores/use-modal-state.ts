@@ -1,11 +1,8 @@
 'use client';
 
-import {
-  type ModalMap,
-  type ModalType,
-} from '@/components/modals/modal-registry';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
+import type { ModalMap, ModalType } from '@/components/modals/modal-registry';
 
 interface ModalState {
   isOpen: boolean;

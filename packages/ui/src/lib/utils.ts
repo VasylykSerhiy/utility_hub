@@ -1,6 +1,6 @@
-import { Language } from '@workspace/types';
+import type { Language } from '@workspace/types';
 import { type ClassValue, clsx } from 'clsx';
-import { Locale, enUS, uk } from 'react-day-picker/locale';
+import { enUS, type Locale, uk } from 'react-day-picker/locale';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {

@@ -1,5 +1,4 @@
-import { API, apiAuth } from '@/lib/axios';
-import {
+import type {
   GetPropertyMonth,
   GetPropertyMonths,
   GetPropertyTariffs,
@@ -10,11 +9,12 @@ import {
   IPropertyTariff,
   ITariff,
 } from '@workspace/types';
-import {
+import type {
   CreatePropertySchema,
   MonthSchema,
   UpdatePropertySchema,
 } from '@workspace/utils';
+import { API, apiAuth } from '@/lib/axios';
 
 export const propertyService = {
   getProperties: async () => apiAuth.get<IProperty[]>(API.PROPERTIES),

@@ -1,19 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import { useUpdateTariff } from '@/hooks/use-property';
-import { useModalStore } from '@/stores/use-modal-state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IElectricityType, IProperty } from '@workspace/types';
-import {
-  type UpdatePropertySchema,
-  getElectricityMeterLabel,
-  updatePropertySchema,
-} from '@workspace/utils';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
+import { IElectricityType, type IProperty } from '@workspace/types';
 import { Button } from '@workspace/ui/components/button';
 import {
   Form,
@@ -32,6 +20,16 @@ import {
   SelectValue,
 } from '@workspace/ui/components/select';
 import { cn } from '@workspace/ui/lib/utils';
+import {
+  getElectricityMeterLabel,
+  type UpdatePropertySchema,
+  updatePropertySchema,
+} from '@workspace/utils';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useUpdateTariff } from '@/hooks/use-property';
+import { useModalStore } from '@/stores/use-modal-state';
 
 interface TariffChangeFormProps {
   property: IProperty;
@@ -227,7 +225,10 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
           { name: 'fixedCosts.gas_delivery', label: t('GAS_DELIVERY') },
         ].map(el => {
           // TypeScript Path Trick: ми гарантуємо, що це валідний шлях
-          const fieldName = el.name as any;
+          const fieldName = el.name as
+            | 'fixedCosts.internet'
+            | 'fixedCosts.maintenance'
+            | 'fixedCosts.gas_delivery';
 
           return (
             <FormField

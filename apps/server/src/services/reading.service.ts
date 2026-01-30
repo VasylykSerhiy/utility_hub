@@ -1,4 +1,4 @@
-import { MonthSchema } from '@workspace/utils';
+import type { MonthSchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
 import {
@@ -55,7 +55,13 @@ const getMonths = async ({
   };
 };
 
-const getMonth = async ({ userId, propertyId, monthId }: any) => {
+interface GetMonthParams {
+  userId: string;
+  propertyId: string;
+  monthId: string;
+}
+
+const getMonth = async ({ userId, propertyId, monthId }: GetMonthParams) => {
   const { data: property, error: propError } = await supabase
     .from('properties')
     .select('electricity_type, user_id')

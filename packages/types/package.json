@@ -6,11 +6,11 @@
   "license": "ISC",
   "description": "",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "pnpm -w exec biome check .",
+    "lint:fix": "pnpm -w exec biome check --write .",
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*"
   },
   "exports": {

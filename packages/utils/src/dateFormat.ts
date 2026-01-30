@@ -1,5 +1,4 @@
 import {
-  type Locale,
   differenceInDays,
   differenceInMinutes,
   format,
@@ -8,10 +7,11 @@ import {
   isTomorrow,
   isValid,
   isYesterday,
+  type Locale,
   set,
 } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import { formatInTimeZone } from 'date-fns-tz';
-import { enUS, uk } from 'date-fns/locale';
 
 const DEFAULT_FALLBACK = 'N/A';
 const DEFAULT_SEPARATOR = ' - ';

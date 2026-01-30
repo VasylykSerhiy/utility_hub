@@ -1,12 +1,5 @@
 'use client';
 
-import React, { useState } from 'react';
-
-import Link from 'next/link';
-
-import { ForgotPasswordForm } from '@/components/forms/forgot-password-form';
-import { Routes } from '@/constants/router';
-
 import {
   Card,
   CardContent,
@@ -15,6 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
+
+import Link from 'next/link';
+import { useState } from 'react';
+import { ForgotPasswordForm } from '@/components/forms/forgot-password-form';
+import { Routes } from '@/constants/router';
 
 const Page = () => {
   const [isSuccess, setSuccess] = useState(false);

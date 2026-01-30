@@ -1,5 +1,5 @@
-import { PaginateOptions } from '@workspace/types';
-import mongoose from 'mongoose';
+import type { PaginateOptions } from '@workspace/types';
+import type mongoose from 'mongoose';
 
 export const findWithPagination = async <
   TDoc extends mongoose.Document,

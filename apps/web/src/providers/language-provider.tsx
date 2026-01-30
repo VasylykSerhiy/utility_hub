@@ -1,9 +1,14 @@
 'use client';
 
-import React, { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
-
 import i18n from '@workspace/i18n/i18n';
 import { Language } from '@workspace/types';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 export const LanguageContext = createContext<
   | {
@@ -20,7 +25,9 @@ export const LanguageProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     const cookieLang = document.cookie.match(/i18next=(\w+)/)?.[1] ?? 'en';
     if (i18n.language !== cookieLang) {
-      i18n.changeLanguage(cookieLang).then(() => setLanguage(cookieLang as Language));
+      i18n
+        .changeLanguage(cookieLang)
+        .then(() => setLanguage(cookieLang as Language));
     } else {
       setLanguage(cookieLang as Language);
     }
@@ -30,6 +37,7 @@ export const LanguageProvider = ({ children }: PropsWithChildren) => {
   const changeLanguage = (lang: Language) => {
     i18n.changeLanguage(lang).then(() => {
       setLanguage(lang);
+      // biome-ignore lint/suspicious/noDocumentCookie: i18next expects document.cookie for broad compatibility
       document.cookie = `i18next=${lang}; path=/;`;
     });
   };

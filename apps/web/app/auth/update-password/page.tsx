@@ -1,7 +1,3 @@
-import React from 'react';
-
-import { UpdatePasswordForm } from '@/components/forms/update-password-form';
-
 import {
   Card,
   CardContent,
@@ -9,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
+import { UpdatePasswordForm } from '@/components/forms/update-password-form';
 
 const Page = () => {
   return (

@@ -1,4 +1,7 @@
-import { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
+import type {
+  CreatePropertySchema,
+  UpdatePropertySchema,
+} from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
 import {

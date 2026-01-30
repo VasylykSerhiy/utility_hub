@@ -1,15 +1,3 @@
-import React from 'react';
-
-import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
-import { useLanguage } from '@/providers/language-provider';
-import {
-  formatCurrencySymbol,
-  formatDate,
-  localeDateMap,
-} from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-
 import {
   Card,
   CardContent,
@@ -17,11 +5,20 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@workspace/ui/components/chart';
+import {
+  formatCurrencySymbol,
+  formatDate,
+  localeDateMap,
+} from '@workspace/utils';
+import { useTranslation } from 'react-i18next';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
+import { useLanguage } from '@/providers/language-provider';
 
 const DashboardConstTrend = () => {
   const { data } = useGetDashboardAnalytics();

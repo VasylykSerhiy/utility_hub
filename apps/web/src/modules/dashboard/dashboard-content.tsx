@@ -1,19 +1,5 @@
 'use client';
 
-import React, { useMemo } from 'react';
-
-import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
-import DashboardConstByProperty from '@/modules/dashboard/dashboard-const-by-property';
-import DashboardConstTrend from '@/modules/dashboard/dashboard-cost-trend';
-import DashboardSpendingBreakdown from '@/modules/dashboard/dashboard-spending-breakdown';
-import { useLanguage } from '@/providers/language-provider';
-import {
-  formatCurrencySymbol,
-  formatDate,
-  localeDateMap,
-} from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-
 import {
   Card,
   CardContent,
@@ -21,6 +7,18 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 import { cn } from '@workspace/ui/lib/utils';
+import {
+  formatCurrencySymbol,
+  formatDate,
+  localeDateMap,
+} from '@workspace/utils';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useGetDashboardAnalytics } from '@/hooks/use-dashboard';
+import DashboardConstByProperty from '@/modules/dashboard/dashboard-const-by-property';
+import DashboardConstTrend from '@/modules/dashboard/dashboard-cost-trend';
+import DashboardSpendingBreakdown from '@/modules/dashboard/dashboard-spending-breakdown';
+import { useLanguage } from '@/providers/language-provider';
 
 const DashboardContent = () => {
   const { data } = useGetDashboardAnalytics();
@@ -42,7 +40,7 @@ const DashboardContent = () => {
         content: t('DASHBOARD.CARD.VALUE.PENDING_READINGS', {
           count: data?.pendingReadingsCount || 0,
         }),
-        isWarning: data?.pendingReadingsCount! > 0,
+        isWarning: (data?.pendingReadingsCount ?? 0) > 0,
       },
       {
         title: t('DASHBOARD.CARD.TITLE.ACTIVE_PROPERTIES'),
@@ -55,6 +53,7 @@ const DashboardContent = () => {
       data?.activeProperties,
       t,
       language,
+      data?.currentMonthName,
     ],
   );
 

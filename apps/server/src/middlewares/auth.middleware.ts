@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { supabase } from '../configs/supabase';
 
 export const requireAuth = async (
   req: Request,
@@ -7,11 +7,6 @@ export const requireAuth = async (
   next: NextFunction,
 ) => {
   try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ message: 'No token provided' });
 

@@ -4,7 +4,7 @@ import { Routes } from '@/constants/router';
 import { createClient } from '@/lib/supabase/server';
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  const supabaseResponse = NextResponse.next({
     request,
   });
 

@@ -1,13 +1,6 @@
 'use client';
 
-import { HTMLAttributes, useState } from 'react';
-
-import { Routes } from '@/constants/router';
-import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UserForgotPassword, userForgotPassword } from '@workspace/utils';
-import { useForm } from 'react-hook-form';
-
 import { Button } from '@workspace/ui/components/button';
 import {
   Form,
@@ -19,6 +12,11 @@ import {
 } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
 import { cn } from '@workspace/ui/lib/utils';
+import { type UserForgotPassword, userForgotPassword } from '@workspace/utils';
+import { type HTMLAttributes, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Routes } from '@/constants/router';
+import { createClient } from '@/lib/supabase/client';
 
 interface ForgotPasswordFormProps extends HTMLAttributes<HTMLFormElement> {
   setSuccess: (success: boolean) => void;

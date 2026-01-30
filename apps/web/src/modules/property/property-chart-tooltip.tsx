@@ -1,9 +1,3 @@
-import React from 'react';
-
-import { formatCurrencySymbol, formatDate } from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-import * as RechartsPrimitive from 'recharts';
-
 import {
   Card,
   CardContent,
@@ -14,6 +8,10 @@ import {
   getPayloadConfigFromPayload,
   useChart,
 } from '@workspace/ui/components/chart';
+import { formatCurrencySymbol, formatDate } from '@workspace/utils';
+import type React from 'react';
+import { useTranslation } from 'react-i18next';
+import type * as RechartsPrimitive from 'recharts';
 
 const PropertyChartTooltip = ({
   active,
@@ -39,7 +37,7 @@ const PropertyChartTooltip = ({
             <ul>
               {payload
                 .filter(item => item.type !== 'none')
-                .map((item, index) => {
+                .map(item => {
                   const key = `${item.name || item.dataKey || 'value'}`;
                   const itemConfig = getPayloadConfigFromPayload(
                     config,
@@ -49,7 +47,7 @@ const PropertyChartTooltip = ({
                   const indicatorColor = item.payload.fill || item.color;
 
                   return (
-                    <li key={`tooltip-item-${index}`}>
+                    <li key={key}>
                       <span
                         className='border-(--color-border) bg-(--color-bg) mr-2 inline-block h-2 w-2 rounded-full'
                         style={

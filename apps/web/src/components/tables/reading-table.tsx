@@ -1,26 +1,7 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
-
-import { useParams } from 'next/navigation';
-
-import { DropdownActions } from '@/components/dropdown-actions';
-import {
-  getPropertyMonths,
-  useDeletePropertyMonth,
-} from '@/hooks/use-property';
-import { useModalStore } from '@/stores/use-modal-state';
-import { IElectricityType, IMonth } from '@workspace/types';
-import {
-  formatDate,
-  formatEnergy,
-  formatVolume,
-  isDoubleElectricity,
-  isSingleElectricity,
-} from '@workspace/utils';
-import { useTranslation } from 'react-i18next';
-
-import { ButtonProps } from '@workspace/ui/components/button';
+import { IElectricityType, type IMonth } from '@workspace/types';
+import type { ButtonProps } from '@workspace/ui/components/button';
 import {
   Table,
   TableBody,
@@ -29,6 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from '@workspace/ui/components/table';
+import {
+  formatDate,
+  formatEnergy,
+  formatVolume,
+  isDoubleElectricity,
+  isSingleElectricity,
+} from '@workspace/utils';
+import { useParams } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { DropdownActions } from '@/components/dropdown-actions';
+import {
+  getPropertyMonths,
+  useDeletePropertyMonth,
+} from '@/hooks/use-property';
+import { useModalStore } from '@/stores/use-modal-state';
 
 const ReadingTable = () => {
   const { openModal, closeModal } = useModalStore();
@@ -72,9 +69,10 @@ const ReadingTable = () => {
                 variant: 'destructive',
                 isLoading: isPending,
                 onClick: async () => {
+                  if (!month?.id || !month?.propertyId) return;
                   await deleteMutateAsync({
-                    propertyId: month?.propertyId as string,
-                    monthId: month.id!,
+                    propertyId: month.propertyId,
+                    monthId: month.id,
                   });
                   closeModal();
                 },

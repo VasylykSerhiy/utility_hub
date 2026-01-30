@@ -1,5 +1,5 @@
-import { PaginateOptions, PaginatedResult } from './pagination';
-import { ITariff } from './tariff.type';
+import type { PaginatedResult, PaginateOptions } from './pagination';
+import type { ITariff } from './tariff.type';
 
 export enum IElectricityType {
   SINGLE = 'single',
