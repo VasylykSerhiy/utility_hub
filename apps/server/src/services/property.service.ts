@@ -7,6 +7,7 @@ import {
   mapReadingToFrontend,
   mapTariffToFrontend,
 } from '../mappers/property.mappers';
+import { enrichWithReplacement, enrichRowsWithReplacement } from './reading.service';
 import { findTariffForDate } from './tariff.service';
 
 const getProperties = async (userId: string) => {
@@ -29,8 +30,10 @@ const getProperties = async (userId: string) => {
         .single();
 
       let historicalTariff = null;
+      let lastReadingEnriched = lastReading;
       if (lastReading) {
         historicalTariff = await findTariffForDate(prop.id, lastReading.date);
+        lastReadingEnriched = await enrichWithReplacement(lastReading, lastReading.id);
       }
 
       const { data: currentTariff } = await supabase
@@ -41,8 +44,8 @@ const getProperties = async (userId: string) => {
         .limit(1)
         .single();
 
-      const mappedLastReading = lastReading
-        ? mapReadingToFrontend(lastReading, historicalTariff, prop.electricity_type)
+      const mappedLastReading = lastReadingEnriched
+        ? mapReadingToFrontend(lastReadingEnriched, historicalTariff, prop.electricity_type)
         : createEmptyReading(prop.electricity_type, prop.id);
 
       const mappedCurrentTariff = currentTariff ? mapTariffToFrontend(currentTariff) : null;
@@ -71,8 +74,10 @@ const getProperty = async (userId: string, propertyId: string) => {
     .single();
 
   let historicalTariff = null;
+  let lastReadingEnriched = lastReading;
   if (lastReading) {
     historicalTariff = await findTariffForDate(propertyId, lastReading.date);
+    lastReadingEnriched = await enrichWithReplacement(lastReading, lastReading.id);
   }
 
   const { data: currentTariff } = await supabase
@@ -83,8 +88,8 @@ const getProperty = async (userId: string, propertyId: string) => {
     .limit(1)
     .single();
 
-  const mappedLastReading = lastReading
-    ? mapReadingToFrontend(lastReading, historicalTariff, property.electricity_type)
+  const mappedLastReading = lastReadingEnriched
+    ? mapReadingToFrontend(lastReadingEnriched, historicalTariff, property.electricity_type)
     : createEmptyReading(property.electricity_type, propertyId);
 
   const mappedCurrentTariff = currentTariff ? mapTariffToFrontend(currentTariff) : null;
@@ -240,8 +245,9 @@ const getMetrics = async ({ propertyId }: { propertyId: string }) => {
 
   if (error) throw new Error(error.message);
 
+  const readingsEnriched = await enrichRowsWithReplacement(readings);
   return await Promise.all(
-    readings.map(async r => {
+    readingsEnriched.map(async r => {
       const tariff = await findTariffForDate(propertyId, r.date);
       return mapReadingToFrontend(r, tariff, electricityType);
     }),

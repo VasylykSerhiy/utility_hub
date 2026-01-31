@@ -4,6 +4,42 @@ import { supabase } from '../configs/supabase';
 import { mapFormDataToDb, mapReadingToFrontend } from '../mappers/property.mappers';
 import { findTariffForDate } from './tariff.service';
 
+/** UA: Список колонок заміни лічильника в таблиці readings (view їх не повертає). EN: Replacement columns in readings table (view does not return them). */
+const REPLACEMENT_COLUMNS =
+  'electricity_baseline_single,electricity_baseline_day,electricity_baseline_night,electricity_old_final_single,electricity_old_final_day,electricity_old_final_night,water_baseline,water_old_final,gas_baseline,gas_old_final' as const;
+
+/** UA: Доповнює рядок з view полями заміни з таблиці readings. EN: Enriches view row with replacement columns from readings table. */
+export async function enrichWithReplacement<T extends Record<string, unknown>>(
+  viewRow: T,
+  readingId: string,
+): Promise<T> {
+  const { data: raw } = await supabase
+    .from('readings')
+    .select(REPLACEMENT_COLUMNS)
+    .eq('id', readingId)
+    .single();
+  if (!raw) return viewRow;
+  return { ...viewRow, ...raw } as T;
+}
+
+/** UA: Доповнює масив рядків з view полями заміни з readings. EN: Enriches view rows with replacement columns from readings. */
+export async function enrichRowsWithReplacement<T extends Record<string, unknown> & { id: string }>(
+  viewRows: T[],
+): Promise<T[]> {
+  if (viewRows.length === 0) return viewRows;
+  const ids = viewRows.map(r => r.id);
+  const { data: rawRows } = await supabase
+    .from('readings')
+    .select(`id,${REPLACEMENT_COLUMNS}`)
+    .in('id', ids);
+  if (!rawRows?.length) return viewRows;
+  const byId = new Map(rawRows.map(r => [r.id, r]));
+  return viewRows.map(row => {
+    const replacement = byId.get(row.id);
+    return (replacement ? { ...row, ...replacement } : row) as T;
+  });
+}
+
 const getMonths = async ({
   propertyId,
   page = 1,
@@ -37,8 +73,9 @@ const getMonths = async ({
 
   if (error) throw new Error(error.message);
 
+  const rowsWithReplacement = await enrichRowsWithReplacement(rows);
   const resultData = await Promise.all(
-    rows.map(async r => {
+    rowsWithReplacement.map(async r => {
       const tariff = await findTariffForDate(propertyId, r.date);
       return mapReadingToFrontend(r, tariff, electricityType);
     }),
@@ -87,9 +124,10 @@ const getMonth = async ({ userId, propertyId, monthId }: GetMonthParams) => {
     throw new Error('Reading record not found');
   }
 
-  const tariff = await findTariffForDate(propertyId, reading.date);
+  const readingEnriched = await enrichWithReplacement(reading, monthId);
+  const tariff = await findTariffForDate(propertyId, readingEnriched.date);
 
-  return mapReadingToFrontend(reading, tariff, electricityType);
+  return mapReadingToFrontend(readingEnriched, tariff, electricityType);
 };
 
 const createMonth = async ({
@@ -110,20 +148,22 @@ const createMonth = async ({
 
   if (!property) throw new Error('Property not found');
 
+  const insertPayload = mapFormDataToDb(data, propertyId);
   const { error, data: newReading } = await supabase
     .from('readings')
     .insert({
+      ...insertPayload,
       property_id: propertyId,
       date: data.date,
-      water: data.meters.water || 0,
-      gas: data.meters.gas || 0,
+      water: data.meters.water ?? 0,
+      gas: data.meters.gas ?? 0,
       ...(data.meters.electricity?.type === 'single'
         ? {
             electricity_single: data.meters.electricity.single,
           }
         : {
-            electricity_day: data.meters.electricity?.day || 0,
-            electricity_night: data.meters.electricity?.night || 0,
+            electricity_day: data.meters.electricity?.day ?? 0,
+            electricity_night: data.meters.electricity?.night ?? 0,
           }),
     })
     .select()
@@ -137,9 +177,12 @@ const createMonth = async ({
     .eq('id', newReading.id)
     .single();
 
+  const rowToMap = readingWithStats
+    ? await enrichWithReplacement(readingWithStats, newReading.id)
+    : newReading;
   const tariff = await findTariffForDate(propertyId, data.date);
 
-  return mapReadingToFrontend(readingWithStats || newReading, tariff, property.electricity_type);
+  return mapReadingToFrontend(rowToMap, tariff, property.electricity_type);
 };
 
 const editMonth = async ({
@@ -153,19 +196,37 @@ const editMonth = async ({
 }) => {
   const updatePayload = mapFormDataToDb(data);
 
-  const { data: updatedData, error } = await supabase
+  const { error } = await supabase
     .from('readings')
     .update(updatePayload)
     .eq('id', monthId)
-    .eq('property_id', propertyId)
-    .select()
-    .single();
+    .eq('property_id', propertyId);
 
   if (error) {
     throw new Error(`Failed to update month: ${error.message}`);
   }
 
-  return updatedData;
+  const { data: readingWithStats } = await supabase
+    .from('view_readings_stats')
+    .select('*')
+    .eq('id', monthId)
+    .eq('property_id', propertyId)
+    .single();
+
+  if (!readingWithStats) {
+    throw new Error('Failed to load updated reading');
+  }
+
+  const readingEnriched = await enrichWithReplacement(readingWithStats, monthId);
+  const { data: property } = await supabase
+    .from('properties')
+    .select('electricity_type')
+    .eq('id', propertyId)
+    .single();
+
+  const tariff = await findTariffForDate(propertyId, readingEnriched.date);
+
+  return mapReadingToFrontend(readingEnriched, tariff, property?.electricity_type ?? null);
 };
 
 const deleteMonth = async ({ propertyId, monthId }: { propertyId: string; monthId: string }) => {

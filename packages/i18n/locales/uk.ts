@@ -78,6 +78,11 @@ const uk = {
   ELECTRICITY_DAY: 'Світло (День)',
   ELECTRICITY_NIGHT: 'Світло (Ніч)',
   ELECTRICITY_SELECT: 'Тип лічильника електроенергії',
+  /** UA: Секція заміни лічильника. EN: Meter replacement section. */
+  METER_REPLACEMENT: 'Заміна лічильника',
+  METER_REPLACEMENT_HINT: 'Якщо цей показ — після заміни лічильника, вкажіть початкове значення нового (зазвичай 0) та за потреби останній показ старого.',
+  METER_REPLACEMENT_BASELINE: 'Початкове значення нового лічильника',
+  METER_REPLACEMENT_OLD_FINAL: 'Остаточний показ старого лічильника',
   WATER: 'Вода',
   GAS: 'Газ',
   INTERNET: 'Інтернет',

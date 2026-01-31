@@ -1,8 +1,3 @@
-/**
- * Dashboard Service
- * UA: Сервіс аналітики дашборду — агрегація витрат по нерухомості, місяцях та трендах.
- * EN: Dashboard analytics service — aggregates spending by property, month, and trends.
- */
 import type {
   CategoryBreakdown,
   FullDashboardData,
@@ -32,6 +27,17 @@ interface DatabaseReading {
   electricity_day: number | null;
   electricity_night: number | null;
   electricity_single: number | null;
+  /** UA: Поля заміни лічильника (з таблиці readings). EN: Meter replacement fields. */
+  water_baseline?: number | null;
+  water_old_final?: number | null;
+  gas_baseline?: number | null;
+  gas_old_final?: number | null;
+  electricity_baseline_single?: number | null;
+  electricity_baseline_day?: number | null;
+  electricity_baseline_night?: number | null;
+  electricity_old_final_single?: number | null;
+  electricity_old_final_day?: number | null;
+  electricity_old_final_night?: number | null;
 }
 
 interface DatabaseProperty {
@@ -202,31 +208,96 @@ const buildSixMonthTrend = (
 
 // --- Cost calculation / Розрахунок витрат ---
 
-/** UA: Рахує витрати між двома показаннями за тарифом (вода, газ, світло single/day-night, фікс). EN: Calculates costs between two readings using tariff (water, gas, electricity, fixed). */
+/** UA: Ефективна різниця для одного лічильника при заміні (baseline/old_final). EN: Effective diff for one meter when replacement fields set. */
+const effectiveDiff = (
+  current: number | null,
+  prev: number | null,
+  baseline: number | null | undefined,
+  oldFinal: number | null | undefined,
+): number => {
+  if (current === null) return 0;
+  const prevVal = prev ?? 0;
+  if (oldFinal != null) {
+    return Math.max(0, oldFinal - prevVal) + Math.max(0, current - (baseline ?? 0));
+  }
+  const effectivePrev = baseline != null ? baseline : prevVal;
+  return Math.max(0, current - effectivePrev);
+};
+
+/** UA: Різниця для одного ресурсу (вода/газ) з підтримкою заміни. EN: Diff for one resource (water/gas) with replacement support. */
+const resourceDiff = (
+  currentVal: number,
+  prevVal: number,
+  baseline: number | null | undefined,
+  oldFinal: number | null | undefined,
+): number =>
+  baseline != null || oldFinal != null
+    ? effectiveDiff(currentVal, prevVal, baseline ?? null, oldFinal ?? null)
+    : Math.max(0, currentVal - prevVal);
+
+/** UA: Вартість електрики (single або day/night) з підтримкою заміни. EN: Electricity cost with replacement support. */
+const electricityCost = (
+  current: DatabaseReading,
+  prev: DatabaseReading,
+  rateDay: number,
+  rateNight: number,
+): number => {
+  const cd = current.electricity_day;
+  const cn = current.electricity_night;
+  const pd = prev.electricity_day;
+  const pn = prev.electricity_night;
+  if (cd != null && cn != null && pd != null && pn != null) {
+    const dayDiff = resourceDiff(
+      cd,
+      pd,
+      current.electricity_baseline_day,
+      current.electricity_old_final_day,
+    );
+    const nightDiff = resourceDiff(
+      cn,
+      pn,
+      current.electricity_baseline_night,
+      current.electricity_old_final_night,
+    );
+    return dayDiff * rateDay + nightDiff * rateNight;
+  }
+  const cs = current.electricity_single;
+  const ps = prev.electricity_single;
+  if (cs != null && ps != null) {
+    const singleDiff = resourceDiff(
+      cs,
+      ps,
+      current.electricity_baseline_single,
+      current.electricity_old_final_single,
+    );
+    return singleDiff * rateDay;
+  }
+  return 0;
+};
+
+/** UA: Рахує витрати між двома показаннями за тарифом (вода, газ, світло single/day-night, фікс); враховує заміну лічильника. EN: Calculates costs between two readings using tariff; supports meter replacement. */
 const calculateCosts = (current: DatabaseReading, prev: DatabaseReading, t: DatabaseTariff) => {
-  const water = Math.max(0, current.water - prev.water) * (Number(t.rate_water) || 0);
-  const gas = Math.max(0, current.gas - prev.gas) * (Number(t.rate_gas) || 0);
-  let electricity = 0;
+  const waterDiff = resourceDiff(
+    current.water,
+    prev.water,
+    current.water_baseline,
+    current.water_old_final,
+  );
+  const gasDiff = resourceDiff(
+    current.gas,
+    prev.gas,
+    current.gas_baseline,
+    current.gas_old_final,
+  );
   const rateDay = Number(t.rate_electricity_day) || Number(t.rate_electricity_single) || 0;
   const rateNight = Number(t.rate_electricity_night) || 0;
-
-  if (
-    current.electricity_day !== null &&
-    current.electricity_night !== null &&
-    prev.electricity_day !== null &&
-    prev.electricity_night !== null
-  ) {
-    electricity =
-      Math.max(0, current.electricity_day - prev.electricity_day) * rateDay +
-      Math.max(0, current.electricity_night - prev.electricity_night) * rateNight;
-  } else if (current.electricity_single !== null && prev.electricity_single !== null) {
-    electricity = Math.max(0, current.electricity_single - prev.electricity_single) * rateDay;
-  }
-
+  const electricity = electricityCost(current, prev, rateDay, rateNight);
   const fixed =
     (Number(t.fixed_internet) || 0) +
     (Number(t.fixed_maintenance) || 0) +
     (Number(t.fixed_gas_delivery) || 0);
+  const water = waterDiff * (Number(t.rate_water) || 0);
+  const gas = gasDiff * (Number(t.rate_gas) || 0);
   return {
     water,
     gas,

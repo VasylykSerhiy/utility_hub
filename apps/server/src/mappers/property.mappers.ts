@@ -11,6 +11,17 @@ interface ReadingsDbRow {
   electricity_single?: number | null;
   electricity_day?: number | null;
   electricity_night?: number | null;
+  /** UA: Початкове значення нового лічильника при заміні. EN: New meter baseline when replaced. */
+  electricity_baseline_single?: number | null;
+  electricity_baseline_day?: number | null;
+  electricity_baseline_night?: number | null;
+  electricity_old_final_single?: number | null;
+  electricity_old_final_day?: number | null;
+  electricity_old_final_night?: number | null;
+  water_baseline?: number | null;
+  water_old_final?: number | null;
+  gas_baseline?: number | null;
+  gas_old_final?: number | null;
 }
 
 interface TariffDbRow {
@@ -46,6 +57,16 @@ interface ReadingDbRow {
   prev_electricity_single?: number | null;
   prev_electricity_day?: number | null;
   prev_electricity_night?: number | null;
+  electricity_baseline_single?: number | null;
+  electricity_baseline_day?: number | null;
+  electricity_baseline_night?: number | null;
+  electricity_old_final_single?: number | null;
+  electricity_old_final_day?: number | null;
+  electricity_old_final_night?: number | null;
+  water_baseline?: number | null;
+  water_old_final?: number | null;
+  gas_baseline?: number | null;
+  gas_old_final?: number | null;
   created_at: string | null;
 }
 
@@ -168,6 +189,131 @@ interface PropertyFrontend {
 
 // --- Helpers ---
 
+/**
+ * UA: Рахує ефективну різницю для одного лічильника при заміні (baseline / old_final).
+ * EN: Computes effective diff for one meter when replacement fields are set.
+ */
+function effectiveDiff(
+  current: number | null,
+  prev: number | null,
+  baseline: number | null | undefined,
+  oldFinal: number | null | undefined,
+): number {
+  if (current === null) return 0;
+  const prevVal = prev ?? 0;
+  if (oldFinal != null) {
+    return Math.max(0, oldFinal - prevVal) + Math.max(0, current - (baseline ?? 0));
+  }
+  const effectivePrev = baseline != null ? baseline : prevVal;
+  return Math.max(0, current - effectivePrev);
+}
+
+function diffOne(
+  reading: ReadingDbRow,
+  key: 'water' | 'gas',
+  diffKey: 'diff_water' | 'diff_gas',
+  prevKey: 'prev_water' | 'prev_gas',
+  baselineKey: 'water_baseline' | 'gas_baseline',
+  oldFinalKey: 'water_old_final' | 'gas_old_final',
+): number {
+  const current = reading[key];
+  const hasReplacement = reading[baselineKey] != null || reading[oldFinalKey] != null;
+  return hasReplacement
+    ? effectiveDiff(
+        current,
+        reading[prevKey] ?? null,
+        reading[baselineKey] ?? null,
+        reading[oldFinalKey] ?? null,
+      )
+    : Math.max(reading[diffKey] ?? 0, 0);
+}
+
+const ELECTRICITY_KEYS: Record<
+  'single' | 'day' | 'night',
+  {
+    current: keyof ReadingDbRow;
+    prev: keyof ReadingDbRow;
+    baseline: keyof ReadingDbRow;
+    oldFinal: keyof ReadingDbRow;
+    diff: keyof ReadingDbRow;
+  }
+> = {
+  single: {
+    current: 'electricity_single',
+    prev: 'prev_electricity_single',
+    baseline: 'electricity_baseline_single',
+    oldFinal: 'electricity_old_final_single',
+    diff: 'diff_electricity_single',
+  },
+  day: {
+    current: 'electricity_day',
+    prev: 'prev_electricity_day',
+    baseline: 'electricity_baseline_day',
+    oldFinal: 'electricity_old_final_day',
+    diff: 'diff_electricity_day',
+  },
+  night: {
+    current: 'electricity_night',
+    prev: 'prev_electricity_night',
+    baseline: 'electricity_baseline_night',
+    oldFinal: 'electricity_old_final_night',
+    diff: 'diff_electricity_night',
+  },
+};
+
+function diffElectricity(
+  reading: ReadingDbRow,
+  kind: 'single' | 'day' | 'night',
+): number {
+  const k = ELECTRICITY_KEYS[kind];
+  const current = reading[k.current] as number | null;
+  const hasReplacement = reading[k.baseline] != null || reading[k.oldFinal] != null;
+  return hasReplacement
+    ? effectiveDiff(
+        current,
+        (reading[k.prev] as number | null) ?? null,
+        (reading[k.baseline] as number | null | undefined) ?? null,
+        (reading[k.oldFinal] as number | null | undefined) ?? null,
+      )
+    : Math.max((reading[k.diff] as number | null | undefined) ?? 0, 0);
+}
+
+/** UA: Обчислює diff для одного запису (з урахуванням заміни лічильника). EN: Computes diff for one reading (meter replacement aware). */
+function computeDiffForReading(reading: ReadingDbRow): DiffForTotal {
+  return {
+    water: diffOne(reading, 'water', 'diff_water', 'prev_water', 'water_baseline', 'water_old_final'),
+    gas: diffOne(reading, 'gas', 'diff_gas', 'prev_gas', 'gas_baseline', 'gas_old_final'),
+    electricity_single: diffElectricity(reading, 'single'),
+    electricity_day: diffElectricity(reading, 'day'),
+    electricity_night: diffElectricity(reading, 'night'),
+  };
+}
+
+function setElectricityReplacement(
+  payload: ReadingsDbRow,
+  e: NonNullable<MonthSchema['replacement']>['electricity'],
+): void {
+  if (!e) return;
+  if (e.baselineSingle != null) payload.electricity_baseline_single = e.baselineSingle;
+  if (e.baselineDay != null) payload.electricity_baseline_day = e.baselineDay;
+  if (e.baselineNight != null) payload.electricity_baseline_night = e.baselineNight;
+  if (e.oldFinalSingle != null) payload.electricity_old_final_single = e.oldFinalSingle;
+  if (e.oldFinalDay != null) payload.electricity_old_final_day = e.oldFinalDay;
+  if (e.oldFinalNight != null) payload.electricity_old_final_night = e.oldFinalNight;
+}
+
+/** UA: Заповнює payload полями заміни з data.replacement. EN: Fills payload with replacement fields from data.replacement. */
+function applyReplacementToPayload(
+  payload: ReadingsDbRow,
+  replacement: NonNullable<MonthSchema['replacement']>,
+): void {
+  setElectricityReplacement(payload, replacement.electricity);
+  if (replacement.water?.baseline != null) payload.water_baseline = replacement.water.baseline;
+  if (replacement.water?.oldFinal != null) payload.water_old_final = replacement.water.oldFinal;
+  if (replacement.gas?.baseline != null) payload.gas_baseline = replacement.gas.baseline;
+  if (replacement.gas?.oldFinal != null) payload.gas_old_final = replacement.gas.oldFinal;
+}
+
 function resolveElectricityType(
   reading: ReadingDbRow,
   propertyElectricityType: 'single' | 'double' | null,
@@ -283,6 +429,9 @@ export const mapFormDataToDb = (data: Partial<MonthSchema>, propertyId?: string)
     }
   }
 
+  if (data.replacement) {
+    applyReplacementToPayload(payload, data.replacement);
+  }
   return payload;
 };
 
@@ -302,15 +451,7 @@ export const mapReadingToFrontend = (
   // we force 'double' for this record (handles meter type change in history).
 
   const actualType = resolveElectricityType(reading, propertyElectricityType);
-
-  const diff: DiffForTotal = {
-    water: Math.max(reading.diff_water ?? 0, 0),
-    gas: Math.max(reading.diff_gas ?? 0, 0),
-    electricity_single: Math.max(reading.diff_electricity_single ?? 0, 0),
-    electricity_day: Math.max(reading.diff_electricity_day ?? 0, 0),
-    electricity_night: Math.max(reading.diff_electricity_night ?? 0, 0),
-  };
-
+  const diff = computeDiffForReading(reading);
   const total = tariff ? calculateTotal(diff, tariff) : 0;
 
   return {

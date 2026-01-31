@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@workspace/ui/components/form';
 import NumberInput from '@workspace/ui/components/number-input';
+import { Switch } from '@workspace/ui/components/switch';
 import { cn } from '@workspace/ui/lib/utils';
 import { type MonthSchema, monthSchemaClient } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
@@ -54,20 +55,27 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
         gas: meter?.meters.gas ?? undefined,
         water: meter?.meters.water ?? undefined,
       },
+      replacement: undefined,
     },
   });
 
+  const isReplacement = form.watch('replacement') != null;
+
   const onSubmit = async (data: MonthSchema) => {
+    const payload: MonthSchema = {
+      ...data,
+      replacement: isReplacement ? data.replacement : undefined,
+    };
     if (meter?.id) {
       await updateMeterAsync({
         id: property.id,
         meterId: meter.id,
-        data,
+        data: payload,
       });
     } else {
       await mutateAsync({
         id: property.id,
-        data,
+        data: payload,
       });
     }
     closeModal();
@@ -75,7 +83,7 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-2')}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-2 overflow-auto ')}>
         <FormField
           control={form.control}
           name='date'
@@ -193,6 +201,252 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
             </FormItem>
           )}
         />
+        <hr className='my-3' />
+        {/* UA: Секція заміни лічильника (baseline / old final). EN: Meter replacement section. */}
+        <FormField
+          control={form.control}
+          name='replacement'
+          render={({ field }) => (
+            <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+              <div className='space-y-0.5'>
+                <FormLabel className='text-base'>{t('METER_REPLACEMENT')}</FormLabel>
+                <p className='text-muted-foreground text-sm'>{t('METER_REPLACEMENT_HINT')}</p>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value != null}
+                  onCheckedChange={checked => {
+                    field.onChange(checked ? { electricity: {}, water: {}, gas: {} } : undefined);
+                  }}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        {isReplacement && (
+          <>
+            {electricityType === IElectricityType.SINGLE && (
+              <>
+                <FormField
+                  control={form.control}
+                  name='replacement.electricity.baselineSingle'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t('ELECTRICITY')} — {t('METER_REPLACEMENT_BASELINE')}
+                      </FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          {...field}
+                          onChange={undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue ?? undefined)
+                          }
+                          placeholder='0'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='replacement.electricity.oldFinalSingle'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t('ELECTRICITY')} — {t('METER_REPLACEMENT_OLD_FINAL')}
+                      </FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          {...field}
+                          onChange={undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue ?? undefined)
+                          }
+                          placeholder='—'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+            {electricityType === IElectricityType.DOUBLE && (
+              <>
+                <FormField
+                  control={form.control}
+                  name='replacement.electricity.baselineDay'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t('ELECTRICITY_DAY')} — {t('METER_REPLACEMENT_BASELINE')}
+                      </FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          {...field}
+                          onChange={undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue ?? undefined)
+                          }
+                          placeholder='0'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='replacement.electricity.baselineNight'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t('ELECTRICITY_NIGHT')} — {t('METER_REPLACEMENT_BASELINE')}
+                      </FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          {...field}
+                          onChange={undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue ?? undefined)
+                          }
+                          placeholder='0'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='replacement.electricity.oldFinalDay'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t('ELECTRICITY_DAY')} — {t('METER_REPLACEMENT_OLD_FINAL')}
+                      </FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          {...field}
+                          onChange={undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue ?? undefined)
+                          }
+                          placeholder='—'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='replacement.electricity.oldFinalNight'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t('ELECTRICITY_NIGHT')} — {t('METER_REPLACEMENT_OLD_FINAL')}
+                      </FormLabel>
+                      <FormControl>
+                        <NumberInput
+                          {...field}
+                          onChange={undefined}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue ?? undefined)
+                          }
+                          placeholder='—'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+            <FormField
+              control={form.control}
+              name='replacement.water.baseline'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('WATER')} — {t('METER_REPLACEMENT_BASELINE')}
+                  </FormLabel>
+                  <FormControl>
+                    <NumberInput
+                      {...field}
+                      onChange={undefined}
+                      onValueChange={({ floatValue }) => field.onChange(floatValue ?? undefined)}
+                      placeholder='0'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='replacement.water.oldFinal'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('WATER')} — {t('METER_REPLACEMENT_OLD_FINAL')}
+                  </FormLabel>
+                  <FormControl>
+                    <NumberInput
+                      {...field}
+                      onChange={undefined}
+                      onValueChange={({ floatValue }) => field.onChange(floatValue ?? undefined)}
+                      placeholder='—'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='replacement.gas.baseline'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('GAS')} — {t('METER_REPLACEMENT_BASELINE')}
+                  </FormLabel>
+                  <FormControl>
+                    <NumberInput
+                      {...field}
+                      onChange={undefined}
+                      onValueChange={({ floatValue }) => field.onChange(floatValue ?? undefined)}
+                      placeholder='0'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='replacement.gas.oldFinal'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('GAS')} — {t('METER_REPLACEMENT_OLD_FINAL')}
+                  </FormLabel>
+                  <FormControl>
+                    <NumberInput
+                      {...field}
+                      onChange={undefined}
+                      onValueChange={({ floatValue }) => field.onChange(floatValue ?? undefined)}
+                      placeholder='—'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
         <hr className='my-3' />
         <Button className='mt-2' type='submit'>
           {t(meter?.id ? 'BUTTONS.EDIT' : 'BUTTONS.CREATE')}

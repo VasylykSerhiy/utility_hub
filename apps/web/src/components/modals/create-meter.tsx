@@ -21,7 +21,7 @@ const CreateMeter = ({ id, meterId }: CreateMeterProps) => {
   const isLoading = isPropertyLoading || monthLoading;
 
   return (
-    <DialogContent className='w-full lg:max-w-[400px]'>
+    <DialogContent className='w-full lg:max-w-[400px] max-h-[90vh] overflow-auto'>
       <DialogTitle>{t('MODAL.CREATE_METER.TITLE')}</DialogTitle>
       <DialogDescription>{t('MODAL.CREATE_METER.DESC')}</DialogDescription>
       {isLoading && <div>Loading...</div>}
