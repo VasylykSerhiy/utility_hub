@@ -18,6 +18,20 @@ export interface IMeter {
   gas: number;
 }
 
+/** UA: Опційні поля заміни лічильника (baseline / old final). EN: Optional meter replacement fields. */
+export interface IReplacement {
+  electricity?: {
+    baselineSingle?: number;
+    baselineDay?: number;
+    baselineNight?: number;
+    oldFinalSingle?: number;
+    oldFinalDay?: number;
+    oldFinalNight?: number;
+  };
+  water?: { baseline?: number; oldFinal?: number };
+  gas?: { baseline?: number; oldFinal?: number };
+}
+
 export interface IMonth {
   id?: string;
   createdAt?: string;
@@ -29,6 +43,8 @@ export interface IMonth {
   tariff: ITariff;
   total: number;
   electricityType: IElectricityType;
+  /** UA: Заміна лічильника (при редагуванні запису). EN: Meter replacement (when editing reading). */
+  replacement?: IReplacement | null;
 }
 
 export interface LastReading {

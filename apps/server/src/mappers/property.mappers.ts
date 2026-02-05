@@ -159,6 +159,69 @@ interface EmptyReadingReturn {
   createdAt: null;
 }
 
+/** UA: Форма replacement для фронту (camelCase). EN: Replacement shape for frontend (camelCase). */
+interface ReplacementFrontend {
+  electricity?: {
+    baselineSingle?: number;
+    baselineDay?: number;
+    baselineNight?: number;
+    oldFinalSingle?: number;
+    oldFinalDay?: number;
+    oldFinalNight?: number;
+  };
+  water?: { baseline?: number; oldFinal?: number };
+  gas?: { baseline?: number; oldFinal?: number };
+}
+
+/** UA: Збирає replacement з рядка БД для префілу форми. EN: Build replacement object from DB row for form pre-fill. */
+function buildReplacementFromReading(reading: ReadingDbRow): ReplacementFrontend | undefined {
+  const hasAny =
+    reading.water_baseline != null ||
+    reading.water_old_final != null ||
+    reading.gas_baseline != null ||
+    reading.gas_old_final != null ||
+    reading.electricity_baseline_single != null ||
+    reading.electricity_baseline_day != null ||
+    reading.electricity_baseline_night != null ||
+    reading.electricity_old_final_single != null ||
+    reading.electricity_old_final_day != null ||
+    reading.electricity_old_final_night != null;
+  if (!hasAny) return undefined;
+  const hasElec =
+    reading.electricity_baseline_single != null ||
+    reading.electricity_baseline_day != null ||
+    reading.electricity_baseline_night != null ||
+    reading.electricity_old_final_single != null ||
+    reading.electricity_old_final_day != null ||
+    reading.electricity_old_final_night != null;
+  return {
+    electricity: hasElec
+      ? {
+          baselineSingle: reading.electricity_baseline_single ?? undefined,
+          baselineDay: reading.electricity_baseline_day ?? undefined,
+          baselineNight: reading.electricity_baseline_night ?? undefined,
+          oldFinalSingle: reading.electricity_old_final_single ?? undefined,
+          oldFinalDay: reading.electricity_old_final_day ?? undefined,
+          oldFinalNight: reading.electricity_old_final_night ?? undefined,
+        }
+      : undefined,
+    water:
+      reading.water_baseline != null || reading.water_old_final != null
+        ? {
+            baseline: reading.water_baseline ?? undefined,
+            oldFinal: reading.water_old_final ?? undefined,
+          }
+        : undefined,
+    gas:
+      reading.gas_baseline != null || reading.gas_old_final != null
+        ? {
+            baseline: reading.gas_baseline ?? undefined,
+            oldFinal: reading.gas_old_final ?? undefined,
+          }
+        : undefined,
+  };
+}
+
 interface ReadingFrontend {
   id: string;
   propertyId: string;
@@ -174,6 +237,8 @@ interface ReadingFrontend {
   tariff: TariffFrontend | null;
   total: number;
   createdAt: string | null;
+  /** UA: Заміна лічильника (для префілу форми при редагуванні). EN: Meter replacement (for form pre-fill on edit). */
+  replacement?: ReplacementFrontend | null;
 }
 
 interface PropertyFrontend {
@@ -429,8 +494,22 @@ export const mapFormDataToDb = (data: Partial<MonthSchema>, propertyId?: string)
     }
   }
 
-  if (data.replacement) {
-    applyReplacementToPayload(payload, data.replacement);
+  if (data.replacement !== undefined) {
+    if (data.replacement === null) {
+      // UA: Явне очищення полів заміни при знятому перемикачі. EN: Explicitly clear replacement when user unchecks.
+      payload.electricity_baseline_single = null;
+      payload.electricity_baseline_day = null;
+      payload.electricity_baseline_night = null;
+      payload.electricity_old_final_single = null;
+      payload.electricity_old_final_day = null;
+      payload.electricity_old_final_night = null;
+      payload.water_baseline = null;
+      payload.water_old_final = null;
+      payload.gas_baseline = null;
+      payload.gas_old_final = null;
+    } else {
+      applyReplacementToPayload(payload, data.replacement);
+    }
   }
   return payload;
 };
@@ -453,6 +532,7 @@ export const mapReadingToFrontend = (
   const actualType = resolveElectricityType(reading, propertyElectricityType);
   const diff = computeDiffForReading(reading);
   const total = tariff ? calculateTotal(diff, tariff) : 0;
+  const replacement = buildReplacementFromReading(reading);
 
   return {
     id: reading.id,
@@ -489,6 +569,7 @@ export const mapReadingToFrontend = (
     tariff: tariff ? mapTariffToFrontend(tariff) : null,
     total,
     createdAt: reading.created_at,
+    replacement,
   };
 };
 

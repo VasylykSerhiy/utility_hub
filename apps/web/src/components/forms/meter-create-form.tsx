@@ -36,6 +36,8 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
   const closeModal = useModalStore(s => s.closeModal);
 
   const electricityType = meter?.electricityType ?? property.electricityType;
+  // UA: При редагуванні префілимо replacement з API (baseline/old final). EN: Pre-fill replacement from API when editing.
+  const initialReplacement = meter?.replacement ?? undefined;
   const form = useForm<MonthSchema>({
     resolver: zodResolver(monthSchemaClient),
     defaultValues: {
@@ -55,16 +57,17 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
         gas: meter?.meters.gas ?? undefined,
         water: meter?.meters.water ?? undefined,
       },
-      replacement: undefined,
+      replacement: initialReplacement,
     },
   });
 
-  const isReplacement = form.watch('replacement') != null;
+  const isReplacement = form.watch('replacement') != null && form.watch('replacement') !== undefined;
 
   const onSubmit = async (data: MonthSchema) => {
+    // UA: При знятому перемикачі надсилаємо null, щоб бекенд очистив поля заміни. EN: Send null when unchecked so backend clears replacement.
     const payload: MonthSchema = {
       ...data,
-      replacement: isReplacement ? data.replacement : undefined,
+      replacement: isReplacement ? data.replacement ?? undefined : null,
     };
     if (meter?.id) {
       await updateMeterAsync({
@@ -214,9 +217,9 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
               </div>
               <FormControl>
                 <Switch
-                  checked={field.value != null}
+                  checked={field.value != null && field.value !== undefined}
                   onCheckedChange={checked => {
-                    field.onChange(checked ? { electricity: {}, water: {}, gas: {} } : undefined);
+                    field.onChange(checked ? { electricity: {}, water: {}, gas: {} } : null);
                   }}
                 />
               </FormControl>

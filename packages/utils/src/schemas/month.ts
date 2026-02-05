@@ -43,7 +43,7 @@ export const monthSchema = z.object({
     gas: z.coerce.number().nonnegative(),
   }),
 
-  replacement: replacementSchema,
+  replacement: replacementSchema.nullable(),
 });
 
 export const monthSchemaClient = monthSchema.omit({ date: true }).extend({
