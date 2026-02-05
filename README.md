@@ -8,19 +8,29 @@
 
 ## Зміст / Table of Contents
 
-- [Функціонал / Features](#функціонал--features)
-- [Технологічний стек / Tech Stack](#технологічний-стек--tech-stack)
-- [Структура проєкту / Project Structure](#структура-проєкту--project-structure)
-- [Передумови / Prerequisites](#передумови--prerequisites)
-- [Встановлення / Installation](#встановлення--installation)
-- [Змінні середовища / Environment Variables](#змінні-середовища--environment-variables)
-- [Запуск / Running](#запуск--running)
-- [Скрипти / Scripts](#скрипти--scripts)
-- [Стиль коду / Code Style](#стиль-коду--code-style)
-- [API](#api)
-- [Docker](#docker)
-- [CI/CD](#cicd)
-- [Додавання UI-компонентів / Adding UI Components](#додавання-ui-компонентів--adding-ui-components)
+- [Utility Hub](#utility-hub)
+  - [Зміст / Table of Contents](#зміст--table-of-contents)
+  - [Функціонал / Features](#функціонал--features)
+  - [Технологічний стек / Tech Stack](#технологічний-стек--tech-stack)
+  - [Структура проєкту / Project Structure](#структура-проєкту--project-structure)
+  - [Передумови / Prerequisites](#передумови--prerequisites)
+  - [Встановлення / Installation](#встановлення--installation)
+  - [Змінні середовища / Environment Variables](#змінні-середовища--environment-variables)
+    - [Backend (`apps/server`)](#backend-appsserver)
+    - [Frontend (`apps/web`)](#frontend-appsweb)
+    - [GitHub Actions (Supabase Keep-Alive)](#github-actions-supabase-keep-alive)
+  - [Запуск / Running](#запуск--running)
+    - [Усі сервіси (web + server)](#усі-сервіси-web--server)
+    - [Тільки frontend](#тільки-frontend)
+    - [Тільки backend](#тільки-backend)
+    - [Збірка для продакшну](#збірка-для-продакшну)
+  - [Скрипти / Scripts](#скрипти--scripts)
+  - [Стиль коду / Code Style](#стиль-коду--code-style)
+  - [API](#api)
+  - [Docker](#docker)
+  - [CI/CD](#cicd)
+  - [Додавання UI-компонентів / Adding UI Components](#додавання-ui-компонентів--adding-ui-components)
+  - [Ліцензія / License](#ліцензія--license)
 
 ---
 
@@ -31,6 +41,8 @@
 | **Авторизація** | Реєстрація, вхід (email + Google OAuth), відновлення пароля, підтвердження email. |
 | **Dashboard** | Загальна статистика: витрати за місяць, тренд за 6 місяців, розбивка по категоріях (вода, газ, електрика, фіксовані), витрати по об'єктах. |
 | **Об'єкти нерухомості** | CRUD об'єктів, лічильники (одно-/двотарифні), показники, історія місяців, зміна тарифу. |
+| **Учасники об'єкта** | Власник може запрошувати учасників (email), видаляти їх і змінювати ролі. Ролі: **owner** (повний доступ + керування учасниками), **admin** (редагування даних об'єкта), **viewer** (тільки перегляд). |
+| **Журнал аудиту** | Для власника — хто й коли змінив об'єкт, показники чи учасників (дата, користувач, дія, деталі). З пагінацією. |
 | **Лічильники** | Створення лічильників, введення показників (день/ніч для двотарифних). |
 | **Тарифи** | Перегляд та зміна тарифів по об'єктах. |
 | **Інтернаціоналізація** | Українська та англійська мови (i18n). |
@@ -48,7 +60,7 @@
 | **Стан та запити** | TanStack Query (React Query), Zustand |
 | **Форми та валідація** | React Hook Form, Zod |
 | **Backend** | Express 5, Node.js, TypeScript |
-| **База даних / Auth** | Supabase (PostgreSQL + Auth) |
+| **Auth / Backend** | Supabase |
 | **Лінтер / Форматер** | Biome |
 | **Графіки** | Recharts |
 | **Анімації** | Framer Motion |
@@ -69,7 +81,7 @@ utility_hub/
 │   │   │   ├── middlewares/    # auth
 │   │   │   ├── mappers/        # DB → API DTO
 │   │   │   ├── routes/         # /v1/auth, /v1/users, /v1/properties, /v1/dashboard
-│   │   │   ├── services/       # business logic, Supabase calls
+│   │   │   ├── services/       # business logic (property, reading, audit, dashboard, tariff), Supabase
 │   │   │   ├── responses/     # success/error response handlers
 │   │   │   └── utils/
 │   │   ├── scripts/            # keep-alive.ts (Supabase ping)
@@ -79,7 +91,7 @@ utility_hub/
 │   └── web/                    # Next.js frontend
 │       ├── app/
 │       │   ├── (protected)/    # dashboard, property/[slug], property/create
-│       │   ├── auth/           # sing-in, sing-up, forgot-password, confirm, update-password
+│       │   ├── auth/           # sign-in, sign-up, forgot-password, confirm, update-password
 │       │   └── layout.tsx
 │       ├── src/
 │       │   ├── components/     # forms, layout, modals, tables
@@ -246,7 +258,9 @@ pnpm build
 - **Лінтер і форматер:** Biome (конфіг у `biome.json`).  
 - **Правила:** 2 пробіли, одинарні лапки, trailing commas, LF.  
 - Перевірка: `pnpm lint`, форматування: `pnpm format`, повна перевірка: `pnpm check`.  
-- У проєкті заборонено використання `any`; використовуються типізації TypeScript та пакет `@workspace/types`.
+- **Типи:** заборонено `any`; використовувати TypeScript та пакет `@workspace/types`.  
+- **Імпорти:** абсолютні шляхи з `@/` у frontend (наприклад `@/hooks/use-property`).  
+- **Коментарі:** подвійна мова (UA / EN) з можливістю видалити одну.
 
 ---
 
@@ -259,10 +273,13 @@ pnpm build
 | `/v1/auth` | Авторизація (OAuth, callback тощо) |
 | `/v1/users` | Профіль користувача |
 | `/v1/properties` | Об'єкти нерухомості, лічильники, показники, тарифи, місяці |
+| `/v1/properties/:id/members` | Учасники об'єкта (GET — список, POST — запросити). Лише власник. |
+| `/v1/properties/:id/members/:memberId` | PATCH — змінити роль (viewer/admin), DELETE — видалити учасника. Лише власник. |
+| `/v1/properties/:id/audit-log` | GET — журнал аудиту (query: `page`, `pageSize`). Лише власник. |
 | `/v1/dashboard` | Агреговані дані для головної сторінки (витрати, тренди, розбивки) |
 
-Захист: маршрути, що потребують авторизації, проходять через middleware з перевіркою JWT/Supabase-сесії.  
-Формат відповідей: уніфікований через `success-response-handler` та `error-response-handler` (наприклад, JSON з полями `data` / `error`).
+**Захист:** маршрути з авторизацією проходять через middleware з перевіркою JWT/Supabase-сесії. Доступ до об'єкта — за роллю (власник або учасник); керування учасниками та аудит — лише власник.  
+**Відповіді:** уніфікований формат через response handlers (JSON з полями `data` / `error`).
 
 ---
 

@@ -25,6 +25,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./configs": "./src/configs/index.ts",
     "./schemas/*": "./src/schemas/*.ts"
   }
 }

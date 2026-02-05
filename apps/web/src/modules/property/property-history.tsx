@@ -8,14 +8,15 @@ import ReadingTable from '@/components/tables/reading-table';
 import TariffsTable from '@/components/tables/tariffs-table';
 import { useTabs } from '@/hooks/use-tabs';
 
-const PropertyHistory = () => {
+/** canEdit: true = owner, false = viewer, undefined = loading. */
+const PropertyHistory = ({ canEdit }: { canEdit?: boolean }) => {
   const { t } = useTranslation();
 
   const tabs = [
     {
       label: t('READING'),
       id: 'reading',
-      content: <ReadingTable />,
+      content: <ReadingTable canEdit={canEdit} />,
     },
     {
       label: t('TARIFFS'),

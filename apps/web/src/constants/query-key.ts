@@ -2,6 +2,8 @@ export const queryKeys = {
   user: 'user',
   dashboard: 'dashboard',
   property: 'property',
+  propertyMembers: 'propertyMembers',
+  propertyAuditLog: 'propertyAuditLog',
   months: 'months',
   tariff: 'tariff',
   metrics: 'metrics',

@@ -283,12 +283,7 @@ const calculateCosts = (current: DatabaseReading, prev: DatabaseReading, t: Data
     current.water_baseline,
     current.water_old_final,
   );
-  const gasDiff = resourceDiff(
-    current.gas,
-    prev.gas,
-    current.gas_baseline,
-    current.gas_old_final,
-  );
+  const gasDiff = resourceDiff(current.gas, prev.gas, current.gas_baseline, current.gas_old_final);
   const rateDay = Number(t.rate_electricity_day) || Number(t.rate_electricity_single) || 0;
   const rateNight = Number(t.rate_electricity_night) || 0;
   const electricity = electricityCost(current, prev, rateDay, rateNight);
@@ -320,14 +315,36 @@ export const getDashboardAnalytics = async (userId: string): Promise<FullDashboa
   const prevMonthKey = format(subMonths(today, 1), 'yyyy-MM');
 
   const rangeStart = startOfMonth(subMonths(today, 12));
+
+  const { data: owned } = await supabase.from('properties').select('id').eq('user_id', userId);
+  const { data: memberRows } = await supabase
+    .from('property_members')
+    .select('property_id')
+    .eq('user_id', userId);
+  const ownedIds = (owned ?? []).map(p => p.id);
+  const memberIds = (memberRows ?? []).map(r => r.property_id);
+  const allIds = [...new Set([...ownedIds, ...memberIds])];
+  if (allIds.length === 0) {
+    return {
+      currentMonthName: new Date().toISOString(),
+      totalSpentCurrentMonth: 0,
+      totalSpentLastMonth: 0,
+      pendingReadingsCount: 0,
+      activeProperties: 0,
+      spendingBreakdown: { water: 0, gas: 0, electricity: 0, fixed: 0 },
+      costByProperty: [],
+      sixMonthTrend: [],
+    };
+  }
+
   const { data: properties, error } = await supabase
     .from('properties')
     .select('*, readings (*), tariffs (*)')
-    .eq('user_id', userId)
+    .in('id', allIds)
     .gte('readings.date', format(rangeStart, 'yyyy-MM-dd'));
 
   if (error) throw new Error('Failed to load dashboard data');
-  const typedProperties = properties as unknown as DatabaseProperty[];
+  const typedProperties = (properties ?? []) as unknown as DatabaseProperty[];
 
   // UA: Агрегація по всіх об'єктах. EN: Aggregate across all properties.
   const { monthlyStats, propertyCostsByMonth, latestDataKey, pendingReadingsCount } =

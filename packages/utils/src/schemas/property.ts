@@ -21,3 +21,8 @@ export const propertySchema = z.object({
 
 export const createPropertySchema = propertySchema.required();
 export const updatePropertySchema = propertySchema.omit({ name: true });
+
+/** UA: Зміна ролі учасника об'єкта (viewer | admin). EN: Update property member role. */
+export const updateMemberRoleSchema = z.object({
+  role: z.enum(['viewer', 'admin']),
+});

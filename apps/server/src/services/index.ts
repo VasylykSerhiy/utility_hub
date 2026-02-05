@@ -1,3 +1,4 @@
+export { default as auditService } from './audit.service';
 export { default as authorizationService } from './authorization.service';
 export { default as dashboardService } from './dashboard.service';
 export { default as propertyService } from './property.service';

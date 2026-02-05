@@ -15,10 +15,11 @@ import { Routes } from '@/constants/router';
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { useModalStore } from '@/stores/use-modal-state';
 
-export function PropertyCard({ lastReading, name, id }: IProperty) {
+export function PropertyCard({ lastReading, name, id, role }: IProperty) {
   const { t } = useTranslation();
   const blockRef = useRef<HTMLDivElement>(null);
   const openModal = useModalStore(s => s.openModal);
+  const canEdit = role !== 'viewer';
 
   const handleScreenshot = async () => {
     if (!blockRef.current) return;
@@ -69,20 +70,29 @@ export function PropertyCard({ lastReading, name, id }: IProperty) {
       </Button>
 
       <PropertyLastMonthDetail name={name} lastReading={lastReading} />
+      {role === 'viewer' && (
+        <span className='absolute right-3 top-3 rounded-md bg-muted px-2 py-0.5 text-muted-foreground text-xs'>
+          {t('PROPERTY.VIEW_ONLY')}
+        </span>
+      )}
       <CardFooter>
-        <div className='grid w-full grid-cols-2 gap-2'>
+        <div
+          className={`grid w-full gap-2 ${canEdit ? 'grid-cols-2' : 'grid-cols-1'}`}
+        >
           <Link href={`${Routes.PROPERTY}/${id}`}>
             <Button className='w-full'>{t('BUTTONS.MORE')}</Button>
           </Link>
-          <Button
-            onClick={e => {
-              e.stopPropagation();
-              openModal('createMeter', { id });
-            }}
-            className='w-full'
-          >
-            {t('BUTTONS.ADD_METER')}
-          </Button>
+          {canEdit && (
+            <Button
+              onClick={e => {
+                e.stopPropagation();
+                openModal('createMeter', { id });
+              }}
+              className='w-full'
+            >
+              {t('BUTTONS.ADD_METER')}
+            </Button>
+          )}
         </div>
       </CardFooter>
     </Card>

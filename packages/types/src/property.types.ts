@@ -43,7 +43,6 @@ export interface IMonth {
   tariff: ITariff;
   total: number;
   electricityType: IElectricityType;
-  /** UA: Заміна лічильника (при редагуванні запису). EN: Meter replacement (when editing reading). */
   replacement?: IReplacement | null;
 }
 
@@ -68,6 +67,7 @@ export type IProperty = {
   user_id: string;
   lastReading: LastReading;
   currentTariff: ITariff;
+  role?: PropertyRole;
 };
 
 export interface IMetrics extends IMonth {
@@ -89,3 +89,29 @@ export interface GetPropertyMonth {
 export interface GetPropertyTariffs extends PaginateOptions {
   id: string;
 }
+
+/** UA: owner = власник об'єкта, admin = запрошений з повним доступом, viewer = лише перегляд. EN: owner = property owner, admin = invited full access, viewer = read-only. */
+export type PropertyRole = 'owner' | 'admin' | 'viewer';
+
+export interface IPropertyMember {
+  id: string;
+  propertyId: string;
+  userId: string;
+  role: PropertyRole;
+  createdAt: string;
+  email?: string;
+}
+
+/** UA: Один запис журналу аудиту по об'єкту. EN: Single property audit log entry. */
+export interface IAuditLogEntry {
+  id: string;
+  propertyId: string;
+  userId: string;
+  action: string;
+  entityType: string | null;
+  entityId: string | null;
+  details: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface IPropertyAuditLog extends PaginatedResult<IAuditLogEntry> {}

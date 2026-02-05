@@ -74,6 +74,9 @@ export const useDeletePropertyMonth = () => {
         exact: true,
       });
       void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyAuditLog, variables.propertyId],
+      });
     },
   });
 };
@@ -112,12 +115,15 @@ export const useCreateMeter = () => {
   return useMutation({
     mutationKey: [mutationKey.meter_create],
     mutationFn: propertyService.createMeter,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: [queryKeys.property],
         exact: true,
       });
       void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyAuditLog, variables.id],
+      });
     },
   });
 };
@@ -127,12 +133,15 @@ export const useUpdateMeter = () => {
   return useMutation({
     mutationKey: [mutationKey.meter_update],
     mutationFn: propertyService.updateMeter,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: [queryKeys.property],
         exact: true,
       });
       void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyAuditLog, variables.id],
+      });
     },
   });
 };
@@ -164,5 +173,96 @@ export const getPropertyMetrics = (id: string) => {
     select: ({ data }) => data,
     enabled: !!id,
     placeholderData: keepPreviousData,
+  });
+};
+
+export const getPropertyMembers = (propertyId: string) => {
+  return useQuery({
+    queryKey: [queryKeys.propertyMembers, propertyId],
+    queryFn: () => propertyService.getPropertyMembers(propertyId),
+    select: ({ data }) => data,
+    enabled: !!propertyId,
+  });
+};
+
+export const getPropertyAuditLog = (
+  propertyId: string,
+  page: number,
+  pageSize: number,
+) => {
+  return useQuery({
+    queryKey: [queryKeys.propertyAuditLog, propertyId, page, pageSize],
+    queryFn: () => propertyService.getPropertyAuditLog(propertyId, page, pageSize),
+    select: ({ data }) => data,
+    enabled: !!propertyId,
+  });
+};
+
+export const useAddPropertyMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      propertyId,
+      email,
+      userId,
+      role,
+    }: {
+      propertyId: string;
+      email?: string;
+      userId?: string;
+      role?: 'viewer' | 'admin';
+    }) => {
+      const payload = email?.trim()
+        ? { email: email.trim(), ...(role && { role }) }
+        : { userId: userId?.trim() ?? '', ...(role && { role }) };
+      return propertyService.addPropertyMember(propertyId, payload);
+    },
+    onSuccess: (_, { propertyId }) => {
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyMembers, propertyId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyAuditLog, propertyId],
+      });
+    },
+  });
+};
+
+export const useUpdatePropertyMemberRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      propertyId,
+      memberUserId,
+      role,
+    }: {
+      propertyId: string;
+      memberUserId: string;
+      role: 'viewer' | 'admin';
+    }) => propertyService.updatePropertyMemberRole(propertyId, memberUserId, role),
+    onSuccess: (_, { propertyId }) => {
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyMembers, propertyId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyAuditLog, propertyId],
+      });
+    },
+  });
+};
+
+export const useRemovePropertyMember = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ propertyId, memberUserId }: { propertyId: string; memberUserId: string }) =>
+      propertyService.removePropertyMember(propertyId, memberUserId),
+    onSuccess: (_, { propertyId }) => {
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyMembers, propertyId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [queryKeys.propertyAuditLog, propertyId],
+      });
+    },
   });
 };

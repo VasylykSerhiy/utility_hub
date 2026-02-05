@@ -26,7 +26,8 @@ import { DropdownActions } from '@/components/dropdown-actions';
 import { getPropertyMonths, useDeletePropertyMonth } from '@/hooks/use-property';
 import { useModalStore } from '@/stores/use-modal-state';
 
-const ReadingTable = () => {
+/** canEdit: true = owner, false = viewer, undefined = loading (no actions column). */
+const ReadingTable = ({ canEdit }: { canEdit?: boolean }) => {
   const { openModal, closeModal } = useModalStore();
   const [page, setPage] = useState(1);
   const { t } = useTranslation();
@@ -43,8 +44,12 @@ const ReadingTable = () => {
     ? IElectricityType.SINGLE
     : IElectricityType.DOUBLE;
 
+  const showActions = canEdit === true;
   const actions = useCallback(
-    (month: IMonth): ButtonProps[] => [
+    (month: IMonth): ButtonProps[] =>
+      !showActions
+        ? []
+        : [
       {
         children: t('BUTTONS.EDIT'),
         variant: 'ghost',
@@ -85,7 +90,7 @@ const ReadingTable = () => {
         },
       },
     ],
-    [closeModal, deleteMutateAsync, isPending, openModal, t],
+    [showActions, closeModal, deleteMutateAsync, isPending, openModal, t],
   );
 
   return (
@@ -102,11 +107,11 @@ const ReadingTable = () => {
           )}
           <TableHead>{t('GAS')}</TableHead>
           <TableHead>{t('WATER')}</TableHead>
-          <TableHead className='w-1' />
+          {showActions && <TableHead className='w-1' />}
         </TableRow>
       </TableHeader>
       <TableBody isLoading={isLoading}>
-        {data?.data.map(month => (
+        {(data?.data ?? []).map(month => (
           <TableRow key={month.id}>
             <TableCell>
               {formatDate({
@@ -125,9 +130,11 @@ const ReadingTable = () => {
 
             <TableCell>{formatVolume(month?.meters?.gas)}</TableCell>
             <TableCell>{formatVolume(month?.meters?.water)}</TableCell>
-            <TableCell>
-              <DropdownActions actions={actions(month)} />
-            </TableCell>
+            {showActions && (
+              <TableCell>
+                <DropdownActions actions={actions(month)} />
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

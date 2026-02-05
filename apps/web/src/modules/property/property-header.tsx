@@ -17,7 +17,16 @@ import { getProperty, getPropertyLastTariff, useDeleteProperty } from '@/hooks/u
 import PropertyLastMonthDetail from '@/modules/property/property-last-month-detail';
 import { useModalStore } from '@/stores/use-modal-state';
 
-const PropertyHeader = ({ id }: { id: string }) => {
+const PropertyHeader = ({
+  id,
+  canEdit = true,
+  isLoadingRole = false,
+}: {
+  id: string;
+  canEdit?: boolean;
+  /** UA: Чи ще завантажується роль (не показувати view-only і не кнопки). EN: Role still loading (hide view-only and edit buttons). */
+  isLoadingRole?: boolean;
+}) => {
   const { data, isLoading } = getProperty(id);
   const { data: lastTariff } = getPropertyLastTariff({ id });
   const { mutate: deleteProperty, isPending } = useDeleteProperty();
@@ -33,15 +42,26 @@ const PropertyHeader = ({ id }: { id: string }) => {
     return null;
   }
 
+  const showViewOnlyBadge = !isLoadingRole && canEdit === false;
+  const showEditActions = !isLoadingRole && canEdit === true;
+
   return (
     <Card>
       <CardHeader className='flex items-center justify-between'>
-        <CardTitle className='text-lg font-semibold'>
-          {isLoading ? <Skeleton className='h-7 w-20' /> : data?.name}
-        </CardTitle>
-        <Button
-          onClick={() =>
-            openModal('alertModal', {
+        <div className='flex items-center gap-2'>
+          <CardTitle className='text-lg font-semibold'>
+            {isLoading ? <Skeleton className='h-7 w-20' /> : data?.name}
+          </CardTitle>
+          {showViewOnlyBadge && (
+            <span className='rounded-md bg-muted px-2 py-0.5 text-muted-foreground text-xs'>
+              {t('PROPERTY.VIEW_ONLY')}
+            </span>
+          )}
+        </div>
+        {showEditActions && (
+          <Button
+            onClick={() =>
+              openModal('alertModal', {
               title: t('MODALS.ALERT.TITLE.REMOVE_PROPERTY'),
               message: t('MODALS.ALERT.MESSAGE.REMOVE_PROPERTY'),
               actions: [
@@ -66,10 +86,11 @@ const PropertyHeader = ({ id }: { id: string }) => {
               ],
             })
           }
-          variant='destructive'
-        >
-          {t('BUTTONS.DELETE')}
-        </Button>
+            variant='destructive'
+          >
+            {t('BUTTONS.DELETE')}
+          </Button>
+        )}
       </CardHeader>
       <div className='grid grid-cols-1 md:grid-cols-2'>
         <div className='relative'>
@@ -137,14 +158,16 @@ const PropertyHeader = ({ id }: { id: string }) => {
               ))}
             </div>
           </div>
-          <div className='mt-4 grid grid-cols-1 gap-2 md:grid-cols-2'>
-            <Button className='w-full' onClick={() => openModal('changeTariff', { id })}>
-              {t('BUTTONS.CHANGE_TARIFF')}
-            </Button>
-            <Button onClick={() => openModal('createMeter', { id })} className='w-full'>
-              {t('BUTTONS.ADD_METER')}
-            </Button>{' '}
-          </div>
+          {showEditActions && (
+            <div className='mt-4 grid grid-cols-1 gap-2 md:grid-cols-2'>
+              <Button className='w-full' onClick={() => openModal('changeTariff', { id })}>
+                {t('BUTTONS.CHANGE_TARIFF')}
+              </Button>
+              <Button onClick={() => openModal('createMeter', { id })} className='w-full'>
+                {t('BUTTONS.ADD_METER')}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </div>
     </Card>

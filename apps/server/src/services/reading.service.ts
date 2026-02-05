@@ -2,6 +2,8 @@ import type { MonthSchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
 import { mapFormDataToDb, mapReadingToFrontend } from '../mappers/property.mappers';
+import { insertAuditLog, AUDIT_ACTIONS } from './audit.service';
+import { ensureCanAccessProperty, ensureOwner } from './property-access.service';
 import { findTariffForDate } from './tariff.service';
 
 /** UA: Список колонок заміни лічильника в таблиці readings (view їх не повертає). EN: Replacement columns in readings table (view does not return them). */
@@ -41,14 +43,18 @@ export async function enrichRowsWithReplacement<T extends Record<string, unknown
 }
 
 const getMonths = async ({
+  userId,
   propertyId,
   page = 1,
   pageSize = 10,
 }: {
+  userId: string;
   propertyId: string;
   page: number;
   pageSize: number;
 }) => {
+  await ensureCanAccessProperty(userId, propertyId);
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -96,19 +102,16 @@ interface GetMonthParams {
 }
 
 const getMonth = async ({ userId, propertyId, monthId }: GetMonthParams) => {
+  await ensureCanAccessProperty(userId, propertyId);
+
   const { data: property, error: propError } = await supabase
     .from('properties')
-    .select('electricity_type, user_id')
+    .select('electricity_type')
     .eq('id', propertyId)
     .single();
 
   if (propError || !property) {
     throw new Error('Property not found');
-  }
-
-  if (property.user_id !== userId) {
-    console.log(property.user_id, userId);
-    throw new Error('Access denied');
   }
 
   const electricityType = property.electricity_type || 'single';
@@ -134,11 +137,15 @@ const createMonth = async ({
   userId,
   propertyId,
   data,
+  actorEmail,
 }: {
   userId: string;
   propertyId: string;
   data: MonthSchema;
+  actorEmail?: string;
 }) => {
+  await ensureOwner(userId, propertyId);
+
   const { data: property } = await supabase
     .from('properties')
     .select('id, electricity_type')
@@ -182,18 +189,33 @@ const createMonth = async ({
     : newReading;
   const tariff = await findTariffForDate(propertyId, data.date);
 
+  await insertAuditLog({
+    userId,
+    propertyId,
+    action: AUDIT_ACTIONS.READING_CREATE,
+    entityType: 'reading',
+    entityId: newReading.id,
+    details: { date: data.date },
+    actorEmail,
+  });
   return mapReadingToFrontend(rowToMap, tariff, property.electricity_type);
 };
 
 const editMonth = async ({
+  userId,
   propertyId,
   monthId,
   data,
+  actorEmail,
 }: {
+  userId: string;
   propertyId: string;
   monthId: string;
   data: Partial<MonthSchema>;
+  actorEmail?: string;
 }) => {
+  await ensureOwner(userId, propertyId);
+
   const updatePayload = mapFormDataToDb(data);
 
   const { error } = await supabase
@@ -226,10 +248,30 @@ const editMonth = async ({
 
   const tariff = await findTariffForDate(propertyId, readingEnriched.date);
 
+  await insertAuditLog({
+    userId,
+    propertyId,
+    action: AUDIT_ACTIONS.READING_UPDATE,
+    entityType: 'reading',
+    entityId: monthId,
+    actorEmail,
+  });
   return mapReadingToFrontend(readingEnriched, tariff, property?.electricity_type ?? null);
 };
 
-const deleteMonth = async ({ propertyId, monthId }: { propertyId: string; monthId: string }) => {
+const deleteMonth = async ({
+  userId,
+  propertyId,
+  monthId,
+  actorEmail,
+}: {
+  userId: string;
+  propertyId: string;
+  monthId: string;
+  actorEmail?: string;
+}) => {
+  await ensureOwner(userId, propertyId);
+
   const { data, error } = await supabase
     .from('readings')
     .delete()
@@ -247,6 +289,14 @@ const deleteMonth = async ({ propertyId, monthId }: { propertyId: string; monthI
     throw new Error('Month not found or access denied');
   }
 
+  await insertAuditLog({
+    userId,
+    propertyId,
+    action: AUDIT_ACTIONS.READING_DELETE,
+    entityType: 'reading',
+    entityId: monthId,
+    actorEmail,
+  });
   return { success: true };
 };
 

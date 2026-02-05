@@ -1,5 +1,6 @@
 import { supabase } from '../configs/supabase';
 import { mapTariffToFrontend } from '../mappers/property.mappers';
+import { ensureCanAccessProperty } from './property-access.service';
 
 export const findTariffForDate = async (propertyId: string, date: string | Date) => {
   const { data } = await supabase
@@ -14,7 +15,9 @@ export const findTariffForDate = async (propertyId: string, date: string | Date)
   return data;
 };
 
-export const getLastTariff = async (propertyId: string) => {
+export const getLastTariff = async (userId: string, propertyId: string) => {
+  await ensureCanAccessProperty(userId, propertyId);
+
   const { data, error } = await supabase
     .from('tariffs')
     .select('*')
@@ -28,14 +31,18 @@ export const getLastTariff = async (propertyId: string) => {
 };
 
 export const getTariffs = async ({
+  userId,
   propertyId,
   page = 1,
   pageSize = 10,
 }: {
+  userId: string;
   propertyId: string;
   page: number;
   pageSize: number;
 }) => {
+  await ensureCanAccessProperty(userId, propertyId);
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
