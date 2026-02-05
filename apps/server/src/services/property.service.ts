@@ -7,14 +7,10 @@ import {
   mapReadingToFrontend,
   mapTariffToFrontend,
 } from '../mappers/property.mappers';
-import { enrichWithReplacement, enrichRowsWithReplacement } from './reading.service';
+import { AUDIT_ACTIONS, insertAuditLog } from './audit.service';
+import { ensureCanAccessProperty, ensureOwner, ensureStrictOwner } from './property-access.service';
+import { enrichRowsWithReplacement, enrichWithReplacement } from './reading.service';
 import { findTariffForDate } from './tariff.service';
-import { insertAuditLog, AUDIT_ACTIONS } from './audit.service';
-import {
-  ensureCanAccessProperty,
-  ensureOwner,
-  ensureStrictOwner,
-} from './property-access.service';
 
 type PropertyRow = {
   id: string;
@@ -293,13 +289,7 @@ const deleteProperty = async ({
   return { success: true };
 };
 
-const getMetrics = async ({
-  userId,
-  propertyId,
-}: {
-  userId: string;
-  propertyId: string;
-}) => {
+const getMetrics = async ({ userId, propertyId }: { userId: string; propertyId: string }) => {
   await ensureCanAccessProperty(userId, propertyId);
 
   const today = new Date();
@@ -366,9 +356,7 @@ const findUserIdByEmail = async (email: string): Promise<string> => {
     });
     if (error) throw new Error(error.message);
     const users = data?.users ?? [];
-    const found = users.find(
-      u => (u.email ?? '').toLowerCase() === normalized,
-    );
+    const found = users.find(u => (u.email ?? '').toLowerCase() === normalized);
     if (found) return found.id;
     if (users.length < perPage) break;
     page += 1;

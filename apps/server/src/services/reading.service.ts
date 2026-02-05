@@ -2,7 +2,7 @@ import type { MonthSchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
 import { mapFormDataToDb, mapReadingToFrontend } from '../mappers/property.mappers';
-import { insertAuditLog, AUDIT_ACTIONS } from './audit.service';
+import { AUDIT_ACTIONS, insertAuditLog } from './audit.service';
 import { ensureCanAccessProperty, ensureOwner } from './property-access.service';
 import { findTariffForDate } from './tariff.service';
 
