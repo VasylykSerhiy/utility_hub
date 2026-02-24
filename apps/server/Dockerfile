@@ -13,7 +13,6 @@ FROM node:lts AS installer
 WORKDIR /app
 
 # Копіюємо lockfile і package.json із підготовленого білду
-COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ ./
 COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 

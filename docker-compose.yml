@@ -1,16 +1,22 @@
-version: "3.9"
-
 services:
   server:
-    image: ghcr.io/vasylykserhiy/utility_hub/server:dev
+    image: ghcr.io/vasylykserhiy/utility_hub/server:prod
     build:
       context: .
       dockerfile: apps/server/Dockerfile
       args:
-        NODE: development
+        NODE: production
     container_name: server
     ports:
       - "8080:8080"
-    env_file:
-      - ./apps/server/.env.development.local
-    command: [ "node", "dist/main.js" ]
+  
+  web:
+    image: ghcr.io/vasylykserhiy/utility_hub/web:prod
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NODE: production
+    container_name: web
+    ports:
+      - "3000:3000"

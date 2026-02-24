@@ -1,0 +1,14 @@
+# UA: .env НЕ виключаємо — web і server Dockerfile копіюють .env.${NODE}.local під час білду.
+# EN: .env not excluded — web and server Dockerfiles COPY .env.${NODE}.local at build.
+
+# Git
+.git
+.gitignore
+
+# Dependencies & build outputs (reduced context size)
+node_modules
+.turbo
+.next
+out
+dist
+coverage

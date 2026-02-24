@@ -2,7 +2,7 @@ import axios, { type AxiosInstance } from 'axios';
 
 import { createClient } from '@/lib/supabase/client';
 
-export const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}v1`;
+export const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1`;
 
 export enum API {
   AUTH = '/auth',

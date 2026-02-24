@@ -5,10 +5,10 @@ import type {
   IMetrics,
   IMonth,
   IProperty,
+  IPropertyAuditLog,
   IPropertyMember,
   IPropertyMonths,
   IPropertyTariff,
-  IPropertyAuditLog,
   ITariff,
 } from '@workspace/types';
 import type { CreatePropertySchema, MonthSchema, UpdatePropertySchema } from '@workspace/utils';
@@ -46,21 +46,18 @@ export const propertyService = {
     apiAuth.get<IPropertyMember[]>(`${API.PROPERTIES}/${id}/members`),
   addPropertyMember: async (
     propertyId: string,
-    payload: { email: string; role?: 'viewer' | 'admin' } | { userId: string; role?: 'viewer' | 'admin' },
+    payload:
+      | { email: string; role?: 'viewer' | 'admin' }
+      | { userId: string; role?: 'viewer' | 'admin' },
   ) => apiAuth.post(`${API.PROPERTIES}/${propertyId}/members`, payload),
   updatePropertyMemberRole: async (
     propertyId: string,
     memberUserId: string,
     role: 'viewer' | 'admin',
-  ) =>
-    apiAuth.patch(`${API.PROPERTIES}/${propertyId}/members/${memberUserId}`, { role }),
+  ) => apiAuth.patch(`${API.PROPERTIES}/${propertyId}/members/${memberUserId}`, { role }),
   removePropertyMember: async (propertyId: string, memberUserId: string) =>
     apiAuth.delete(`${API.PROPERTIES}/${propertyId}/members/${memberUserId}`),
-  getPropertyAuditLog: async (
-    propertyId: string,
-    page: number,
-    pageSize: number,
-  ) =>
+  getPropertyAuditLog: async (propertyId: string, page: number, pageSize: number) =>
     apiAuth.get<IPropertyAuditLog>(
       `${API.PROPERTIES}/${propertyId}/audit-log?page=${page}&pageSize=${pageSize}`,
     ),
