@@ -1,12 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "ExpressJS Server",
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs",
-      "moduleResolution": "nodenext"
-    }
-  },
   "compilerOptions": {
     "target": "ES2022",
     "verbatimModuleSyntax": false,
