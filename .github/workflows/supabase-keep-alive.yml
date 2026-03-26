@@ -32,4 +32,4 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: pnpm exec ts-node --transpile-only scripts/keep-alive.ts
+        run: pnpm exec ts-node --transpile-only -P tsconfig.scripts.json scripts/keep-alive.ts
