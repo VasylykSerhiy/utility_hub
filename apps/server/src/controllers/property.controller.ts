@@ -2,14 +2,10 @@ import type { NextFunction, Request, Response } from 'express';
 
 import { auditService, propertyService, readingService, tariffService } from '../services';
 import { ensureStrictOwner } from '../services/property-access.service';
+import { getUserId } from '../utils';
+import { parsePagination } from '../utils/pagination.util';
 
-const getUserId = (req: Request): string => {
-  if (!req.user?.id) throw new Error('User ID missing in request');
-  return req.user.id;
-};
-
-const getActorEmail = (req: Request): string | undefined =>
-  (req.user as { email?: string } | undefined)?.email;
+const getActorEmail = (req: Request): string | undefined => req.user?.email;
 
 const getProperties = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -96,11 +92,12 @@ const getMonths = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
+    const { page, pageSize } = parsePagination(req.query);
     const months = await readingService.getMonths({
       userId,
       propertyId: id,
-      page: Number(req.query.page) || 1,
-      pageSize: Number(req.query.pageSize) || 10,
+      page,
+      pageSize,
     });
 
     res.json(months);
@@ -211,11 +208,12 @@ const getTariffs = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
+    const { page, pageSize } = parsePagination(req.query);
     const tariffs = await tariffService.getTariffs({
       userId,
       propertyId: id,
-      page: Number(req.query.page) || 1,
-      pageSize: Number(req.query.pageSize) || 10,
+      page,
+      pageSize,
     });
 
     res.json(tariffs);
@@ -256,18 +254,11 @@ const addPropertyMember = async (req: Request, res: Response, next: NextFunction
     const { id } = req.params;
     const body = req.body as { email?: string; userId?: string; role?: 'viewer' | 'admin' };
     if (!id) return res.status(400).json({ message: 'Property ID is required' });
-    const hasEmail = Boolean(body?.email?.trim());
-    const hasUserId = Boolean(body?.userId?.trim());
-    if (hasEmail === hasUserId) {
-      return res.status(400).json({ message: 'Provide either email or userId' });
-    }
 
-    const email = hasEmail && body.email ? body.email.trim() : undefined;
-    const memberUserIdParam = !hasEmail && body.userId ? body.userId.trim() : undefined;
     await propertyService.addPropertyMember({
       userId,
       propertyId: id,
-      ...(email !== undefined ? { email } : { memberUserId: memberUserIdParam ?? '' }),
+      ...(body.email ? { email: body.email } : { memberUserId: body.userId ?? '' }),
       ...(body.role && { role: body.role }),
       actorEmail: getActorEmail(req),
     });
@@ -324,8 +315,7 @@ const getPropertyAuditLog = async (req: Request, res: Response, next: NextFuncti
   try {
     const userId = getUserId(req);
     const { id } = req.params;
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const pageSize = Math.min(50, Math.max(1, Number(req.query.pageSize) || 20));
+    const { page, pageSize } = parsePagination(req.query, { pageSize: 20, maxPageSize: 50 });
     if (!id) return res.status(400).json({ message: 'Property ID is required' });
 
     await ensureStrictOwner(userId, id);

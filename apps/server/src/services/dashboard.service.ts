@@ -7,6 +7,7 @@ import type {
 import { format, getDate, startOfMonth, subMonths } from 'date-fns';
 
 import { supabase } from '../configs/supabase';
+import { serverError } from '../utils/http-errors';
 
 // --- Database Interfaces / Інтерфейси даних з БД ---
 interface DatabaseTariff {
@@ -343,7 +344,7 @@ export const getDashboardAnalytics = async (userId: string): Promise<FullDashboa
     .in('id', allIds)
     .gte('readings.date', format(rangeStart, 'yyyy-MM-dd'));
 
-  if (error) throw new Error('Failed to load dashboard data');
+  if (error) serverError('Failed to load dashboard data', error);
   const typedProperties = (properties ?? []) as unknown as DatabaseProperty[];
 
   // UA: Агрегація по всіх об'єктах. EN: Aggregate across all properties.

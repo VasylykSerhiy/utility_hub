@@ -2,6 +2,7 @@ import type { MonthSchema } from '@workspace/utils';
 
 import { supabase } from '../configs/supabase';
 import { mapFormDataToDb, mapReadingToFrontend } from '../mappers/property.mappers';
+import { notFound, serverError, assertFound } from '../utils/http-errors';
 import { AUDIT_ACTIONS, insertAuditLog } from './audit.service';
 import { ensureCanAccessProperty, ensureOwner } from './property-access.service';
 import { findTariffForDate } from './tariff.service';
@@ -26,9 +27,9 @@ export async function enrichWithReplacement<T extends Record<string, unknown>>(
 
 /** UA: Доповнює масив рядків з view полями заміни з readings. EN: Enriches view rows with replacement columns from readings. */
 export async function enrichRowsWithReplacement<T extends Record<string, unknown> & { id: string }>(
-  viewRows: T[],
+  viewRows: T[] | null,
 ): Promise<T[]> {
-  if (viewRows.length === 0) return viewRows;
+  if (!viewRows?.length) return viewRows ?? [];
   const ids = viewRows.map(r => r.id);
   const { data: rawRows } = await supabase
     .from('readings')
@@ -77,9 +78,9 @@ const getMonths = async ({
     .order('date', { ascending: false })
     .range(from, to);
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to load months', error);
 
-  const rowsWithReplacement = await enrichRowsWithReplacement(rows);
+  const rowsWithReplacement = await enrichRowsWithReplacement(rows ?? []);
   const resultData = await Promise.all(
     rowsWithReplacement.map(async r => {
       const tariff = await findTariffForDate(propertyId, r.date);
@@ -110,9 +111,8 @@ const getMonth = async ({ userId, propertyId, monthId }: GetMonthParams) => {
     .eq('id', propertyId)
     .single();
 
-  if (propError || !property) {
-    throw new Error('Property not found');
-  }
+  if (propError || !property) notFound('Property not found');
+  assertFound(property, 'Property not found');
 
   const electricityType = property.electricity_type || 'single';
 
@@ -123,9 +123,8 @@ const getMonth = async ({ userId, propertyId, monthId }: GetMonthParams) => {
     .eq('property_id', propertyId)
     .single();
 
-  if (readingError || !reading) {
-    throw new Error('Reading record not found');
-  }
+  if (readingError || !reading) notFound('Reading record not found');
+  assertFound(reading, 'Reading record not found');
 
   const readingEnriched = await enrichWithReplacement(reading, monthId);
   const tariff = await findTariffForDate(propertyId, readingEnriched.date);
@@ -150,10 +149,10 @@ const createMonth = async ({
     .from('properties')
     .select('id, electricity_type')
     .eq('id', propertyId)
-    .eq('user_id', userId)
     .single();
 
-  if (!property) throw new Error('Property not found');
+  if (!property) notFound('Property not found');
+  assertFound(property, 'Property not found');
 
   const insertPayload = mapFormDataToDb(data, propertyId);
   const { error, data: newReading } = await supabase
@@ -176,7 +175,7 @@ const createMonth = async ({
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to create month', error);
 
   const { data: readingWithStats } = await supabase
     .from('view_readings_stats')
@@ -225,7 +224,7 @@ const editMonth = async ({
     .eq('property_id', propertyId);
 
   if (error) {
-    throw new Error(`Failed to update month: ${error.message}`);
+    serverError('Failed to update month', error);
   }
 
   const { data: readingWithStats } = await supabase
@@ -236,7 +235,7 @@ const editMonth = async ({
     .single();
 
   if (!readingWithStats) {
-    throw new Error('Failed to load updated reading');
+    serverError('Failed to load updated reading');
   }
 
   const readingEnriched = await enrichWithReplacement(readingWithStats, monthId);
@@ -281,12 +280,11 @@ const deleteMonth = async ({
     .maybeSingle();
 
   if (error) {
-    console.error('Error deleting month:', error);
-    throw new Error(`Failed to delete month: ${error.message}`);
+    serverError('Failed to delete month', error);
   }
 
   if (!data) {
-    throw new Error('Month not found or access denied');
+    notFound('Month not found or access denied');
   }
 
   await insertAuditLog({

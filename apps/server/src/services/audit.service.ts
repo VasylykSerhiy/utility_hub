@@ -1,4 +1,5 @@
 import { supabase } from '../configs/supabase';
+import { serverError } from '../utils/http-errors';
 
 export const AUDIT_ACTIONS = {
   PROPERTY_CREATE: 'property.create',
@@ -84,7 +85,7 @@ export const getAuditLog = async (
     .select('*', { count: 'exact', head: true })
     .eq('property_id', propertyId);
 
-  if (countError) throw new Error(countError.message);
+  if (countError) serverError('Failed to load audit log', countError);
   const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -95,7 +96,7 @@ export const getAuditLog = async (
     .order('created_at', { ascending: false })
     .range(from, to);
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to load audit log', error);
 
   const data = (rows ?? []).map((r: AuditRow) => ({
     id: r.id,

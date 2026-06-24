@@ -29,7 +29,6 @@ const Navigations = ({ onClick }: INavigationsProps) => {
             'flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2 font-semibold transition',
             {
               'bg-primary': isActive(link.href),
-              '': !isActive(link.href),
             },
           )}
         >

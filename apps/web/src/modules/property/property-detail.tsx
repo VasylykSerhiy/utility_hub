@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 import { Routes } from '@/constants/router';
@@ -10,13 +12,18 @@ import PropertyHeader from '@/modules/property/property-header';
 import PropertyHistory from '@/modules/property/property-history';
 import PropertyMembers from '@/modules/property/property-members';
 
-/** UA: Дані property в кеші з префетчу (SSR), getProperty(id) їх одразу повертає. EN: Property data in cache from prefetch (SSR), getProperty(id) returns it immediately. */
 const PropertyDetail = ({ id }: { id: string }) => {
   const { push } = useRouter();
-  const { data, error } = getProperty(id);
+  const { data, error, isLoading } = getProperty(id);
 
-  if (error) {
-    push(Routes.PROPERTY);
+  useEffect(() => {
+    if (error) {
+      push(Routes.PROPERTY);
+    }
+  }, [error, push]);
+
+  if (isLoading || error) {
+    return null;
   }
 
   const canEdit = data == null ? undefined : data.role !== 'viewer';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -30,6 +30,15 @@ export const useTabs = (tabs: Tab[], options?: Options) => {
   };
 
   const [activeTabId, setActiveTabId] = useState(getInitialTabId);
+
+  useEffect(() => {
+    if (!syncWithUrl) return;
+
+    const urlTab = searchParams.get(urlKey);
+    if (urlTab && tabs.some(tab => tab.id === urlTab) && urlTab !== activeTabId) {
+      setActiveTabId(urlTab);
+    }
+  }, [activeTabId, searchParams, syncWithUrl, tabs, urlKey]);
 
   const changeTab = useCallback(
     (id: string) => {

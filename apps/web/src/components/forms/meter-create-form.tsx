@@ -18,8 +18,10 @@ import { cn } from '@workspace/ui/lib/utils';
 import { type MonthSchema, monthSchemaClient } from '@workspace/utils';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { useCreateMeter, useUpdateMeter } from '@/hooks/use-property';
+import { getApiErrorMessage } from '@/lib/axios';
 import { useLanguage } from '@/providers/language-provider';
 import { useModalStore } from '@/stores/use-modal-state';
 
@@ -64,24 +66,28 @@ export function MeterCreateForm({ property, meter }: MeterCreateFormProps) {
   const isReplacement = form.watch('replacement') != null && form.watch('replacement') !== undefined;
 
   const onSubmit = async (data: MonthSchema) => {
-    // UA: При знятому перемикачі надсилаємо null, щоб бекенд очистив поля заміни. EN: Send null when unchecked so backend clears replacement.
     const payload: MonthSchema = {
       ...data,
       replacement: isReplacement ? data.replacement ?? undefined : null,
     };
-    if (meter?.id) {
-      await updateMeterAsync({
-        id: property.id,
-        meterId: meter.id,
-        data: payload,
-      });
-    } else {
-      await mutateAsync({
-        id: property.id,
-        data: payload,
-      });
+
+    try {
+      if (meter?.id) {
+        await updateMeterAsync({
+          id: property.id,
+          meterId: meter.id,
+          data: payload,
+        });
+      } else {
+        await mutateAsync({
+          id: property.id,
+          data: payload,
+        });
+      }
+      closeModal();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
     }
-    closeModal();
   };
 
   return (

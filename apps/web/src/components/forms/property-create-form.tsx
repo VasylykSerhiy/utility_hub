@@ -27,13 +27,15 @@ import {
   type CreatePropertySchema,
   createPropertySchema,
   getElectricityMeterLabel,
-  type PropertySchema,
 } from '@workspace/utils';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
+import { Routes } from '@/constants/router';
 import { useCreateProperty } from '@/hooks/use-property';
+import { getApiErrorMessage } from '@/lib/axios';
 
 interface PropertyCreateForm extends HTMLAttributes<HTMLFormElement> {}
 
@@ -46,15 +48,28 @@ export function PropertyCreateForm({ className, ...props }: PropertyCreateForm) 
     resolver: zodResolver(createPropertySchema),
     defaultValues: {
       name: '',
+      tariffs: {
+        electricity: { type: IElectricityType.SINGLE, single: 0 },
+        water: 0,
+        gas: 0,
+      },
+      fixedCosts: {
+        internet: 0,
+        maintenance: 0,
+        gas_delivery: 0,
+      },
     },
   });
 
   const electricityType = form.watch('tariffs.electricity.type');
 
   const onSubmit = async (data: CreatePropertySchema) => {
-    console.log(`data`, data);
-    await mutateAsync(data);
-    router.push('/property');
+    try {
+      await mutateAsync(data);
+      router.push(Routes.PROPERTY);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   return (
@@ -195,25 +210,17 @@ export function PropertyCreateForm({ className, ...props }: PropertyCreateForm) 
         <hr className='my-3' />
 
         {[
-          { name: 'fixedCosts.internet', label: t('INTERNET') },
-          {
-            name: 'fixedCosts.maintenance',
-            label: t('MAINTENANCE'),
-          },
-          {
-            name: 'fixedCosts.gas_delivery',
-            label: t('GAS_DELIVERY'),
-          },
-        ].map(el => {
-          const key = el.name as keyof PropertySchema['fixedCosts'];
-          return (
-            <FormField
-              key={el.name}
-              control={form.control}
-              name={key}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t(el.label)}</FormLabel>
+          { name: 'fixedCosts.internet' as const, label: 'INTERNET' },
+          { name: 'fixedCosts.maintenance' as const, label: 'MAINTENANCE' },
+          { name: 'fixedCosts.gas_delivery' as const, label: 'GAS_DELIVERY' },
+        ].map(el => (
+          <FormField
+            key={el.name}
+            control={form.control}
+            name={el.name}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t(el.label)}</FormLabel>
                   <FormControl>
                     <NumberInput
                       {...field}
@@ -222,11 +229,10 @@ export function PropertyCreateForm({ className, ...props }: PropertyCreateForm) 
                     />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-          );
-        })}
+              </FormItem>
+            )}
+          />
+        ))}
         <Button className='mt-2' type='submit' isLoading={isPending}>
           {t('BUTTONS.CREATE')}
         </Button>

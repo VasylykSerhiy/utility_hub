@@ -28,8 +28,10 @@ import {
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { useUpdateTariff } from '@/hooks/use-property';
+import { getApiErrorMessage } from '@/lib/axios';
 import { useModalStore } from '@/stores/use-modal-state';
 
 interface TariffChangeFormProps {
@@ -70,9 +72,13 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
   const electricityType = form.watch('tariffs.electricity.type');
 
   const onSubmit = async (data: UpdatePropertySchema) => {
-    await mutateAsync({ id: property.id, data });
-    closeModal();
-    router.refresh();
+    try {
+      await mutateAsync({ id: property.id, data });
+      closeModal();
+      router.refresh();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error));
+    }
   };
 
   return (
@@ -205,9 +211,9 @@ export function ChangeTariffForm({ property }: TariffChangeFormProps) {
 
         {/* Фіксовані витрати */}
         {[
-          { name: 'fixedCosts.internet', label: t('INTERNET') },
-          { name: 'fixedCosts.maintenance', label: t('MAINTENANCE') },
-          { name: 'fixedCosts.gas_delivery', label: t('GAS_DELIVERY') },
+          { name: 'fixedCosts.internet', label: 'INTERNET' },
+          { name: 'fixedCosts.maintenance', label: 'MAINTENANCE' },
+          { name: 'fixedCosts.gas_delivery', label: 'GAS_DELIVERY' },
         ].map(el => {
           // TypeScript Path Trick: ми гарантуємо, що це валідний шлях
           const fieldName = el.name as

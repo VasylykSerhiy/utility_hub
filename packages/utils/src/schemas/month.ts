@@ -50,4 +50,7 @@ export const monthSchemaClient = monthSchema.omit({ date: true }).extend({
   date: z.date(),
 });
 
+export const updateMonthSchema = monthSchema.partial();
+
 export type ReplacementSchema = z.infer<typeof replacementSchema>;
+export type UpdateMonthSchema = z.infer<typeof updateMonthSchema>;

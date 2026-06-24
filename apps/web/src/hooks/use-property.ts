@@ -1,9 +1,33 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
 import type { GetPropertyMonth, GetPropertyMonths, GetPropertyTariffs } from '@workspace/types';
 import type { CreatePropertySchema, UpdatePropertySchema } from '@workspace/utils';
 
 import { mutationKey, queryKeys } from '@/constants/query-key';
 import { propertyService } from '@/services/property.service';
+
+const invalidateReadingQueries = (queryClient: QueryClient, propertyId: string) => {
+  void queryClient.invalidateQueries({
+    queryKey: [queryKeys.property],
+    exact: true,
+  });
+  void queryClient.invalidateQueries({
+    queryKey: [queryKeys.property, propertyId],
+  });
+  void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
+  void queryClient.invalidateQueries({
+    queryKey: [queryKeys.metrics, propertyId],
+  });
+  void queryClient.invalidateQueries({ queryKey: [queryKeys.dashboard] });
+  void queryClient.invalidateQueries({
+    queryKey: [queryKeys.propertyAuditLog, propertyId],
+  });
+};
 
 export const getProperties = () => {
   return useQuery({
@@ -65,18 +89,7 @@ export const useDeletePropertyMonth = () => {
   return useMutation({
     mutationFn: (data: GetPropertyMonth) => propertyService.deletePropertyMonth(data),
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.property],
-        exact: true,
-      });
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.property, variables.propertyId],
-        exact: true,
-      });
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.propertyAuditLog, variables.propertyId],
-      });
+      invalidateReadingQueries(queryClient, variables.propertyId);
     },
   });
 };
@@ -93,7 +106,7 @@ export const useCreateProperty = () => {
 export const useUpdateTariff = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: [mutationKey.property_create],
+    mutationKey: [mutationKey.property_update],
     mutationFn: (props: { id: string; data: UpdatePropertySchema }) =>
       propertyService.updateProperty(props),
     onSuccess: (_data, variables) => {
@@ -116,14 +129,7 @@ export const useCreateMeter = () => {
     mutationKey: [mutationKey.meter_create],
     mutationFn: propertyService.createMeter,
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.property],
-        exact: true,
-      });
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.propertyAuditLog, variables.id],
-      });
+      invalidateReadingQueries(queryClient, variables.id);
     },
   });
 };
@@ -134,14 +140,7 @@ export const useUpdateMeter = () => {
     mutationKey: [mutationKey.meter_update],
     mutationFn: propertyService.updateMeter,
     onSuccess: (_, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.property],
-        exact: true,
-      });
-      void queryClient.invalidateQueries({ queryKey: [queryKeys.months] });
-      void queryClient.invalidateQueries({
-        queryKey: [queryKeys.propertyAuditLog, variables.id],
-      });
+      invalidateReadingQueries(queryClient, variables.id);
     },
   });
 };

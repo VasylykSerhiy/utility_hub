@@ -3,12 +3,12 @@ import { lazy } from 'react';
 
 const Alert = lazy(() => import('./alert'));
 const ChangeTariff = lazy(() => import('@/components/modals/change-tariff'));
-const CreateMetter = lazy(() => import('@/components/modals/create-meter'));
+const CreateMeter = lazy(() => import('@/components/modals/create-meter'));
 
 export const ModalComponents = {
   alertModal: Alert,
   changeTariff: ChangeTariff,
-  createMeter: CreateMetter,
+  createMeter: CreateMeter,
 } as const;
 
 export type ModalMap = {

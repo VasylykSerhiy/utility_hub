@@ -1,9 +1,5 @@
-/**
- * UA: Перевірка доступу до об'єкта (власник / адмін / переглядач). Без залежностей від інших сервісів.
- * EN: Property access checks (owner / admin / viewer). No dependencies on other services.
- */
-
 import { supabase } from '../configs/supabase';
+import { assertFound, forbidden } from '../utils/http-errors';
 
 export type PropertyAccessRole = 'owner' | 'admin' | 'viewer';
 
@@ -29,13 +25,17 @@ export const getPropertyAccess = async (
 /** UA: Дозволити тільки тому, хто може керувати об'єктом (власник або адмін). EN: Allow only those who can manage the property (owner or admin). */
 export const ensureOwner = async (userId: string, propertyId: string): Promise<void> => {
   const role = await getPropertyAccess(userId, propertyId);
-  if (role !== 'owner' && role !== 'admin') throw new Error('Property not found or access denied');
+  if (role !== 'owner' && role !== 'admin') {
+    forbidden('Property not found or access denied');
+  }
 };
 
 /** UA: Дозволити тільки власнику об'єкта (для керування учасниками). EN: Allow only property owner (for managing members). */
 export const ensureStrictOwner = async (userId: string, propertyId: string): Promise<void> => {
   const role = await getPropertyAccess(userId, propertyId);
-  if (role !== 'owner') throw new Error('Only the property owner can manage members');
+  if (role !== 'owner') {
+    forbidden('Only the property owner can manage members');
+  }
 };
 
 export const ensureCanAccessProperty = async (
@@ -43,6 +43,6 @@ export const ensureCanAccessProperty = async (
   propertyId: string,
 ): Promise<PropertyAccessRole> => {
   const role = await getPropertyAccess(userId, propertyId);
-  if (!role) throw new Error('Property not found');
+  assertFound(role, 'Property not found');
   return role;
 };

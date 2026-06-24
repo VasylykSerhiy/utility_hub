@@ -1,7 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card';
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ error: string }> }) {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const params = await searchParams;
+  const errorMessage = params?.error ? decodeURIComponent(params.error) : null;
 
   return (
     <Card>
@@ -9,8 +14,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
         <CardTitle className='text-2xl'>Sorry, something went wrong.</CardTitle>
       </CardHeader>
       <CardContent>
-        {params?.error ? (
-          <p className='text-muted-foreground text-sm'>Code error: {params.error}</p>
+        {errorMessage ? (
+          <p className='text-muted-foreground text-sm'>Code error: {errorMessage}</p>
         ) : (
           <p className='text-muted-foreground text-sm'>An unspecified error occurred.</p>
         )}

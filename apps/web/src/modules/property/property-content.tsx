@@ -11,8 +11,17 @@ import { getProperties } from '@/hooks/use-property';
 import { PropertyCard } from '@/modules/property/property-card';
 
 const PropertyContent = () => {
-  const { data } = getProperties();
+  const { data, isLoading, isError } = getProperties();
   const { t } = useTranslation();
+
+  if (isLoading) {
+    return <div className='bg-muted h-40 animate-pulse rounded-lg' />;
+  }
+
+  if (isError) {
+    return <p className='text-muted-foreground text-sm'>{t('ERRORS.LOAD_FAILED')}</p>;
+  }
+
   return (
     <>
       <div className='mb-6 flex items-center justify-between gap-4'>

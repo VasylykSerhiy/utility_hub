@@ -23,7 +23,7 @@ import { useParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 import { DropdownActions } from '@/components/dropdown-actions';
-import { getPropertyMonths, useDeletePropertyMonth } from '@/hooks/use-property';
+import { getProperty, getPropertyMonths, useDeletePropertyMonth } from '@/hooks/use-property';
 import { useModalStore } from '@/stores/use-modal-state';
 
 /** canEdit: true = owner, false = viewer, undefined = loading (no actions column). */
@@ -40,9 +40,8 @@ const ReadingTable = ({ canEdit }: { canEdit?: boolean }) => {
     pageSize: 10,
   });
 
-  const electricityType = data?.data?.[0]?.meters.electricity.single
-    ? IElectricityType.SINGLE
-    : IElectricityType.DOUBLE;
+  const { data: property } = getProperty(slug as string);
+  const electricityType = property?.electricityType ?? IElectricityType.SINGLE;
 
   const showActions = canEdit === true;
   const actions = useCallback(

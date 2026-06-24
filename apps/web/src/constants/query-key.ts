@@ -12,6 +12,7 @@ export const queryKeys = {
 export const mutationKey = {
   auth: 'auth',
   property_create: 'property_create',
+  property_update: 'property_update',
   meter_create: 'meter_create',
   meter_update: 'meter_update',
   meter_delete: 'meter_delete',

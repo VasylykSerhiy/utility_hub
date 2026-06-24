@@ -45,7 +45,7 @@ const PropertyChart = () => {
                 type: 'double',
                 day: Number(item.difference.electricity.day * (tariff.electricity.day ?? 0)) ?? 0,
                 night:
-                  Number(item.difference.electricity.night * (tariff.electricity.day ?? 0)) ?? 0,
+                  Number(item.difference.electricity.night * (tariff.electricity.night ?? 0)) ?? 0,
               }),
           },
           total: item.total,
@@ -80,7 +80,16 @@ const PropertyChart = () => {
   } satisfies ChartConfig;
 
   if (isLoading) {
-    return;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('CHART')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='bg-muted md:h-100 h-60 w-full animate-pulse rounded-lg' />
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

@@ -14,7 +14,7 @@ import DashboardSpendingBreakdown from '@/modules/dashboard/dashboard-spending-b
 import { useLanguage } from '@/providers/language-provider';
 
 const DashboardContent = () => {
-  const { data } = useGetDashboardAnalytics();
+  const { data, isLoading, isError } = useGetDashboardAnalytics();
   const { language } = useLanguage();
   const { t } = useTranslation();
 
@@ -49,6 +49,14 @@ const DashboardContent = () => {
       data?.currentMonthName,
     ],
   );
+
+  if (isLoading) {
+    return <div className='bg-muted h-40 animate-pulse rounded-lg' />;
+  }
+
+  if (isError) {
+    return <p className='text-muted-foreground text-sm'>{t('ERRORS.LOAD_FAILED')}</p>;
+  }
 
   return (
     <div className='@container flex flex-col gap-4'>

@@ -1,8 +1,9 @@
-import { monthSchema } from '@workspace/utils/schemas/month';
+import { monthSchema, updateMonthSchema } from '@workspace/utils/schemas/month';
 import {
+  addMemberSchema,
   createPropertySchema,
-  updatePropertySchema,
   updateMemberRoleSchema,
+  updatePropertySchema,
 } from '@workspace/utils/schemas/property';
 import { Router } from 'express';
 
@@ -46,6 +47,7 @@ propertyRouter.post(
 propertyRouter.put(
   '/:id/months/:monthId',
   authMiddleware.requireAuth,
+  validateRequest(updateMonthSchema),
   propertyController.editMonth,
 );
 propertyRouter.delete(
@@ -77,6 +79,7 @@ propertyRouter.get(
 propertyRouter.post(
   '/:id/members',
   authMiddleware.requireAuth,
+  validateRequest(addMemberSchema),
   propertyController.addPropertyMember,
 );
 propertyRouter.patch(

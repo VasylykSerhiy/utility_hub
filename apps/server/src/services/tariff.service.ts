@@ -1,5 +1,6 @@
 import { supabase } from '../configs/supabase';
 import { mapTariffToFrontend } from '../mappers/property.mappers';
+import { serverError } from '../utils/http-errors';
 import { ensureCanAccessProperty } from './property-access.service';
 
 export const findTariffForDate = async (propertyId: string, date: string | Date) => {
@@ -57,10 +58,10 @@ export const getTariffs = async ({
     .order('start_date', { ascending: false })
     .range(from, to);
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to load tariffs', error);
 
   return {
-    data: rows.map(mapTariffToFrontend),
+    data: (rows ?? []).map(mapTariffToFrontend),
     total: count,
     page,
     totalPages: Math.ceil((count || 0) / pageSize),

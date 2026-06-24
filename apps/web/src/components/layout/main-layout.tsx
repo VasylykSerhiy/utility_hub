@@ -1,7 +1,5 @@
 import type { PropsWithChildren } from 'react';
 
-import { Toaster } from '@workspace/ui/components/sonner';
-
 import Header from './header';
 import MobileMainMenu from './mobile-menu';
 import Sidebar from './sidebar';
@@ -9,7 +7,6 @@ import Sidebar from './sidebar';
 const MainLayout = ({ children }: PropsWithChildren) => {
   return (
     <div className={'flex min-h-dvh flex-col'}>
-      <Toaster />
       <Sidebar />
       <MobileMainMenu />
       <Header />

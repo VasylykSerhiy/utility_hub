@@ -7,6 +7,7 @@ import {
   mapReadingToFrontend,
   mapTariffToFrontend,
 } from '../mappers/property.mappers';
+import { assertFound, badRequest, conflict, notFound, serverError } from '../utils/http-errors';
 import { AUDIT_ACTIONS, insertAuditLog } from './audit.service';
 import { ensureCanAccessProperty, ensureOwner, ensureStrictOwner } from './property-access.service';
 import { enrichRowsWithReplacement, enrichWithReplacement } from './reading.service';
@@ -19,6 +20,123 @@ type PropertyRow = {
   electricity_type: 'single' | 'double' | null;
   created_at: string;
   updated_at: string;
+};
+
+type TariffRow = {
+  rate_electricity_single?: number | null;
+  rate_electricity_day?: number | null;
+  rate_electricity_night?: number | null;
+  rate_water?: number | null;
+  rate_gas?: number | null;
+  fixed_internet?: number | null;
+  fixed_maintenance?: number | null;
+  fixed_gas_delivery?: number | null;
+};
+
+const buildMergedTariffInsert = ({
+  propertyId,
+  startDate,
+  electricityType,
+  tariffs,
+  fixedCosts,
+  currentTariff,
+}: {
+  propertyId: string;
+  startDate: string;
+  electricityType: 'single' | 'double';
+  tariffs: UpdatePropertySchema['tariffs'];
+  fixedCosts: UpdatePropertySchema['fixedCosts'];
+  currentTariff: TariffRow | null;
+}) => {
+  const base = {
+    property_id: propertyId,
+    start_date: startDate,
+    rate_water: tariffs?.water ?? currentTariff?.rate_water ?? 0,
+    rate_gas: tariffs?.gas ?? currentTariff?.rate_gas ?? 0,
+    fixed_internet: fixedCosts?.internet ?? currentTariff?.fixed_internet ?? 0,
+    fixed_maintenance: fixedCosts?.maintenance ?? currentTariff?.fixed_maintenance ?? 0,
+    fixed_gas_delivery: fixedCosts?.gas_delivery ?? currentTariff?.fixed_gas_delivery ?? 0,
+  };
+
+  if (electricityType === 'single') {
+    return {
+      ...base,
+      rate_electricity_single:
+        tariffs?.electricity?.type === 'single'
+          ? tariffs.electricity.single
+          : (currentTariff?.rate_electricity_single ?? 0),
+      rate_electricity_day: 0,
+      rate_electricity_night: 0,
+    };
+  }
+
+  return {
+    ...base,
+    rate_electricity_single: 0,
+    rate_electricity_day:
+      tariffs?.electricity?.type === 'double'
+        ? tariffs.electricity.day
+        : (currentTariff?.rate_electricity_day ?? 0),
+    rate_electricity_night:
+      tariffs?.electricity?.type === 'double'
+        ? tariffs.electricity.night
+        : (currentTariff?.rate_electricity_night ?? 0),
+  };
+};
+
+const updatePropertyElectricityType = async (
+  propertyId: string,
+  electricityType: 'single' | 'double' | undefined,
+): Promise<void> => {
+  if (!electricityType) return;
+
+  const { error } = await supabase
+    .from('properties')
+    .update({ electricity_type: electricityType })
+    .eq('id', propertyId);
+
+  if (error) serverError('Failed to update property', error);
+};
+
+const replacePropertyTariff = async (
+  propertyId: string,
+  property: Pick<PropertyRow, 'electricity_type'>,
+  tariffs: UpdatePropertySchema['tariffs'],
+  fixedCosts: UpdatePropertySchema['fixedCosts'],
+): Promise<void> => {
+  const { data: currentTariff } = await supabase
+    .from('tariffs')
+    .select('*')
+    .eq('property_id', propertyId)
+    .order('start_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const now = new Date().toISOString();
+
+  const { error: closeTariffError } = await supabase
+    .from('tariffs')
+    .update({ end_date: now })
+    .eq('property_id', propertyId)
+    .is('end_date', null);
+
+  if (closeTariffError) serverError('Failed to close current tariff', closeTariffError);
+
+  const resolvedElectricityType =
+    tariffs?.electricity?.type ?? property.electricity_type ?? 'single';
+
+  const { error: insertTariffError } = await supabase.from('tariffs').insert(
+    buildMergedTariffInsert({
+      propertyId,
+      startDate: now,
+      electricityType: resolvedElectricityType,
+      tariffs,
+      fixedCosts,
+      currentTariff,
+    }),
+  );
+
+  if (insertTariffError) serverError('Failed to create tariff', insertTariffError);
 };
 
 const fetchPropertyWithDetails = async (prop: PropertyRow) => {
@@ -62,7 +180,7 @@ const getProperties = async (userId: string) => {
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
-  if (ownedError) throw new Error(ownedError.message);
+  if (ownedError) serverError('Failed to load properties', ownedError);
 
   const { data: memberRows } = await supabase
     .from('property_members')
@@ -111,7 +229,7 @@ const getProperty = async (userId: string, propertyId: string) => {
     .eq('id', propertyId)
     .single();
 
-  if (error || !property) throw new Error('Property not found');
+  if (error || !property) notFound('Property not found');
 
   const mapped = await fetchPropertyWithDetails(property);
   return { ...mapped, role };
@@ -138,7 +256,7 @@ const createProperty = async ({
     .select()
     .single();
 
-  if (propError) throw new Error(`Failed to create property: ${propError.message}`);
+  if (propError) serverError('Failed to create property', propError);
 
   const { error: tariffError } = await supabase.from('tariffs').insert({
     property_id: newProp.id,
@@ -162,7 +280,7 @@ const createProperty = async ({
 
   if (tariffError) {
     await supabase.from('properties').delete().eq('id', newProp.id);
-    throw new Error(`Failed to create tariff: ${tariffError.message}`);
+    serverError('Failed to create tariff', tariffError);
   }
 
   await insertAuditLog({
@@ -192,52 +310,19 @@ const updateProperty = async ({
 
   const { data: property, error: fetchError } = await supabase
     .from('properties')
-    .select('id')
+    .select('id, electricity_type')
     .eq('id', propertyId)
     .single();
 
-  if (fetchError || !property) throw new Error('Property not found');
+  if (fetchError || !property) notFound('Property not found');
+  assertFound(property, 'Property not found');
 
   const { tariffs, fixedCosts } = data;
-  const electricityType = data.tariffs?.electricity?.type;
 
-  if (electricityType) {
-    await supabase
-      .from('properties')
-      .update({
-        ...(electricityType && { electricity_type: electricityType }),
-      })
-      .eq('id', propertyId);
-  }
+  await updatePropertyElectricityType(propertyId, data.tariffs?.electricity?.type);
 
   if (tariffs || fixedCosts) {
-    const now = new Date().toISOString();
-
-    await supabase
-      .from('tariffs')
-      .update({ end_date: now })
-      .eq('property_id', propertyId)
-      .is('end_date', null);
-
-    await supabase.from('tariffs').insert({
-      property_id: propertyId,
-      start_date: now,
-      ...(tariffs?.electricity.type === 'single' && {
-        rate_electricity_single: tariffs.electricity?.single,
-        rate_electricity_day: 0,
-        rate_electricity_night: 0,
-      }),
-      ...(tariffs?.electricity.type === 'double' && {
-        rate_electricity_single: 0,
-        rate_electricity_day: tariffs.electricity.day,
-        rate_electricity_night: tariffs.electricity.night,
-      }),
-      rate_water: tariffs?.water ?? 0,
-      rate_gas: tariffs?.gas ?? 0,
-      fixed_internet: fixedCosts?.internet ?? 0,
-      fixed_maintenance: fixedCosts?.maintenance ?? 0,
-      fixed_gas_delivery: fixedCosts?.gas_delivery ?? 0,
-    });
+    await replacePropertyTariff(propertyId, property, tariffs, fixedCosts);
   }
 
   await insertAuditLog({
@@ -270,12 +355,11 @@ const deleteProperty = async ({
     .maybeSingle();
 
   if (error) {
-    console.error('Error deleting property:', error);
-    throw new Error(`Failed to delete property: ${error.message}`);
+    serverError('Failed to delete property', error);
   }
 
   if (!data) {
-    throw new Error('Property not found or access denied');
+    notFound('Property not found or access denied');
   }
 
   await insertAuditLog({
@@ -310,9 +394,9 @@ const getMetrics = async ({ userId, propertyId }: { userId: string; propertyId: 
     .gte('date', oneYearAgo)
     .order('date', { ascending: true });
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to load metrics', error);
 
-  const readingsEnriched = await enrichRowsWithReplacement(readings);
+  const readingsEnriched = await enrichRowsWithReplacement(readings ?? []);
   return await Promise.all(
     readingsEnriched.map(async r => {
       const tariff = await findTariffForDate(propertyId, r.date);
@@ -331,7 +415,7 @@ const getPropertyMembers = async (userId: string, propertyId: string) => {
     .eq('property_id', propertyId)
     .order('created_at', { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to load members', error);
 
   return (rows ?? []).map(r => ({
     id: r.id,
@@ -346,7 +430,7 @@ const getPropertyMembers = async (userId: string, propertyId: string) => {
 /** UA: Знайти user id за email через Auth Admin (listUsers + пошук). EN: Resolve user id by email via Auth Admin. */
 const findUserIdByEmail = async (email: string): Promise<string> => {
   const normalized = email.trim().toLowerCase();
-  if (!normalized) throw new Error('Email is required');
+  if (!normalized) badRequest('Email is required');
   let page = 1;
   const perPage = 500;
   while (true) {
@@ -354,14 +438,15 @@ const findUserIdByEmail = async (email: string): Promise<string> => {
       page,
       perPage,
     });
-    if (error) throw new Error(error.message);
+    if (error) serverError('Failed to search users', error);
     const users = data?.users ?? [];
     const found = users.find(u => (u.email ?? '').toLowerCase() === normalized);
     if (found) return found.id;
     if (users.length < perPage) break;
     page += 1;
   }
-  throw new Error('User with this email not found');
+  notFound('User with this email not found');
+  return '';
 };
 
 const MEMBER_ROLES = ['viewer', 'admin'] as const;
@@ -384,46 +469,55 @@ const addPropertyMember = async ({
   actorEmail?: string;
 }) => {
   await ensureStrictOwner(userId, propertyId);
-  if (!MEMBER_ROLES.includes(role)) throw new Error('Role must be viewer or admin');
+  if (!MEMBER_ROLES.includes(role)) badRequest('Role must be viewer or admin');
 
   const hasEmail = Boolean(email?.trim());
   const hasUserId = Boolean(memberUserId?.trim());
   if (hasEmail === hasUserId) {
-    throw new Error('Provide either email or userId');
+    badRequest('Provide either email or userId');
   }
 
-  let targetUserId: string;
   let invitedEmail: string | null = null;
 
-  if (hasEmail && email) {
-    const emailTrimmed = email.trim();
-    targetUserId = await findUserIdByEmail(emailTrimmed);
-    invitedEmail = emailTrimmed.toLowerCase();
-  } else if (memberUserId) {
-    targetUserId = memberUserId.trim();
-  } else {
-    throw new Error('Provide either email or userId');
-  }
+  const resolveTargetUserId = async (): Promise<string> => {
+    if (hasEmail && email) {
+      const emailTrimmed = email.trim();
+      invitedEmail = emailTrimmed.toLowerCase();
+      return findUserIdByEmail(emailTrimmed);
+    }
 
-  if (targetUserId === userId) throw new Error('Cannot add yourself as member');
+    if (hasUserId && memberUserId) {
+      const resolvedUserId = memberUserId.trim();
+      const { data: authUser, error: authError } =
+        await supabase.auth.admin.getUserById(resolvedUserId);
+      if (authError || !authUser?.user) notFound('User not found');
+      return resolvedUserId;
+    }
+
+    badRequest('Provide either email or userId');
+  };
+
+  const targetUserId = await resolveTargetUserId();
+
+  if (targetUserId === userId) badRequest('Cannot add yourself as member');
 
   const { data: property } = await supabase
     .from('properties')
     .select('id')
     .eq('id', propertyId)
     .single();
-  if (!property) throw new Error('Property not found');
+  if (!property) notFound('Property not found');
 
   const { error } = await supabase.from('property_members').insert({
     property_id: propertyId,
     user_id: targetUserId,
     role,
-    ...(invitedEmail && { invited_email: invitedEmail }),
+    ...(invitedEmail ? { invited_email: invitedEmail } : {}),
   });
 
   if (error) {
-    if (error.code === '23505') throw new Error('User is already a member');
-    throw new Error(error.message);
+    if (error.code === '23505') conflict('User is already a member');
+    serverError('Failed to add member', error);
   }
 
   await insertAuditLog({
@@ -432,13 +526,13 @@ const addPropertyMember = async ({
     action: AUDIT_ACTIONS.MEMBER_ADD,
     entityType: 'member',
     entityId: targetUserId,
-    details: { role, ...(invitedEmail && { email: invitedEmail }) },
+    details: { role, ...(invitedEmail ? { email: invitedEmail } : {}) },
     actorEmail,
   });
   return { success: true };
 };
 
-/** UA: Змінити роль учасника (viewer | admin). Лише власник або адмін. EN: Update member role. Owner or admin only. */
+/** UA: Змінити роль учасника (viewer | admin). Лише власник. EN: Update member role. Owner only. */
 const updatePropertyMemberRole = async ({
   userId,
   propertyId,
@@ -453,15 +547,18 @@ const updatePropertyMemberRole = async ({
   actorEmail?: string;
 }) => {
   await ensureStrictOwner(userId, propertyId);
-  if (!MEMBER_ROLES.includes(role)) throw new Error('Role must be viewer or admin');
+  if (!MEMBER_ROLES.includes(role)) badRequest('Role must be viewer or admin');
 
-  const { error } = await supabase
+  const { data: updatedMember, error } = await supabase
     .from('property_members')
     .update({ role })
     .eq('property_id', propertyId)
-    .eq('user_id', memberUserId);
+    .eq('user_id', memberUserId)
+    .select('id')
+    .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to update member role', error);
+  if (!updatedMember) notFound('Member not found');
   await insertAuditLog({
     userId,
     propertyId,
@@ -488,13 +585,16 @@ const removePropertyMember = async ({
 }) => {
   await ensureStrictOwner(userId, propertyId);
 
-  const { error } = await supabase
+  const { data: removedMember, error } = await supabase
     .from('property_members')
     .delete()
     .eq('property_id', propertyId)
-    .eq('user_id', memberUserId);
+    .eq('user_id', memberUserId)
+    .select('id')
+    .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  if (error) serverError('Failed to remove member', error);
+  if (!removedMember) notFound('Member not found');
   await insertAuditLog({
     userId,
     propertyId,

@@ -15,22 +15,35 @@ const app: express.Express = express();
 
 app.use(morgan('tiny'));
 
-app.use(express.json({ limit: '100mb' }));
-app.use(express.raw());
-app.use(express.text());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
 
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  allowedOrigins?.length
+    ? cors({ origin: allowedOrigins })
+    : cors(),
+);
+
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok' });
+});
 
 app.use('/v1', routes);
+
+app.use((_req, res) => {
+  res.status(404).json({ message: 'Not found' });
+});
 
 app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof ClientError) {
     res.status(error.status || 400).json(errorResponseHandler.getClientErrorResponse(error));
-
     return;
   }
 
+  console.error('Unhandled error:', error);
   res.status(500).json(errorResponseHandler.getServerErrorResponse(error));
 });
 

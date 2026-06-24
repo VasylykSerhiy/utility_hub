@@ -26,3 +26,14 @@ export const updatePropertySchema = propertySchema.omit({ name: true });
 export const updateMemberRoleSchema = z.object({
   role: z.enum(['viewer', 'admin']),
 });
+
+/** UA: Додавання учасника за email або userId. EN: Add property member by email or userId. */
+export const addMemberSchema = z
+  .object({
+    email: z.string().email().optional(),
+    userId: z.string().uuid().optional(),
+    role: z.enum(['viewer', 'admin']).optional(),
+  })
+  .refine(data => Boolean(data.email?.trim()) !== Boolean(data.userId?.trim()), {
+    message: 'Provide either email or userId',
+  });

@@ -10,6 +10,7 @@ const uk = {
 
   'FORM.ERROR.REQUIRED': "Це поле є обов'язковим",
   'FORM.ERROR.NON_NEGATIVE': "Значення має бути невід'ємним",
+  'ERRORS.LOAD_FAILED': 'Не вдалося завантажити дані. Спробуйте ще раз.',
 
   // DASHBOARD
   'DASHBOARD.CARD.TITLE.TOTAL_COSTS': 'Загальні витрати',

@@ -13,7 +13,7 @@ export const Routes = {
   SING_UP: '/auth/sing-up',
   SING_UP_SUCCESS: '/auth/sing-up-success',
   FORGOT_PASSWORD: '/auth/forgot-password',
-  UPDATE_PASSWORD: 'auth/update-password',
+  UPDATE_PASSWORD: '/auth/update-password',
 } as const;
 
 export const links: ILink[] = [

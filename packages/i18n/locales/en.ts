@@ -10,6 +10,7 @@ const en = {
 
   'FORM.ERROR.REQUIRED': 'This field is required',
   'FORM.ERROR.NON_NEGATIVE': 'Value must be non-negative',
+  'ERRORS.LOAD_FAILED': 'Failed to load data. Please try again.',
 
   // DASHBOARD
   'DASHBOARD.CARD.TITLE.TOTAL_COSTS': 'Total Costs',

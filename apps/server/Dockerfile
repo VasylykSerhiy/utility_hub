@@ -44,5 +44,6 @@ COPY --from=installer /app ./
 WORKDIR /app/apps/server
 
 
+ENV PORT=8080
 EXPOSE 8080
 CMD ["node", "dist/main.js"]

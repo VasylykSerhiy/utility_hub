@@ -1,2 +1,2 @@
 export * from './getUserId';
-export * from './mapId';
+export * from './pagination.util';

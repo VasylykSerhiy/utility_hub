@@ -6,11 +6,6 @@ import { getUserId } from '../utils';
 const getDashboardAnalytics = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
     const properties = await dashboardService.getDashboardAnalytics(userId);
     res.json(properties);
   } catch (error) {

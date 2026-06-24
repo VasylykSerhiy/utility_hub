@@ -9,6 +9,12 @@ const getClientErrorResponse = (error: ClientError) => {
 };
 
 const getServerErrorResponse = (error: Error) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if (isProduction) {
+    return { message: 'Internal server error' };
+  }
+
   return { message: error.message, stack: error.stack };
 };
 
